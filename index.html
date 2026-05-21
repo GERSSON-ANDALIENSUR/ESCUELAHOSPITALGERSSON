@@ -4,6 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Agente Pedagógico | Escuela Hospitalaria</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script>if(typeof pdfjsLib!=='undefined'){pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';}</script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
@@ -357,10 +360,11 @@ textarea.form-control{min-height:80px}
       <div class="form-group">
         <label>📄 Planificación mensual, ABP, AVP o documento pedagógico</label>
         <div class="file-drop" onclick="document.getElementById('fileInput').click()" id="fileDrop">
-          <p>📁 <strong>Clic para subir .txt</strong> o arrastra aquí</p>
+          <p>📁 <strong>Clic para subir .txt, .docx o .pdf</strong> o arrastra aquí</p>
           <p style="font-size:11px;margin-top:4px">También puedes pegar directamente en el área de abajo</p>
         </div>
-        <input type="file" id="fileInput" accept=".txt" class="hidden" onchange="handleFile(event)">
+        <input type="file" id="fileInput" accept=".txt,.docx,.pdf,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document" class="hidden" onchange="handleFile(event)">
+        <div id="fileProgress" class="hidden" style="margin-top:8px;font-size:12px;color:var(--text-muted);display:flex;align-items:center;gap:8px"><div class="spinner" style="width:16px;height:16px;border-width:2px"></div><span id="fileProgressMsg">Procesando archivo...</span></div>
         <textarea class="form-control textarea-main" id="planningText" placeholder="Pega aquí tu planificación mensual, ABP, AVP, planificación por asignatura o documento pedagógico completo...
 
 Ejemplo:
@@ -583,15 +587,86 @@ function toggleSection(cardId, bodyId) {
 // ═══════════════════════════════════════════════
 // FILE HANDLING
 // ═══════════════════════════════════════════════
-function handleFile(event) {
-  const file = event.target.files[0];
+function showFileProgress(msg) {
+  document.getElementById('fileProgress').classList.remove('hidden');
+  document.getElementById('fileProgressMsg').textContent = msg;
+}
+function hideFileProgress() {
+  document.getElementById('fileProgress').classList.add('hidden');
+}
+
+function processFile(file) {
   if (!file) return;
-  const reader = new FileReader();
-  reader.onload = (e) => {
-    document.getElementById('planningText').value = e.target.result;
-    document.getElementById('fileDrop').innerHTML = `<p>✅ Archivo cargado: <strong>${file.name}</strong></p>`;
-  };
-  reader.readAsText(file, 'UTF-8');
+  const ext = file.name.split('.').pop().toLowerCase();
+  const drop = document.getElementById('fileDrop');
+
+  if (ext === 'txt') {
+    showFileProgress('Leyendo archivo de texto...');
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      document.getElementById('planningText').value = e.target.result;
+      drop.innerHTML = `<p>✅ Archivo cargado: <strong>${file.name}</strong></p>`;
+      hideFileProgress();
+    };
+    reader.onerror = () => { hideFileProgress(); showToast('❌ Error al leer el archivo'); };
+    reader.readAsText(file, 'UTF-8');
+
+  } else if (ext === 'docx') {
+    if (typeof mammoth === 'undefined') {
+      showToast('⚠️ La librería para Word no cargó. Verifica tu conexión a internet.');
+      return;
+    }
+    showFileProgress('Extrayendo texto del Word (.docx)...');
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      mammoth.extractRawText({ arrayBuffer: e.target.result })
+        .then(result => {
+          document.getElementById('planningText').value = result.value;
+          drop.innerHTML = `<p>✅ Word cargado: <strong>${file.name}</strong></p>`;
+          if (result.messages.length > 0) showToast('⚠️ Algunos elementos del Word no se pudieron leer (imágenes, tablas complejas)');
+          hideFileProgress();
+        })
+        .catch(() => { hideFileProgress(); showToast('❌ No se pudo leer el archivo Word'); });
+    };
+    reader.onerror = () => { hideFileProgress(); showToast('❌ Error al leer el archivo'); };
+    reader.readAsArrayBuffer(file);
+
+  } else if (ext === 'pdf') {
+    if (typeof pdfjsLib === 'undefined') {
+      showToast('⚠️ La librería para PDF no cargó. Verifica tu conexión a internet.');
+      return;
+    }
+    showFileProgress('Extrayendo texto del PDF (puede tardar unos segundos)...');
+    const reader = new FileReader();
+    reader.onload = async (e) => {
+      try {
+        const pdf = await pdfjsLib.getDocument({ data: e.target.result }).promise;
+        let fullText = '';
+        for (let i = 1; i <= pdf.numPages; i++) {
+          document.getElementById('fileProgressMsg').textContent = `Leyendo página ${i} de ${pdf.numPages}...`;
+          const page = await pdf.getPage(i);
+          const content = await page.getTextContent();
+          const pageText = content.items.map(item => item.str).join(' ');
+          fullText += pageText + '\n\n';
+        }
+        document.getElementById('planningText').value = fullText.trim();
+        drop.innerHTML = `<p>✅ PDF cargado: <strong>${file.name}</strong> (${pdf.numPages} páginas)</p>`;
+        hideFileProgress();
+      } catch(err) {
+        hideFileProgress();
+        showToast('❌ No se pudo leer el PDF. Intenta copiar el texto manualmente.');
+      }
+    };
+    reader.onerror = () => { hideFileProgress(); showToast('❌ Error al leer el archivo'); };
+    reader.readAsArrayBuffer(file);
+
+  } else {
+    showToast('⚠️ Formato no soportado. Usa .txt, .docx o .pdf');
+  }
+}
+
+function handleFile(event) {
+  processFile(event.target.files[0]);
 }
 
 // Drag and drop
@@ -601,15 +676,7 @@ fileDrop.addEventListener('dragleave', () => { fileDrop.style.borderColor=''; })
 fileDrop.addEventListener('drop', e => {
   e.preventDefault();
   fileDrop.style.borderColor='';
-  const file = e.dataTransfer.files[0];
-  if (file) {
-    const reader = new FileReader();
-    reader.onload = ev => {
-      document.getElementById('planningText').value = ev.target.result;
-      fileDrop.innerHTML = `<p>✅ Archivo cargado: <strong>${file.name}</strong></p>`;
-    };
-    reader.readAsText(file, 'UTF-8');
-  }
+  processFile(e.dataTransfer.files[0]);
 });
 
 // ═══════════════════════════════════════════════
