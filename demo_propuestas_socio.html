@@ -1,0 +1,837 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Propuestas — Sección Socioemocional</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap');
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --dk:#0f2027;--md:#1a3a4a;--bl:#1a73e8;--lb:#e8f0fe;
+  --gn:#0d652d;--lg:#e6f4ea;--rd:#d93025;--lr:#fce8e6;
+  --or:#e37400;--lo:#fff3e0;
+  --bg:#f5f6f8;--brd:#dadce0;--wh:#fff;--tx:#333;--tx2:#666;--tx3:#999;
+  --c5:#f0f0f0;--c6:#e8eaed;
+  --n1:#1a73e8;--n1b:#e8f0fe;
+  --n2:#e37400;--n2b:#fff3e0;
+  --n3:#0d652d;--n3b:#e6f4ea;
+}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--tx);font-size:14px}
+
+/* NAV PROPUESTAS */
+.prop-nav{background:linear-gradient(135deg,var(--dk),var(--md));padding:16px 24px;position:sticky;top:0;z-index:200;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.prop-nav h1{color:#fff;font-size:15px;font-weight:700;margin-right:10px;white-space:nowrap}
+.pBtn{padding:7px 14px;border-radius:20px;border:1.5px solid rgba(255,255,255,.3);background:rgba(255,255,255,.08);color:rgba(255,255,255,.75);font:600 12px 'DM Sans';cursor:pointer;transition:.15s;white-space:nowrap}
+.pBtn:hover{background:rgba(255,255,255,.18);color:#fff}
+.pBtn.on{background:#fff;color:var(--dk);border-color:#fff}
+
+/* SECCIONES */
+.propuesta{display:none;padding:28px 32px 60px;max-width:1100px;margin:0 auto;animation:fi .2s ease}
+.propuesta.on{display:block}
+@keyframes fi{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+h2.pt{font-size:1.4rem;font-weight:800;color:var(--dk);margin-bottom:4px}
+.ps{color:var(--tx2);font-size:.9rem;margin-bottom:18px}
+.badge-prop{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;margin-bottom:14px}
+
+/* FILTRO CURSO */
+.tb{display:flex;gap:8px;align-items:center;margin-bottom:14px;flex-wrap:wrap}
+select,input{padding:7px 11px;border:1px solid var(--brd);border-radius:7px;font:14px 'DM Sans';background:#fff;outline:0}
+select:focus,input:focus{border-color:var(--bl);box-shadow:0 0 0 3px rgba(26,115,232,.1)}
+.b{display:inline-flex;align-items:center;gap:5px;padding:7px 14px;border:0;border-radius:7px;font:600 13px 'DM Sans';cursor:pointer;transition:.12s}
+.bp{background:var(--bl);color:#fff}.bp:hover{background:#1557b0}
+.bs{background:0;color:var(--tx);border:1px solid var(--brd)}.bs:hover{background:var(--c5)}
+
+/* TABLA BASE */
+.tw{background:#fff;border-radius:10px;border:1px solid var(--c6);overflow:auto}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{padding:9px 12px;text-align:left;font:700 11px 'DM Sans';color:#555;border-bottom:2px solid var(--c6);text-transform:uppercase;letter-spacing:.4px;white-space:nowrap;background:#fafbfc}
+td{padding:8px 12px;border-bottom:1px solid var(--c5);vertical-align:middle}
+tr:last-child td{border-bottom:0}
+tr:hover td{background:#f8f9fa}
+
+/* ===== PROPUESTA A — CHIPS ===== */
+.chip-group{display:flex;gap:5px}
+.chip{padding:4px 11px;border-radius:20px;font:600 11.5px 'DM Sans';cursor:pointer;border:2px solid transparent;transition:.12s;white-space:nowrap;position:relative}
+.chip.n1{background:var(--n1b);color:var(--n1);border-color:var(--n1b)}
+.chip.n2{background:var(--n2b);color:var(--n2);border-color:var(--n2b)}
+.chip.n3{background:var(--n3b);color:var(--n3);border-color:var(--n3b)}
+.chip.off{background:#f1f3f4;color:#aaa;border-color:#f1f3f4}
+.chip.selected.n1{border-color:var(--n1);box-shadow:0 0 0 2px rgba(26,115,232,.2)}
+.chip.selected.n2{border-color:var(--n2);box-shadow:0 0 0 2px rgba(227,116,0,.2)}
+.chip.selected.n3{border-color:var(--n3);box-shadow:0 0 0 2px rgba(13,101,45,.2)}
+.chip.selected.off{border-color:#ccc}
+/* Tooltip */
+.tip{position:relative}
+.tip .tipbox{display:none;position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);background:#222;color:#fff;font-size:11px;padding:8px 10px;border-radius:7px;width:220px;line-height:1.4;z-index:999;pointer-events:none}
+.tip .tipbox::after{content:'';position:absolute;top:100%;left:50%;transform:translateX(-50%);border:5px solid transparent;border-top-color:#222}
+.tip:hover .tipbox{display:block}
+.exento-label{font-size:11px;color:var(--tx3);font-style:italic}
+.exento-check{display:flex;align-items:center;gap:5px;font-size:12px;cursor:pointer;color:var(--rd)}
+.exento-check input{cursor:pointer}
+
+/* ===== PROPUESTA B — MODAL ===== */
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;z-index:999;animation:fi .15s ease}
+.mbox{background:#fff;border-radius:14px;padding:26px;width:100%;max-width:560px;max-height:90vh;overflow:auto;box-shadow:0 20px 60px rgba(0,0,0,.22)}
+.mbox h3{font-size:1.1rem;font-weight:800;margin-bottom:4px;color:var(--dk)}
+.mbox .sub{font-size:12px;color:var(--tx2);margin-bottom:18px}
+.eje-card{border:2px solid var(--c6);border-radius:10px;padding:14px 16px;margin-bottom:12px;transition:.15s}
+.eje-card h4{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px;color:var(--tx2)}
+.nivel-opts{display:flex;flex-direction:column;gap:7px}
+.nivel-opt{display:flex;align-items:flex-start;gap:10px;padding:9px 12px;border-radius:8px;border:2px solid var(--c6);cursor:pointer;transition:.12s}
+.nivel-opt:hover{background:#f8f9fa;border-color:#ccc}
+.nivel-opt.sel.n1{border-color:var(--n1);background:var(--n1b)}
+.nivel-opt.sel.n2{border-color:var(--n2);background:var(--n2b)}
+.nivel-opt.sel.n3{border-color:var(--n3);background:var(--n3b)}
+.nivel-opt .dot{width:18px;height:18px;border-radius:50%;border:2px solid #ccc;flex-shrink:0;margin-top:1px;display:flex;align-items:center;justify-content:center}
+.nivel-opt.sel .dot{background:currentColor;border-color:currentColor}
+.nivel-opt.sel.n1 .dot{background:var(--n1);border-color:var(--n1);color:#fff}
+.nivel-opt.sel.n2 .dot{background:var(--n2);border-color:var(--n2);color:#fff}
+.nivel-opt.sel.n3 .dot{background:var(--n3);border-color:var(--n3);color:#fff}
+.nivel-opt .dot svg{display:none}
+.nivel-opt.sel .dot svg{display:block}
+.nivel-lbl{font-size:12px;font-weight:700;margin-bottom:2px}
+.nivel-desc{font-size:11.5px;color:var(--tx2);line-height:1.4}
+.mbox .acts{display:flex;gap:8px;justify-content:flex-end;margin-top:16px}
+.resumen-chips{display:flex;gap:5px;flex-wrap:wrap}
+
+/* ===== PROPUESTA C — PANEL LATERAL ===== */
+.layout-split{display:flex;gap:0;border-radius:10px;overflow:hidden;border:1px solid var(--c6);background:#fff;min-height:420px}
+.split-list{width:340px;flex-shrink:0;border-right:1px solid var(--c6);overflow:auto}
+.split-item{padding:11px 14px;cursor:pointer;border-bottom:1px solid var(--c5);transition:.12s;display:flex;align-items:center;gap:10px}
+.split-item:hover{background:#f5f6f8}
+.split-item.sel{background:var(--lb);border-right:3px solid var(--bl)}
+.split-item .sname{font-weight:600;font-size:13px}
+.split-item .scurso{font-size:11px;color:var(--tx2)}
+.split-panel{flex:1;padding:22px;overflow:auto}
+.split-panel h3{font-size:1rem;font-weight:700;margin-bottom:4px;color:var(--dk)}
+.split-panel .sub{font-size:12px;color:var(--tx2);margin-bottom:16px}
+.eje-row{margin-bottom:14px;padding:14px;border-radius:9px;border:1px solid var(--c6)}
+.eje-row h5{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--tx2);margin-bottom:8px}
+.nivel-pills{display:flex;gap:6px}
+.pill{padding:6px 14px;border-radius:20px;font:600 12px 'DM Sans';cursor:pointer;border:2px solid transparent;transition:.12s;text-align:center}
+.pill.off{background:#f1f3f4;color:#999;border-color:#f1f3f4}
+.pill.on.n1{background:var(--n1b);color:var(--n1);border-color:var(--n1)}
+.pill.on.n2{background:var(--n2b);color:var(--n2);border-color:var(--n2)}
+.pill.on.n3{background:var(--n3b);color:var(--n3);border-color:var(--n3)}
+.split-empty{display:flex;align-items:center;justify-content:center;height:100%;color:var(--tx3);flex-direction:column;gap:8px;font-size:13px}
+
+/* ===== PROPUESTA D — SUB-TABS ===== */
+.subtabs{display:flex;gap:0;border-bottom:2px solid var(--c6);margin-bottom:18px}
+.stab{padding:9px 20px;font:600 13px 'DM Sans';cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;color:var(--tx2);transition:.12s}
+.stab:hover{color:var(--tx)}
+.stab.on{color:var(--bl);border-bottom-color:var(--bl)}
+.eje-header{padding:14px 18px;border-radius:10px;margin-bottom:14px;border-left:4px solid}
+.eje-header.e1{background:var(--n1b);border-color:var(--n1)}
+.eje-header.e2{background:var(--n2b);border-color:var(--n2)}
+.eje-header.e3{background:var(--n3b);border-color:var(--n3)}
+.eje-header h4{font-size:13px;font-weight:700;margin-bottom:6px}
+.eje-header .niveles-ref{display:flex;gap:10px;flex-wrap:wrap}
+.nivel-ref{font-size:11px;padding:3px 9px;border-radius:12px;font-weight:600}
+.nr1{background:rgba(26,115,232,.12);color:var(--n1)}
+.nr2{background:rgba(227,116,0,.12);color:var(--n2)}
+.nr3{background:rgba(13,101,45,.12);color:var(--n3)}
+.subtab-content{display:none}.subtab-content.on{display:block;animation:fi .18s ease}
+.select-nivel{padding:5px 10px;border:2px solid var(--c6);border-radius:7px;font:13px 'DM Sans';outline:0;cursor:pointer;background:#fff}
+.select-nivel:focus{border-color:var(--bl)}
+.select-nivel.v1{border-color:var(--n1);background:var(--n1b);color:var(--n1);font-weight:700}
+.select-nivel.v2{border-color:var(--n2);background:var(--n2b);color:var(--n2);font-weight:700}
+.select-nivel.v3{border-color:var(--n3);background:var(--n3b);color:var(--n3);font-weight:700}
+
+/* ===== PROPUESTA E — EXPANDIBLE ===== */
+.exp-row{border-bottom:1px solid var(--c5)}
+.exp-head{display:flex;align-items:center;gap:12px;padding:10px 14px;cursor:pointer;transition:.12s}
+.exp-head:hover{background:#f8f9fa}
+.exp-arrow{font-size:10px;color:var(--tx3);transition:transform .2s;width:14px;text-align:center}
+.exp-arrow.open{transform:rotate(90deg)}
+.exp-body{display:none;padding:14px 16px 16px 40px;background:#fafbfc;border-top:1px solid var(--c5)}
+.exp-body.open{display:block;animation:fi .18s ease}
+.ejes-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.eje-mini{border-radius:9px;padding:12px;border:2px solid var(--c6);background:#fff}
+.eje-mini h5{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:var(--tx2);margin-bottom:8px}
+.eje-mini .desc{font-size:10.5px;color:var(--tx2);line-height:1.4;margin-top:6px;min-height:40px}
+.mini-pills{display:flex;gap:4px}
+.mpill{padding:5px 10px;border-radius:14px;font:600 11px 'DM Sans';cursor:pointer;border:2px solid var(--c6);background:#fff;color:#999;transition:.12s}
+.mpill:hover{background:#f0f0f0}
+.mpill.on.n1{background:var(--n1b);color:var(--n1);border-color:var(--n1)}
+.mpill.on.n2{background:var(--n2b);color:var(--n2);border-color:var(--n2)}
+.mpill.on.n3{background:var(--n3b);color:var(--n3);border-color:var(--n3)}
+.resumen-mini{display:flex;gap:5px;font-size:11px;font-weight:600;color:var(--tx2)}
+
+/* GRAFICOS */
+.graf-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px;margin-top:18px}
+.graf-card{background:#fff;border-radius:10px;border:1px solid var(--c6);padding:16px}
+.graf-card h4{font-size:12.5px;font-weight:700;margin-bottom:12px;color:var(--dk)}
+.bar-row{display:flex;align-items:center;gap:9px;margin-bottom:8px}
+.bar-lbl{width:60px;font-size:11px;font-weight:600;color:var(--tx2)}
+.bar-track{flex:1;height:18px;background:#f1f3f4;border-radius:5px;overflow:hidden}
+.bar-fill{height:100%;border-radius:5px;display:flex;align-items:center;padding-left:8px;min-width:28px;transition:width .4s ease}
+.bar-fill span{font-size:10px;font-weight:700;color:#fff}
+.bar-n{font-size:11px;color:var(--tx2);width:30px;text-align:right}
+.graf-wide{grid-column:1/-1}
+
+/* TOAST */
+.toast{position:fixed;bottom:24px;right:24px;background:var(--gn);color:#fff;padding:10px 20px;border-radius:9px;font:600 13px 'DM Sans';z-index:9999;animation:toastIn .2s ease;pointer-events:none}
+@keyframes toastIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+
+/* LEYENDA */
+.legend{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:14px}
+.leg-item{display:flex;align-items:center;gap:6px;font-size:11.5px;font-weight:600}
+.leg-dot{width:12px;height:12px;border-radius:50%}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<div class="prop-nav">
+  <h1>🎨 Propuestas Socioemocional</h1>
+  <button class="pBtn on" onclick="showProp('a')">A — Chips + Tooltip</button>
+  <button class="pBtn" onclick="showProp('b')">B — Modal por estudiante</button>
+  <button class="pBtn" onclick="showProp('c')">C — Panel lateral</button>
+  <button class="pBtn" onclick="showProp('d')">D — Sub-pestañas por eje</button>
+  <button class="pBtn" onclick="showProp('e')">E — Filas expandibles</button>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════ -->
+<!-- PROPUESTA A — CHIPS CON TOOLTIP                           -->
+<!-- ══════════════════════════════════════════════════════════ -->
+<div class="propuesta on" id="prop-a">
+  <h2 class="pt">Socioemocional</h2>
+  <p class="ps">Evaluación por ejes socioemocionales</p>
+  <span class="badge-prop" style="background:#e8f0fe;color:#1a73e8">Propuesta A — Chips de color con tooltip informativo</span>
+
+  <div class="legend">
+    <div class="leg-item"><div class="leg-dot" style="background:var(--n1)"></div> Nivel I — Inicial / requiere apoyo</div>
+    <div class="leg-item"><div class="leg-dot" style="background:var(--n2)"></div> Nivel II — En proceso / con mediación</div>
+    <div class="leg-item"><div class="leg-dot" style="background:var(--n3)"></div> Nivel III — Logrado / autónomo</div>
+  </div>
+
+  <div class="tb">
+    <select onchange="filtrarA(this.value)">
+      <option>1°</option><option>2°</option><option>3°</option><option>4°</option>
+    </select>
+    <button class="b bp" onclick="verGraficosA()">📊 Ver Gráficos</button>
+    <span style="font-size:11px;color:var(--tx3);margin-left:6px">Pasa el mouse sobre un chip para ver la descripción del nivel</span>
+  </div>
+
+  <div class="tw">
+    <table id="tablaA">
+      <thead>
+        <tr>
+          <th>Nombre</th>
+          <th>EJE 1 · Conciencia Emocional</th>
+          <th>EJE 2 · Regulación y Expresión</th>
+          <th>EJE 3 · Autonomía y Resiliencia</th>
+          <th>Eximir</th>
+        </tr>
+      </thead>
+      <tbody id="bodyA"></tbody>
+    </table>
+  </div>
+  <div id="grafA" style="display:none"></div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════ -->
+<!-- PROPUESTA B — MODAL POR ESTUDIANTE                        -->
+<!-- ══════════════════════════════════════════════════════════ -->
+<div class="propuesta" id="prop-b">
+  <h2 class="pt">Socioemocional</h2>
+  <p class="ps">Evaluación por ejes socioemocionales</p>
+  <span class="badge-prop" style="background:#f3e8ff;color:#7c3aed">Propuesta B — Modal detallado por estudiante</span>
+
+  <div class="tb">
+    <select onchange="filtrarB(this.value)">
+      <option>1°</option><option>2°</option><option>3°</option><option>4°</option>
+    </select>
+    <button class="b bp" onclick="verGraficosB()">📊 Ver Gráficos</button>
+  </div>
+
+  <div class="tw">
+    <table>
+      <thead>
+        <tr><th>Nombre</th><th>EJE 1</th><th>EJE 2</th><th>EJE 3</th><th>Acción</th></tr>
+      </thead>
+      <tbody id="bodyB"></tbody>
+    </table>
+  </div>
+  <div id="grafB" style="display:none"></div>
+  <div id="modalB"></div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════ -->
+<!-- PROPUESTA C — PANEL LATERAL                               -->
+<!-- ══════════════════════════════════════════════════════════ -->
+<div class="propuesta" id="prop-c">
+  <h2 class="pt">Socioemocional</h2>
+  <p class="ps">Evaluación por ejes socioemocionales</p>
+  <span class="badge-prop" style="background:#fff3e0;color:#e37400">Propuesta C — Panel lateral deslizable</span>
+
+  <div class="tb">
+    <select onchange="filtrarC(this.value)">
+      <option>1°</option><option>2°</option><option>3°</option><option>4°</option>
+    </select>
+    <button class="b bp" onclick="verGraficosC()">📊 Ver Gráficos</button>
+  </div>
+
+  <div class="layout-split" id="splitC">
+    <div class="split-list" id="listC"></div>
+    <div class="split-panel" id="panelC">
+      <div class="split-empty">
+        <div style="font-size:32px">👆</div>
+        <div>Selecciona un estudiante de la lista</div>
+      </div>
+    </div>
+  </div>
+  <div id="grafC" style="display:none"></div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════ -->
+<!-- PROPUESTA D — SUB-PESTAÑAS POR EJE                        -->
+<!-- ══════════════════════════════════════════════════════════ -->
+<div class="propuesta" id="prop-d">
+  <h2 class="pt">Socioemocional</h2>
+  <p class="ps">Evaluación por ejes socioemocionales</p>
+  <span class="badge-prop" style="background:#e6f4ea;color:#0d652d">Propuesta D — Sub-pestañas por eje</span>
+
+  <div class="tb">
+    <select onchange="filtrarD(this.value)">
+      <option>1°</option><option>2°</option><option>3°</option><option>4°</option>
+    </select>
+    <button class="b bp" onclick="verGraficosD()">📊 Ver Gráficos</button>
+  </div>
+
+  <div class="subtabs">
+    <div class="stab on" onclick="showSubtab('e1')">EJE 1 — Conciencia Emocional</div>
+    <div class="stab" onclick="showSubtab('e2')">EJE 2 — Regulación y Expresión</div>
+    <div class="stab" onclick="showSubtab('e3')">EJE 3 — Autonomía y Resiliencia</div>
+  </div>
+
+  <div class="subtab-content on" id="stab-e1">
+    <div class="eje-header e1">
+      <h4>Eje 1: Conciencia Emocional y Autoexploración</h4>
+      <div class="niveles-ref">
+        <span class="nivel-ref nr1">Nivel I · Reconoce emociones básicas solo con apoyo</span>
+        <span class="nivel-ref nr2">Nivel II · Relaciona emociones con situaciones simples</span>
+        <span class="nivel-ref nr3">Nivel III · Identifica y explica sus emociones con claridad</span>
+      </div>
+    </div>
+    <div class="tw"><table><thead><tr><th>Nombre</th><th>Nivel de Logro</th><th>Eximir</th></tr></thead><tbody id="bodyD1"></tbody></table></div>
+  </div>
+
+  <div class="subtab-content" id="stab-e2">
+    <div class="eje-header e2">
+      <h4>Eje 2: Regulación y Expresión de Emociones</h4>
+      <div class="niveles-ref">
+        <span class="nivel-ref nr1">Nivel I · Requiere apoyo constante para regularse</span>
+        <span class="nivel-ref nr2">Nivel II · Se regula con orientación o recordatorios</span>
+        <span class="nivel-ref nr3">Nivel III · Se expresa y regula con mínima ayuda</span>
+      </div>
+    </div>
+    <div class="tw"><table><thead><tr><th>Nombre</th><th>Nivel de Logro</th><th>Eximir</th></tr></thead><tbody id="bodyD2"></tbody></table></div>
+  </div>
+
+  <div class="subtab-content" id="stab-e3">
+    <div class="eje-header e3">
+      <h4>Eje 3: Autonomía y Desarrollo de la Resiliencia</h4>
+      <div class="niveles-ref">
+        <span class="nivel-ref nr1">Nivel I · Necesita guía para reconocer sus fortalezas</span>
+        <span class="nivel-ref nr2">Nivel II · Identifica fortalezas con apoyo del adulto</span>
+        <span class="nivel-ref nr3">Nivel III · Propone formas autónomas de superar dificultades</span>
+      </div>
+    </div>
+    <div class="tw"><table><thead><tr><th>Nombre</th><th>Nivel de Logro</th><th>Eximir</th></tr></thead><tbody id="bodyD3"></tbody></table></div>
+  </div>
+  <div id="grafD" style="display:none"></div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════ -->
+<!-- PROPUESTA E — EXPANDIBLE                                   -->
+<!-- ══════════════════════════════════════════════════════════ -->
+<div class="propuesta" id="prop-e">
+  <h2 class="pt">Socioemocional</h2>
+  <p class="ps">Evaluación por ejes socioemocionales</p>
+  <span class="badge-prop" style="background:#fce8e6;color:#d93025">Propuesta E — Filas expandibles por estudiante</span>
+
+  <div class="tb">
+    <select onchange="filtrarE(this.value)">
+      <option>1°</option><option>2°</option><option>3°</option><option>4°</option>
+    </select>
+    <button class="b bp" onclick="verGraficosE()">📊 Ver Gráficos</button>
+    <span style="font-size:11px;color:var(--tx3)">Haz clic en un estudiante para expandir su evaluación</span>
+  </div>
+
+  <div class="tw" id="listaE"></div>
+  <div id="grafE" style="display:none"></div>
+</div>
+
+<script>
+// ═══════ DATOS ═══════
+const EJES = [
+  {
+    id:'eje1', label:'EJE 1', nombre:'Conciencia Emocional y Autoexploración',
+    niveles:{
+      I:{ tag:'Inicial / requiere apoyo', desc:'Reconoce emociones básicas solo con apoyo visual, verbal o mediante ejemplos del adulto.' },
+      II:{ tag:'En proceso / con mediación', desc:'Reconoce algunas emociones y logra relacionarlas con situaciones simples mediante preguntas guía.' },
+      III:{ tag:'Logrado / autónomo', desc:'Identifica, nombra y explica sus emociones de manera clara, relacionándolas con experiencias personales.' }
+    }
+  },
+  {
+    id:'eje2', label:'EJE 2', nombre:'Regulación y Expresión de Emociones',
+    niveles:{
+      I:{ tag:'Inicial / requiere apoyo', desc:'Requiere apoyo constante para expresar lo que siente o utilizar estrategias de calma.' },
+      II:{ tag:'En proceso / con mediación', desc:'Expresa emociones o utiliza estrategias de regulación cuando recibe orientación, modelamiento o recordatorios.' },
+      III:{ tag:'Logrado / autónomo', desc:'Expresa sus emociones de forma respetuosa y utiliza estrategias de regulación con mínima ayuda o de manera espontánea.' }
+    }
+  },
+  {
+    id:'eje3', label:'EJE 3', nombre:'Autonomía y Desarrollo de la Resiliencia',
+    niveles:{
+      I:{ tag:'Inicial / requiere apoyo', desc:'Necesita guía para reconocer fortalezas personales, logros o formas de enfrentar dificultades.' },
+      II:{ tag:'En proceso / con mediación', desc:'Identifica algunas fortalezas y puede relacionarlas con situaciones difíciles cuando recibe apoyo del adulto.' },
+      III:{ tag:'Logrado / autónomo', desc:'Reconoce sus fortalezas, valora sus logros y propone formas positivas de enfrentar dificultades con mayor autonomía.' }
+    }
+  }
+];
+
+const CURSOS = {
+  '1°': ['AGUILERA PÉREZ SOFÍA','BARRIENTOS SOTO MATÍAS','CASTILLO MORA VALENTINA','DÍAZ RUIZ TOMÁS','ESPINOZA LAGOS ISIDORA','FUENTES VERA GABRIEL','GÓMEZ SILVA CAMILA','HERRERA CAMPOS NICOLÁS'],
+  '2°': ['IBÁÑEZ MENA ANTONELLA','JARA ROJO SEBASTIÁN','LAGOS PINO EMILIA','MORA REYES LUCAS'],
+  '3°': ['NAVARRO SOTO ANA BELÉN','ORTIZ DÍAZ FELIPE','PALMA VERA CONSTANZA','RIQUELME MORA PABLO'],
+  '4°': ['SALAZAR JARA FLORENCIA','TAPIA LAGOS IGNACIO','URIBE SOTO RENATA','VARGAS PINO CRISTÓBAL']
+};
+
+// Estado compartido por propuesta
+const estado = {a:{}, b:{}, c:{}, d:{}, e:{}};
+
+function initData(prop) {
+  Object.values(CURSOS).flat().forEach(n => {
+    if (!estado[prop][n]) estado[prop][n] = { eje1:'', eje2:'', eje3:'', exento:false, razon:'' };
+  });
+}
+['a','b','c','d','e'].forEach(initData);
+
+let cursoA='1°', cursoB='1°', cursoC='1°', cursoD='1°', cursoE='1°';
+let selC = null;
+let curSubtab = 'e1';
+
+function chipClass(n) { return n ? 'n'+n.replace('I','1').replace('II','2').replace('III','3').replace('1','1').replace('11','2').replace('111','3') : 'off'; }
+function chipN(v) { if(v==='III') return 'n3'; if(v==='II') return 'n2'; if(v==='I') return 'n1'; return 'off'; }
+function chipColor(v) { if(v==='III') return '#0d652d'; if(v==='II') return '#e37400'; if(v==='I') return '#1a73e8'; return '#aaa'; }
+function nivelBadge(v) {
+  if(!v) return '<span style="color:#ccc;font-size:11px">—</span>';
+  const cls = chipN(v);
+  const colors = {n1:'background:var(--n1b);color:var(--n1)', n2:'background:var(--n2b);color:var(--n2)', n3:'background:var(--n3b);color:var(--n3)', off:''};
+  return `<span style="${colors[cls]};padding:3px 9px;border-radius:12px;font:700 11px DM Sans">${v}</span>`;
+}
+
+function toast(msg) {
+  const t = document.createElement('div');
+  t.className='toast'; t.textContent=msg;
+  document.body.appendChild(t);
+  setTimeout(()=>t.remove(), 2000);
+}
+
+function showProp(p) {
+  document.querySelectorAll('.propuesta').forEach(el=>el.classList.remove('on'));
+  document.querySelectorAll('.pBtn').forEach(el=>el.classList.remove('on'));
+  document.getElementById('prop-'+p).classList.add('on');
+  document.querySelectorAll('.pBtn')[['a','b','c','d','e'].indexOf(p)].classList.add('on');
+}
+
+// ═══════════════════════════════════════
+// GRÁFICOS (compartido)
+// ═══════════════════════════════════════
+function buildGraficos(prop, data, container) {
+  const el = document.getElementById(container);
+  if(el.style.display !== 'none') { el.style.display='none'; return; }
+  const todos = Object.values(CURSOS).flat().filter(n => !data[n]?.exento);
+  let html = '<div class="graf-grid" style="margin-top:0">';
+
+  EJES.forEach(eje => {
+    const cnt = {I:0,II:0,III:0};
+    todos.forEach(n => { const v=data[n]?.[eje.id]; if(v) cnt[v]++; });
+    const total = cnt.I+cnt.II+cnt.III||1;
+    html += `<div class="graf-card">
+      <h4>${eje.label} — ${eje.nombre}</h4>`;
+    [['I','var(--n1)'],['II','var(--n2)'],['III','var(--n3)']].forEach(([nv,col])=>{
+      const pct=Math.round(cnt[nv]/total*100);
+      html+=`<div class="bar-row">
+        <div class="bar-lbl">Nivel ${nv}</div>
+        <div class="bar-track"><div class="bar-fill" style="width:${pct||2}%;background:${col}"><span>${pct}%</span></div></div>
+        <div class="bar-n">${cnt[nv]}</div>
+      </div>`;
+    });
+    html+='</div>';
+  });
+
+  // Comparativa por curso
+  html += `<div class="graf-card graf-wide"><h4>Comparativa por Curso — Nivel promedio</h4>
+    <table style="width:100%;font-size:11.5px;border-collapse:collapse">
+    <thead><tr><th style="text-align:left;padding:6px 10px;border-bottom:2px solid var(--c6)">Curso</th>
+    <th style="padding:6px 10px;border-bottom:2px solid var(--c6)">EJE 1</th>
+    <th style="padding:6px 10px;border-bottom:2px solid var(--c6)">EJE 2</th>
+    <th style="padding:6px 10px;border-bottom:2px solid var(--c6)">EJE 3</th>
+    <th style="padding:6px 10px;border-bottom:2px solid var(--c6)">Evaluados</th></tr></thead><tbody>`;
+  const nVal={I:1,II:2,III:3};
+  Object.entries(CURSOS).forEach(([cur,ests])=>{
+    const activos = ests.filter(n=>!data[n]?.exento);
+    const avg = eje => {
+      const vals = activos.map(n=>data[n]?.[eje]).filter(v=>v);
+      if(!vals.length) return '—';
+      const a = vals.reduce((s,v)=>s+nVal[v],0)/vals.length;
+      return a.toFixed(1);
+    };
+    html+=`<tr style="border-bottom:1px solid var(--c5)">
+      <td style="padding:6px 10px;font-weight:700">${cur}</td>
+      <td style="padding:6px 10px;text-align:center">${avg('eje1')}</td>
+      <td style="padding:6px 10px;text-align:center">${avg('eje2')}</td>
+      <td style="padding:6px 10px;text-align:center">${avg('eje3')}</td>
+      <td style="padding:6px 10px;text-align:center">${activos.length}</td></tr>`;
+  });
+  html+='</tbody></table></div></div>';
+  el.innerHTML=html; el.style.display='block';
+}
+
+// ═══════════════════════════════════════
+// PROPUESTA A — CHIPS + TOOLTIP
+// ═══════════════════════════════════════
+function filtrarA(c){cursoA=c;renderA();}
+function verGraficosA(){buildGraficos('a',estado.a,'grafA');}
+
+function renderA() {
+  const ests = CURSOS[cursoA]||[];
+  let rows='';
+  ests.forEach(nombre => {
+    const d = estado.a[nombre];
+    if(d.exento) {
+      rows+=`<tr style="opacity:.45"><td style="font-weight:600">${nombre}</td>
+        <td colspan="3"><span class="exento-label">✗ Eximido — ${d.razon||'sin razón indicada'}</span></td>
+        <td><label class="exento-check"><input type="checkbox" checked onchange="exentarA('${nombre}',false)"> Eximir</label></td></tr>`;
+    } else {
+      let celdas='';
+      EJES.forEach((eje,i)=>{
+        const val=d[eje.id]||'';
+        let chips='<div class="chip-group">';
+        ['I','II','III'].forEach(nv=>{
+          const cls=chipN(nv);
+          const desc=eje.niveles[nv].desc;
+          const tag=eje.niveles[nv].tag;
+          const isSel=val===nv;
+          chips+=`<div class="tip"><div class="chip ${cls}${isSel?' selected':''}" onclick="setChipA('${nombre}','${eje.id}','${nv}',this)">Nv.${nv}</div>
+            <div class="tipbox"><strong>Nivel ${nv} — ${tag}</strong><br><br>${desc}</div></div>`;
+        });
+        chips+='</div>';
+        celdas+=`<td>${chips}</td>`;
+      });
+      rows+=`<tr><td style="font-weight:600">${nombre}</td>${celdas}
+        <td><label class="exento-check"><input type="checkbox" onchange="exentarA('${nombre}',true)"> Eximir</label></td></tr>`;
+    }
+  });
+  document.getElementById('bodyA').innerHTML=rows||'<tr><td colspan="5" style="padding:30px;text-align:center;color:var(--tx3)">Sin estudiantes</td></tr>';
+}
+
+function setChipA(nombre, eje, nv, el) {
+  estado.a[nombre][eje] = estado.a[nombre][eje]===nv ? '' : nv;
+  renderA();
+  toast('✓ Guardado');
+}
+function exentarA(nombre, val) {
+  let razon='';
+  if(val) razon=prompt('Razón de la exención (opcional):')||'';
+  estado.a[nombre].exento=val; estado.a[nombre].razon=razon;
+  renderA();
+}
+
+// ═══════════════════════════════════════
+// PROPUESTA B — MODAL
+// ═══════════════════════════════════════
+function filtrarB(c){cursoB=c;renderB();}
+function verGraficosB(){buildGraficos('b',estado.b,'grafB');}
+
+function renderB() {
+  const ests = CURSOS[cursoB]||[];
+  let rows='';
+  ests.forEach(nombre=>{
+    const d=estado.b[nombre];
+    const badges=EJES.map(e=>nivelBadge(d[e.id])).join(' ');
+    if(d.exento){
+      rows+=`<tr style="opacity:.45"><td style="font-weight:600">${nombre}</td>
+        <td colspan="3"><span class="exento-label">✗ Eximido</span></td>
+        <td><button class="b bs" style="font-size:11px" onclick="abrirModalB('${nombre}')">✏️ Editar</button></td></tr>`;
+    } else {
+      rows+=`<tr><td style="font-weight:600">${nombre}</td>
+        <td>${nivelBadge(d.eje1)}</td><td>${nivelBadge(d.eje2)}</td><td>${nivelBadge(d.eje3)}</td>
+        <td><button class="b bp" style="font-size:11px" onclick="abrirModalB('${nombre}')">📋 Evaluar</button></td></tr>`;
+    }
+  });
+  document.getElementById('bodyB').innerHTML=rows||'<tr><td colspan="5" style="padding:30px;text-align:center;color:var(--tx3)">Sin estudiantes</td></tr>';
+}
+
+function abrirModalB(nombre){
+  const d=estado.b[nombre];
+  let ejesHtml='';
+  EJES.forEach(eje=>{
+    const val=d[eje.id]||'';
+    let opts='';
+    ['I','II','III'].forEach(nv=>{
+      const cls=chipN(nv);
+      const isSel=val===nv;
+      opts+=`<div class="nivel-opt ${isSel?'sel '+cls:''}" onclick="setModalB('${nombre}','${eje.id}','${nv}',this)">
+        <div class="dot">${isSel?'<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>':''}</div>
+        <div><div class="nivel-lbl" style="color:${isSel?chipColor(nv):'var(--tx)'}">Nivel ${nv} — ${eje.niveles[nv].tag}</div>
+        <div class="nivel-desc">${eje.niveles[nv].desc}</div></div>
+      </div>`;
+    });
+    ejesHtml+=`<div class="eje-card">
+      <h4>${eje.label} — ${eje.nombre}</h4>
+      <div class="nivel-opts">${opts}</div>
+    </div>`;
+  });
+  document.getElementById('modalB').innerHTML=`
+    <div class="modal" onclick="if(event.target===this)cerrarModalB()">
+      <div class="mbox">
+        <h3>${nombre}</h3>
+        <div class="sub">Selecciona el nivel de logro para cada eje</div>
+        ${ejesHtml}
+        <div style="margin-top:10px">
+          <label class="exento-check"><input type="checkbox" ${d.exento?'checked':''} onchange="toggleExentoB('${nombre}',this.checked)"> Eximido de evaluación</label>
+        </div>
+        <div class="acts"><button class="b bs" onclick="cerrarModalB()">Cerrar</button><button class="b bp" onclick="cerrarModalB();toast('✓ Guardado')">Guardar</button></div>
+      </div>
+    </div>`;
+}
+function setModalB(nombre,eje,nv,el){
+  estado.b[nombre][eje]=estado.b[nombre][eje]===nv?'':nv;
+  abrirModalB(nombre); renderB();
+}
+function toggleExentoB(nombre,val){
+  let razon='';
+  if(val) razon=prompt('Razón (opcional):')||'';
+  estado.b[nombre].exento=val; estado.b[nombre].razon=razon;
+  abrirModalB(nombre); renderB();
+}
+function cerrarModalB(){document.getElementById('modalB').innerHTML='';}
+
+// ═══════════════════════════════════════
+// PROPUESTA C — PANEL LATERAL
+// ═══════════════════════════════════════
+function filtrarC(c){cursoC=c;selC=null;renderListC();renderPanelC();}
+function verGraficosC(){buildGraficos('c',estado.c,'grafC');}
+
+function renderListC(){
+  const ests=CURSOS[cursoC]||[];
+  let html='';
+  ests.forEach(nombre=>{
+    const d=estado.c[nombre];
+    const isSel=selC===nombre;
+    const resumen=d.exento
+      ?'<span style="font-size:10px;color:var(--rd)">Eximido</span>'
+      :EJES.map(e=>nivelBadge(d[e.id])).join(' ');
+    html+=`<div class="split-item${isSel?' sel':''}" onclick="seleccionarC('${nombre}')">
+      <div style="flex:1">
+        <div class="sname">${nombre}</div>
+        <div class="scurso" style="margin-top:3px">${resumen}</div>
+      </div>
+      <div style="font-size:11px;color:var(--tx3)">›</div>
+    </div>`;
+  });
+  document.getElementById('listC').innerHTML=html;
+}
+
+function seleccionarC(nombre){selC=nombre;renderListC();renderPanelC();}
+
+function renderPanelC(){
+  const panel=document.getElementById('panelC');
+  if(!selC){
+    panel.innerHTML='<div class="split-empty"><div style="font-size:32px">👆</div><div>Selecciona un estudiante de la lista</div></div>';
+    return;
+  }
+  const d=estado.c[selC];
+  let ejesHtml='';
+  EJES.forEach(eje=>{
+    const val=d[eje.id]||'';
+    const pills=['I','II','III'].map(nv=>{
+      const cls=chipN(nv);
+      const isOn=val===nv;
+      return `<div class="pill ${isOn?'on '+cls:'off'}" onclick="setPillarC('${selC}','${eje.id}','${nv}')">Nivel ${nv}</div>`;
+    }).join('');
+    const desc=val?eje.niveles[val].desc:'<span style="color:var(--tx3)">Sin evaluar</span>';
+    ejesHtml+=`<div class="eje-row">
+      <h5>${eje.label} — ${eje.nombre}</h5>
+      <div class="nivel-pills">${pills}</div>
+      <div style="font-size:11.5px;color:var(--tx2);margin-top:8px;line-height:1.5">${desc}</div>
+    </div>`;
+  });
+  panel.innerHTML=`
+    <h3>${selC}</h3>
+    <div class="sub">Curso ${cursoC} — Haz clic en el nivel para asignarlo</div>
+    ${ejesHtml}
+    <label class="exento-check" style="margin-top:8px">
+      <input type="checkbox" ${d.exento?'checked':''} onchange="toggleExentoC('${selC}',this.checked)"> Eximido de evaluación
+    </label>`;
+}
+
+function setPillarC(nombre,eje,nv){
+  estado.c[nombre][eje]=estado.c[nombre][eje]===nv?'':nv;
+  renderListC(); renderPanelC(); toast('✓ Guardado');
+}
+function toggleExentoC(nombre,val){
+  let razon='';
+  if(val) razon=prompt('Razón (opcional):')||'';
+  estado.c[nombre].exento=val; estado.c[nombre].razon=razon;
+  renderListC(); renderPanelC();
+}
+
+// ═══════════════════════════════════════
+// PROPUESTA D — SUB-TABS POR EJE
+// ═══════════════════════════════════════
+function filtrarD(c){cursoD=c;renderD();}
+function verGraficosD(){buildGraficos('d',estado.d,'grafD');}
+function showSubtab(id){
+  document.querySelectorAll('.subtab-content').forEach(el=>el.classList.remove('on'));
+  document.querySelectorAll('.stab').forEach(el=>el.classList.remove('on'));
+  document.getElementById('stab-'+id).classList.add('on');
+  curSubtab=id;
+  const tabs=document.querySelectorAll('.stab');
+  const idx={'e1':0,'e2':1,'e3':2}[id];
+  if(tabs[idx]) tabs[idx].classList.add('on');
+}
+
+function renderD(){
+  EJES.forEach((eje,i)=>{
+    const num=i+1;
+    const ests=CURSOS[cursoD]||[];
+    let rows='';
+    ests.forEach(nombre=>{
+      const d=estado.d[nombre];
+      const val=d[eje.id]||'';
+      const cls=chipN(val);
+      const colorMap={n1:'var(--n1)',n2:'var(--n2)',n3:'var(--n3)',off:'#ccc'};
+      if(d.exento){
+        rows+=`<tr style="opacity:.45"><td style="font-weight:600">${nombre}</td>
+          <td><span class="exento-label">Eximido — ${d.razon||''}</span></td>
+          <td><label class="exento-check"><input type="checkbox" checked onchange="exentarD('${nombre}',false)"> Eximir</label></td></tr>`;
+      } else {
+        const opts=['','I','II','III'].map(nv=>`<option value="${nv}"${val===nv?' selected':''}>${nv||'— Sin evaluar'}</option>`).join('');
+        rows+=`<tr><td style="font-weight:600">${nombre}</td>
+          <td><select class="select-nivel${val?' v'+['','1','2','3'][['','I','II','III'].indexOf(val)]||'':''}"
+            onchange="setD('${nombre}','${eje.id}',this.value,this)">${opts}</select>
+            ${val?`<span style="font-size:11px;color:${colorMap[cls]};font-weight:600;margin-left:8px">${eje.niveles[val]?.tag||''}</span>`:''}
+          </td>
+          <td><label class="exento-check"><input type="checkbox" onchange="exentarD('${nombre}',true)"> Eximir</label></td></tr>`;
+      }
+    });
+    document.getElementById('bodyD'+num).innerHTML=rows||'<tr><td colspan="3" style="padding:30px;text-align:center;color:var(--tx3)">Sin estudiantes</td></tr>';
+  });
+}
+
+function setD(nombre,eje,val,el){
+  estado.d[nombre][eje]=val;
+  const cls={I:'v1',II:'v2',III:'v3','':''}[val]||'';
+  el.className='select-nivel '+cls;
+  renderD(); toast('✓ Guardado');
+}
+function exentarD(nombre,val){
+  let razon='';
+  if(val) razon=prompt('Razón (opcional):')||'';
+  estado.d[nombre].exento=val; estado.d[nombre].razon=razon;
+  renderD();
+}
+
+// ═══════════════════════════════════════
+// PROPUESTA E — EXPANDIBLE
+// ═══════════════════════════════════════
+function filtrarE(c){cursoE=c;renderE();}
+function verGraficosE(){buildGraficos('e',estado.e,'grafE');}
+
+function renderE(){
+  const ests=CURSOS[cursoE]||[];
+  let html='<div>';
+  ests.forEach(nombre=>{
+    const d=estado.e[nombre];
+    const resumen=EJES.map(e=>{
+      const v=d[e.id]; if(!v) return '';
+      const cls=chipN(v); const colors={n1:'var(--n1)',n2:'var(--n2)',n3:'var(--n3)'};
+      return `<span style="font-size:10.5px;font-weight:700;color:${colors[cls]}">${e.label}:${v}</span>`;
+    }).filter(Boolean);
+    html+=`<div class="exp-row">
+      <div class="exp-head" onclick="toggleE('${nombre}')">
+        <span class="exp-arrow" id="arr-${CSS.escape(nombre)}">▶</span>
+        <div style="font-weight:600;flex:1">${nombre}</div>
+        ${d.exento
+          ?'<span style="font-size:11px;color:var(--rd);font-weight:600">✗ Eximido</span>'
+          :resumen.length
+            ?`<div class="resumen-mini">${resumen.join('<span style="color:#ddd">|</span>')}</div>`
+            :'<span style="font-size:11px;color:var(--tx3)">Sin evaluar</span>'
+        }
+      </div>
+      <div class="exp-body" id="exp-${CSS.escape(nombre)}">
+        ${d.exento
+          ?`<div style="color:var(--rd);font-size:12px;margin-bottom:10px">✗ Eximido — ${d.razon||'sin razón indicada'}</div>`
+          :renderEjesMini(nombre)
+        }
+        <label class="exento-check" style="margin-top:10px">
+          <input type="checkbox" ${d.exento?'checked':''} onchange="exentarE('${nombre}',this.checked)"> Eximido de evaluación
+        </label>
+      </div>
+    </div>`;
+  });
+  html+='</div>';
+  document.getElementById('listaE').innerHTML=html;
+}
+
+function renderEjesMini(nombre){
+  let html='<div class="ejes-grid">';
+  EJES.forEach(eje=>{
+    const val=estado.e[nombre][eje.id]||'';
+    const pills=['I','II','III'].map(nv=>{
+      const cls=chipN(nv);
+      const isOn=val===nv;
+      return `<div class="mpill${isOn?' on '+cls:''}" onclick="setE('${nombre}','${eje.id}','${nv}',event)">${nv}</div>`;
+    }).join('');
+    const desc=val?eje.niveles[val].desc:'Selecciona un nivel';
+    html+=`<div class="eje-mini">
+      <h5>${eje.label}</h5>
+      <div style="font-size:10px;color:var(--tx2);margin-bottom:6px;font-weight:600">${eje.nombre}</div>
+      <div class="mini-pills">${pills}</div>
+      <div class="desc">${desc}</div>
+    </div>`;
+  });
+  html+='</div>';
+  return html;
+}
+
+let expandidos={};
+function toggleE(nombre){
+  expandidos[nombre]=!expandidos[nombre];
+  const body=document.getElementById('exp-'+CSS.escape(nombre));
+  const arr=document.getElementById('arr-'+CSS.escape(nombre));
+  if(body){ body.classList.toggle('open',expandidos[nombre]); }
+  if(arr){ arr.classList.toggle('open',expandidos[nombre]); }
+}
+function setE(nombre,eje,nv,ev){
+  ev.stopPropagation();
+  estado.e[nombre][eje]=estado.e[nombre][eje]===nv?'':nv;
+  const body=document.getElementById('exp-'+CSS.escape(nombre));
+  if(body){ body.innerHTML=renderEjesMini(nombre)+'<label class="exento-check" style="margin-top:10px"><input type="checkbox" onchange="exentarE(\''+nombre+'\',this.checked)"> Eximido de evaluación</label>'; }
+  toast('✓ Guardado');
+}
+function exentarE(nombre,val){
+  let razon='';
+  if(val) razon=prompt('Razón (opcional):')||'';
+  estado.e[nombre].exento=val; estado.e[nombre].razon=razon;
+  renderE();
+}
+
+// ═══════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════
+renderA();
+renderB();
+renderListC();
+renderPanelC();
+renderD();
+renderE();
+</script>
+</body>
+</html>
