@@ -716,15 +716,17 @@ ${Object.keys(cr).length?`<div class="tw" style="padding:18px"><h3 style="font-s
 let stuFilter='';
 function rStu(){
 const fl=D.students.filter(s=>s.nombre?.toLowerCase().includes(stuFilter.toLowerCase())||s.rut?.includes(stuFilter)||s.curso?.toLowerCase().includes(stuFilter.toLowerCase())).sort(sortSt);
-let rows='';if(!fl.length)rows=`<tr><td colspan="5" style="padding:30px;text-align:center;color:var(--tx3)">Sin estudiantes</td></tr>`;
-else fl.forEach((s,i)=>{rows+=`<tr style="background:${i%2?'var(--c4)':'var(--wh)'}"><td>${s.matricula||'—'}</td><td>${s.rut||'—'}</td><td style="font-weight:600">${s.nombre}</td><td><span class="badge ${NMD.includes(s.curso)?'bb':'bg'}">${cursoDisp(s)}</span></td><td><button class="b bs bsm" onclick="editStu('${s.id}')">✏️</button> <button class="b bsm" style="color:var(--rd)" onclick="delStu('${s.id}')">🗑️</button></td></tr>`;});
+let rows='';if(!fl.length)rows=`<tr><td colspan="6" style="padding:30px;text-align:center;color:var(--tx3)">Sin estudiantes</td></tr>`;
+else fl.forEach((s,i)=>{
+const modBadge=s.modalidad?`<span class="badge" style="background:${s.modalidad==='Aula'?'#e8f0fe':'#fff3e0'};color:${s.modalidad==='Aula'?'#1a73e8':'#e37400'};font-size:9px">${s.modalidad}</span>`:'';
+rows+=`<tr style="background:${i%2?'var(--c4)':'var(--wh)'}"><td>${s.matricula||'—'}</td><td>${s.rut||'—'}</td><td style="font-weight:600">${s.nombre}</td><td><span class="badge ${NMD.includes(s.curso)?'bb':'bg'}">${cursoDisp(s)}</span></td><td>${modBadge}</td><td><button class="b bs bsm" onclick="editStu('${s.id}')">✏️</button> <button class="b bsm" style="color:var(--rd)" onclick="delStu('${s.id}')">🗑️</button></td></tr>`;});
 return`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px"><div><h2 class="pt">Estudiantes</h2><p class="ps">${D.students.length} registrados</p></div><div style="display:flex;gap:6px;flex-wrap:wrap"><button class="b bp" onclick="newStu()">＋ Nuevo</button><button class="b bs" onclick="printSection('Estudiantes')" style="font-size:10px">🖨️</button><button class="b bs" onclick="document.getElementById('xlsxInput').click()">📥 Importar Excel</button><button class="b bs" onclick="exportXlsx()">📤 Exportar Excel</button></div></div>
 <input type="file" id="xlsxInput" accept=".xlsx,.xls,.csv" style="display:none" onchange="importXlsx(this)">
 <input value="${stuFilter}" oninput="stuFilter=this.value;render()" placeholder="Buscar por nombre, RUT o curso..." style="width:100%;max-width:360px;margin-bottom:12px">
-<div class="tw"><table><thead><tr><th>N°</th><th>RUT</th><th>Nombre</th><th>Curso</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>`;
+<div class="tw"><table><thead><tr><th>N°</th><th>RUT</th><th>Nombre</th><th>Curso</th><th>Modalidad</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>`;
 }
-function newStu(){closeStuMod();showStuModal({id:'',matricula:'',rut:'',nombre:'',curso:'',cursoDisplay:''});}
-function editStu(id){closeStuMod();var s=D.students.find(x=>x.id===id);if(s)showStuModal({id:s.id,matricula:s.matricula,rut:s.rut,nombre:s.nombre,curso:s.curso,cursoDisplay:s.cursoDisplay||''});}
+function newStu(){closeStuMod();showStuModal({id:'',matricula:'',rut:'',nombre:'',curso:'',cursoDisplay:'',modalidad:''});}
+function editStu(id){closeStuMod();var s=D.students.find(x=>x.id===id);if(s)showStuModal({id:s.id,matricula:s.matricula,rut:s.rut,nombre:s.nombre,curso:s.curso,cursoDisplay:s.cursoDisplay||'',modalidad:s.modalidad||''});}
 function delStu(id){if(!confirm('¿Eliminar estudiante y sus evaluaciones?'))return;D.students=D.students.filter(s=>s.id!==id);_dirtyEvals.add(id);delete D.evaluations[id];save();render();}
 function showStuModal(s){
 var isNew=!s.id;
@@ -738,6 +740,8 @@ var h2='<div class="modal" id="stuMod"><div class="mbox"><h3>'+(isNew?'Nuevo':'E
 +'<label>Curso <span style="font-weight:400;color:#888">(seleccione o escriba)</span></label>'
 +'<input id="mCur" list="cursoList" value="'+curVal+'" placeholder="Ej: 1° Básico, I Nivel Transición..." style="width:100%">'
 +'<datalist id="cursoList">'+dlOpts+'</datalist>'
++'<label>Modalidad</label>'
++'<select id="mMod" style="width:100%"><option value="">Sin especificar</option><option value="Aula"'+(s.modalidad==='Aula'?' selected':'')+'>Aula</option><option value="Sala"'+(s.modalidad==='Sala'?' selected':'')+'>Sala</option></select>'
 +"<div class=\"acts\"><button class=\"b bs\" onclick=\"closeStuMod()\">Cancelar</button><button class=\"b bp\" onclick=\"saveStu('"+s.id+"')\">Guardar</button></div></div></div>";
 document.getElementById('mainArea').insertAdjacentHTML('beforeend',h2);
 }
@@ -750,8 +754,9 @@ const cur=cursoNorm(curInput);
 const curDisplay=curInput;
 const mat=parseInt(document.getElementById('mMat').value)||D.students.reduce((m,s)=>Math.max(m,s.matricula||0),0)+1;
 const rut=document.getElementById('mRut').value.trim();
-if(id){const s=D.students.find(x=>x.id===id);if(s){s.nombre=nom;s.curso=cur;s.cursoDisplay=curDisplay;s.rut=rut;s.matricula=mat;}}
-else D.students.push({id:Date.now().toString(),matricula:mat,rut,nombre:nom,curso:cur,cursoDisplay:curDisplay});
+const mod=document.getElementById('mMod').value;
+if(id){const s=D.students.find(x=>x.id===id);if(s){s.nombre=nom;s.curso=cur;s.cursoDisplay=curDisplay;s.rut=rut;s.matricula=mat;s.modalidad=mod;}}
+else D.students.push({id:Date.now().toString(),matricula:mat,rut,nombre:nom,curso:cur,cursoDisplay:curDisplay,modalidad:mod});
 save();closeStuMod();render();
 }
 
@@ -799,12 +804,13 @@ if(rows.length<2){alert('La hoja está vacía');return;}
 
 // Detect columns by header names
 const hdr=rows[0].map(function(h){return(h||'').toString().toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').trim();});
-let cMat=-1,cRut=-1,cNom=-1,cCur=-1;
+let cMat=-1,cRut=-1,cNom=-1,cCur=-1,cMod=-1;
 hdr.forEach(function(h,i){
 if(cMat<0&&(h.includes('matric')||h.includes('n°')||h==='n'||h==='n° de matric'||h===''))cMat=i;
 if(cRut<0&&(h.includes('rut')||h.includes('run')))cRut=i;
 if(cNom<0&&(h.includes('nombre')||h.includes('Estudiante')||h.includes('estudiante')))cNom=i;
 if(cCur<0&&(h.includes('curso')||h.includes('nivel')))cCur=i;
+if(cMod<0&&(h.includes('modal')||h.includes('aula')||h.includes('sala')))cMod=i;
 });
 
 // Detect matrícula: find first column that has numeric values in data rows
@@ -835,6 +841,7 @@ colInfo+='  Matrícula: '+(cMat>=0?'Columna '+(cMat+1)+' ("'+rows[0][cMat]+'")':
 colInfo+='  RUT: '+(cRut>=0?'Columna '+(cRut+1)+' ("'+rows[0][cRut]+'")':'NO DETECTADA')+'\n';
 colInfo+='  Nombre: Columna '+(cNom+1)+' ("'+rows[0][cNom]+'")\n';
 colInfo+='  Curso: '+(cCur>=0?'Columna '+(cCur+1)+' ("'+rows[0][cCur]+'")':'NO DETECTADA')+'\n';
+colInfo+='  Modalidad: '+(cMod>=0?'Columna '+(cMod+1)+' ("'+rows[0][cMod]+'")':'NO DETECTADA (quedará vacía)')+'\n';
 colInfo+='\nTotal filas con datos: '+(rows.length-1)+'\n';
 colInfo+='\nPrimeros 3 registros:\n';
 for(var p=1;p<=Math.min(3,rows.length-1);p++){
@@ -869,6 +876,8 @@ var rut=cRut>=0?(row[cRut]||'').toString().trim():'';
 var cursoRaw=cCur>=0?(row[cCur]||'').toString().trim():'';
 var curso=cursoNorm(cursoRaw);
 var cursoDisplay=cursoRaw||curso;
+var modalRaw=cMod>=0?(row[cMod]||'').toString().trim().toLowerCase():'';
+var modalidad=modalRaw.includes('aula')?'Aula':modalRaw.includes('sala')?'Sala':modalRaw?modalRaw.charAt(0).toUpperCase()+modalRaw.slice(1):'';
 
 var matRaw=cMat>=0?row[cMat]:null;
 var mat=0;
@@ -887,9 +896,9 @@ if(!exists&&_preByNom[nombre])exists=D.students.find(function(s){return s.id===_
 if(mode==='add'&&exists)continue;
 
 if(mode==='replace'&&exists){
-imported.push({id:exists.id,matricula:mat,rut:rut,nombre:nombre,curso:curso,cursoDisplay:cursoDisplay});
+imported.push({id:exists.id,matricula:mat,rut:rut,nombre:nombre,curso:curso,cursoDisplay:cursoDisplay,modalidad:modalidad});
 }else{
-imported.push({id:Date.now().toString()+r,matricula:mat,rut:rut,nombre:nombre,curso:curso,cursoDisplay:cursoDisplay});
+imported.push({id:Date.now().toString()+r,matricula:mat,rut:rut,nombre:nombre,curso:curso,cursoDisplay:cursoDisplay,modalidad:modalidad});
 }
 }
 
@@ -946,12 +955,12 @@ function exportXlsx(){
 var wb=XLSX.utils.book_new();
 
 // 1. Hoja Estudiantes
-var alData=[['N° Matrícula','RUT','Nombre','Curso']];
+var alData=[['N° Matrícula','RUT','Nombre','Curso','Modalidad']];
 D.students.sort(sortSt).forEach(function(s){
-alData.push([s.matricula||'',s.rut||'',s.nombre||'',s.curso||'']);
+alData.push([s.matricula||'',s.rut||'',s.nombre||'',s.curso||'',s.modalidad||'']);
 });
 var wsAl=XLSX.utils.aoa_to_sheet(alData);
-wsAl['!cols']=[{wch:12},{wch:16},{wch:40},{wch:8}];
+wsAl['!cols']=[{wch:12},{wch:16},{wch:40},{wch:8},{wch:10}];
 XLSX.utils.book_append_sheet(wb,wsAl,'Estudiantes');
 
 // 2. Hoja RESUMEN DE NOTAS (por cada curso que tenga Estudiantes)
