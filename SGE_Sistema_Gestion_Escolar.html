@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es" style="--dk: #0f2027; --md: #1a3a4a; --bl: #1a73e8; --lb: #e8f0fe; --gn: #0d652d; --lg: #e6f4ea; --rd: #d93025; --lr: #fce8e6; --or: #e37400; --bg: #f5f6f8; --brd: #dadce0; --gr: #f8f9fa; --wh: #fff; --tx: #333; --tx2: #666; --tx3: #999; --c1: #264653; --c2: #2d5a6b; --c3: #002060; --c4: #fafbfc; --c5: #f0f0f0; --c6: #e8eaed; --sbtn: rgba(255,255,255,0.06); font-size: 13px;"><head>
+<html lang="es" style="--dk: #0d47a1; --md: #1565c0; --bl: #1976d2; --lb: #e3f2fd; --gn: #2e7d32; --lg: #e8f5e9; --rd: #c62828; --lr: #ffebee; --or: #ef6c00; --bg: #f0f4f8; --brd: #bbdefb; --gr: #e3f2fd; --wh: #fff; --tx: #1a237e; --tx2: #283593; --tx3: #3f51b5; --c1: #1565c0; --c2: #1976d2; --c3: #0d47a1; --c4: #f5f9ff; --c5: #e3f2fd; --c6: #bbdefb; --sbtn: rgba(255,255,255,0.1); font-size: 13px;"><head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>SGE — Sistema de Gestión Escolar</title>
@@ -86,6 +86,16 @@ input,select{font-size:14px;padding:8px 10px}
 .tw{border-radius:6px}
 h2.pt{font-size:17px}
 }
+/* ── Chips Socioemocional ── */
+.sc-chip{padding:4px 11px;border-radius:20px;font:600 11.5px 'DM Sans',sans-serif;cursor:pointer;border:2px solid transparent;transition:.12s;white-space:nowrap;user-select:none}
+.sc-n1{background:#e8f0fe;color:#1a73e8;border-color:#e8f0fe}
+.sc-n2{background:#fff3e0;color:#e37400;border-color:#fff3e0}
+.sc-n3{background:#e6f4ea;color:#0d652d;border-color:#e6f4ea}
+.sc-off{background:#f1f3f4;color:#aaa;border-color:#f1f3f4}
+.sc-chip.sc-sel.sc-n1{border-color:#1a73e8;box-shadow:0 0 0 2px rgba(26,115,232,.2)}
+.sc-chip.sc-sel.sc-n2{border-color:#e37400;box-shadow:0 0 0 2px rgba(227,116,0,.2)}
+.sc-chip.sc-sel.sc-n3{border-color:#0d652d;box-shadow:0 0 0 2px rgba(13,101,45,.2)}
+.sc-chip:hover{opacity:.85;transform:translateY(-1px)}
 </style>
 <!-- Firebase SDK (gratuito, sin instalación) -->
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
@@ -125,11 +135,14 @@ h2.pt{font-size:17px}
 <div class="app" id="app" style="display: flex;">
 <div class="side" id="sidePanel">
 <div class="side-hd"><small>SISTEMA</small><h1>Gestión Escolar</h1><div id="sSchool" style="font-size:9.5px;color:rgba(255,255,255,.45);margin-top:2px;line-height:1.3">ESCUELA BÁSICA COMÚN HOSPITAL</div><div class="cnt" id="sCnt">168 estudiantes</div></div>
-<div class="snav" id="sNav"><button class="" onclick="nav('dashboard')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-4 0a1 1 0 01-1-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 01-1 1"></path></svg> Inicio</button><button class="" onclick="nav('students')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"></path></svg> Estudiantes</button><button class="" onclick="nav('evaluations')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path></svg> Evaluaciones</button><button class="" onclick="nav('socioemocional')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"></path></svg> Socioemocional</button><button class="" onclick="nav('diagnostico')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path><line x1="12" y1="12" x2="16" y2="12"></line><line x1="12" y1="16" x2="16" y2="16"></line><line x1="8" y1="12" x2="8.01" y2="12"></line><line x1="8" y1="16" x2="8.01" y2="16"></line></svg> Ev. Diagnóstica</button><button class="" onclick="nav('asistencia')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 11l3 3L22 4"></path><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"></path></svg> Asistencia</button><button class="" onclick="nav('materiales')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg> Materiales</button><button class="" onclick="nav('reports')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg> Reportes</button><button class="" onclick="nav('process')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> Proceso</button><button class="" onclick="nav('detail')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 6h16M4 10h16M4 14h10M4 18h6"></path></svg> Informe</button><button class="" onclick="nav('certificates')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg> Certificados</button><button class="act" onclick="nav('config')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><circle cx="12" cy="12" r="3"></circle></svg> Configuración</button></div>
+<div class="snav" id="sNav"><button class="act" onclick="nav('dashboard')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-4 0a1 1 0 01-1-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 01-1 1"></path></svg> Inicio</button><button class="" onclick="nav('students')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"></path></svg> Estudiantes</button><button class="" onclick="nav('evaluations')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path></svg> Evaluaciones</button><button class="" onclick="nav('socioemocional')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"></path></svg> Socioemocional</button><button class="" onclick="nav('diagnostico')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path><line x1="12" y1="12" x2="16" y2="12"></line><line x1="12" y1="16" x2="16" y2="16"></line><line x1="8" y1="12" x2="8.01" y2="12"></line><line x1="8" y1="16" x2="8.01" y2="16"></line></svg> Ev. Diagnóstica</button><button class="" onclick="nav('asistencia')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 11l3 3L22 4"></path><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"></path></svg> Asistencia</button><button class="" onclick="nav('materiales')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg> Materiales</button><button class="" onclick="nav('reports')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg> Reportes</button><button class="" onclick="nav('process')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> Proceso</button><button class="" onclick="nav('detail')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 6h16M4 10h16M4 14h10M4 18h6"></path></svg> Informe</button><button class="" onclick="nav('certificates')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg> Certificados</button><button class="" onclick="nav('config')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><circle cx="12" cy="12" r="3"></circle></svg> Configuración</button></div>
 <div class="sft"><div style="text-align:center;margin-bottom:8px">
-        <div style="width:72px;height:72px;border-radius:50%;background:#ccc;margin:0 auto;overflow:hidden;cursor:pointer;position:relative;border:2px solid rgba(255,255,255,0.2)" onclick="document.getElementById('avatarUpload').click()"><img src="https://res.cloudinary.com/ds6c38hso/image/upload/v1777393526/sge_profile_photos/ldfom7nys4nzsjzybsrx.jpg" style="width:100%;height:100%;object-fit:cover"><div style="position:absolute;bottom:0;width:100%;height:16px;background:rgba(0,0,0,0.6);color:var(--wh);font-size:8px;line-height:16px;text-align:center;letter-spacing:1px">EDITAR</div></div>
+        <div style="width:72px;height:72px;border-radius:50%;background:#ccc;margin:0 auto;overflow:hidden;cursor:pointer;position:relative;border:2px solid rgba(255,255,255,0.2)" onclick="document.getElementById('avatarUpload').click()">
+          <img src="https://res.cloudinary.com/ds6c38hso/image/upload/v1777393526/sge_profile_photos/ldfom7nys4nzsjzybsrx.jpg" style="width:100%;height:100%;object-fit:cover">
+          <div style="position:absolute;bottom:0;width:100%;height:16px;background:rgba(0,0,0,0.6);color:var(--wh);font-size:8px;line-height:16px;text-align:center;letter-spacing:1px">EDITAR</div>
+        </div>
         <input type="file" id="avatarUpload" style="display:none" accept="image/*" onchange="uploadAvatar(this,'veronica.hernandez@andaliensur.cl','V')">
-        
+        <div style="font-size:8px;color:rgba(255,255,255,0.35);cursor:pointer;margin-top:5px" onclick="deleteAvatar('veronica.hernandez@andaliensur.cl','V')">✕ Eliminar foto</div>
       </div><div style="text-align:center;margin-bottom:12px"><div style="font-weight:bold;color:var(--wh);font-size:12px;margin-bottom:3px">VERÓNICA HERNÁNDEZ F.</div><div style="font-size:9.5px;color:rgba(255,255,255,0.7);margin-top:2px;letter-spacing:0.5px">DIRECTORA ESCUELA HOSPITAL</div><div style="font-size:8px;color:rgba(255,255,255,0.35);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="veronica.hernandez@andaliensur.cl">veronica.hernandez@andaliensur.cl</div></div><div style="margin-bottom:8px;text-align:center"><span style="background:var(--lr);color:var(--rd);padding:2px 6px;border-radius:4px;font-size:8px">ADMINISTRADOR</span></div><select onchange="applyTheme(this.value)" style="width:100%;font-size:9px;margin-bottom:8px;padding:4px;background:rgba(255,255,255,0.1);color:var(--wh);border:1px solid rgba(255,255,255,0.2)">
         <option value="claro" style="color:var(--tx)">Modo Claro</option>
         <option value="oscuro" style="color:var(--tx)">Modo Oscuro</option>
@@ -138,64 +151,16 @@ h2.pt{font-size:17px}
         <option value="morado" style="color:var(--tx)">Modo Morado</option>
       </select><div style="margin-bottom:8px"><div style="font-size:9px;color:rgba(255,255,255,0.45);margin-bottom:4px">Tamaño de letra</div><select id="fontSizeSel" onchange="applyFontSize(this.value)" style="width:100%;font-size:9px;padding:4px;background:rgba(255,255,255,0.1);color:var(--wh);border:1px solid rgba(255,255,255,0.2)"><option value="12" style="color:var(--tx)">Pequeño (12px)</option><option value="13" style="color:var(--tx)">Normal (13px)</option><option value="15" style="color:var(--tx)">Grande (15px)</option><option value="17" style="color:var(--tx)">Muy grande (17px)</option><option value="19" style="color:var(--tx)">Extra grande (19px)</option></select></div><button onclick="saveToFile()" style="width:100%;padding:5px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);border-radius:5px;color:var(--wh);font:600 9.5px DM Sans,sans-serif;cursor:pointer;margin-bottom:4px">💾 Guardar copia local</button><button onclick="doLogout()" style="width:100%;padding:5px;background:rgba(217,48,37,.2);border:1px solid rgba(217,48,37,.4);border-radius:5px;color:#ff7b72;font:600 9.5px DM Sans,sans-serif;cursor:pointer">↪ Cerrar sesión</button><div style="font-size:7.5px;color:rgba(255,255,255,.15);margin-top:5px">SGE v2.0</div></div>
 </div>
-<div class="mob-bar" id="mobBar"><button onclick="toggleSide()" aria-label="Menú"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button><h2 id="mobTitle">Configuración</h2></div>
-<div class="main" id="mainArea"><div class="pg on" id="pgconfig"><h2 class="pt">Configuración</h2><div class="ps">Datos del establecimiento y respaldo del sistema</div>
-<div class="tw" style="padding:20px;max-width:440px"><div style="margin-bottom:10px"><label style="display:block;font-size:10px;font-weight:600;color:#555;margin-bottom:2px">Nombre del Establecimiento</label><input id="cfg_schoolName" value="ESCUELA BÁSICA COMÚN HOSPITAL" style="width:100%"></div><div style="margin-bottom:10px"><label style="display:block;font-size:10px;font-weight:600;color:#555;margin-bottom:2px">Región</label><input id="cfg_region" value="Bio Bio" style="width:100%"></div><div style="margin-bottom:10px"><label style="display:block;font-size:10px;font-weight:600;color:#555;margin-bottom:2px">Provincia</label><input id="cfg_provincia" value="Concepción" style="width:100%"></div><div style="margin-bottom:10px"><label style="display:block;font-size:10px;font-weight:600;color:#555;margin-bottom:2px">Comuna</label><input id="cfg_comuna" value="Concepción" style="width:100%"></div><div style="margin-bottom:10px"><label style="display:block;font-size:10px;font-weight:600;color:#555;margin-bottom:2px">Director(a)</label><input id="cfg_director" value="VERÓNICA HERNÁNDEZ FERNÁNDEZ" style="width:100%"></div><div style="margin-bottom:10px"><label style="display:block;font-size:10px;font-weight:600;color:#555;margin-bottom:2px">Año Escolar</label><input id="cfg_year" value="2026" style="width:100%"></div><button class="b bp" onclick="saveCfg()" style="margin-top:8px">💾 Guardar Configuración</button></div>
-
-<div style="margin-top:24px;background:var(--lb);border-radius:8px;border:1px solid #d2e3fc;padding:18px;max-width:440px">
-<h3 style="margin-bottom:4px;font-size:12px;color:var(--bl)">💾 Respaldo, Restauración y Sincronización</h3>
-<p style="font-size:10.5px;color:var(--tx2);margin-bottom:6px">Sincronice datos con otro SGE (maestro o profesor), respalde o restaure.</p>
-<div style="background:var(--wh);border-radius:6px;padding:10px 14px;margin-bottom:8px;font-size:10.5px;color:#444;border:1px solid #d2e3fc">
-<div style="font-weight:600;margin-bottom:4px">🔄 Sincronizar con otro SGE</div>
-<p style="font-size:9.5px;color:#888;margin-bottom:6px">Importa Estudiantes + evaluaciones + descripciones desde otro archivo SGE. Los datos nuevos se agregan sin sobreescribir los existentes.</p>
-<button class="b bs" onclick="document.getElementById('syncInput').click()" style="font-size:10px">📥 Sincronizar desde otro SGE</button>
-<input type="file" id="syncInput" accept=".html,.json" style="display:none" onchange="syncFromSGE(this)">
+<div class="mob-bar" id="mobBar"><button onclick="toggleSide()" aria-label="Menú"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button><h2 id="mobTitle">Asistencia</h2></div>
+<div class="main" id="mainArea"><div class="pg on" id="pgdashboard"><h2 class="pt">Panel de Inicio</h2><p class="ps">ESCUELA BÁSICA COMÚN HOSPITAL — Año 2026</p>
+<div class="cds">
+<div class="cd" style="background:var(--lb);border-color:#1a73e818"><div class="v" style="color:var(--bl)">168</div><div class="l" style="color:var(--bl)">Estudiantes</div></div>
+<div class="cd" style="background:var(--lg);border-color:#0d652d18"><div class="v" style="color:var(--gn)">14</div><div class="l" style="color:var(--gn)">Cursos</div></div>
+<div class="cd" style="background:#fef7e0;border-color:#e3740018"><div class="v" style="color:var(--or)">441</div><div class="l" style="color:var(--or)">Con Evaluaciones</div></div>
 </div>
-<p style="font-size:10.5px;color:var(--tx2);margin-bottom:6px">Guarde una copia completa de todos los datos del sistema para trasladarla a otro computador o como respaldo de seguridad.</p>
-<div style="background:var(--wh);border-radius:6px;padding:10px 14px;margin-bottom:12px;font-size:10.5px;color:#444;border:1px solid #d2e3fc">
-<div style="display:flex;justify-content:space-between;margin-bottom:3px"><span>Estudiantes registrados</span><strong>168</strong></div>
-<div style="display:flex;justify-content:space-between;margin-bottom:3px"><span>Estudiantes con evaluaciones</span><strong>441</strong></div>
-<div style="display:flex;justify-content:space-between"><span>Descripciones de indicadores</span><strong>359</strong></div>
+<div class="tw" style="padding:18px"><h3 style="font-size:12px;font-weight:700;margin-bottom:12px;color:var(--tx)">Distribución por Curso</h3><div style="display:flex;align-items:center;gap:9px;margin-bottom:6px"><div style="width:40px;font-size:11px;font-weight:600">NT1</div><div class="bar"><div class="bar-in" style="width:8.928571428571429%"><span>15</span></div></div></div><div style="display:flex;align-items:center;gap:9px;margin-bottom:6px"><div style="width:40px;font-size:11px;font-weight:600">NT2</div><div class="bar"><div class="bar-in" style="width:5.952380952380952%"><span>10</span></div></div></div><div style="display:flex;align-items:center;gap:9px;margin-bottom:6px"><div style="width:40px;font-size:11px;font-weight:600">1°</div><div class="bar"><div class="bar-in" style="width:8.928571428571429%"><span>15</span></div></div></div><div style="display:flex;align-items:center;gap:9px;margin-bottom:6px"><div style="width:40px;font-size:11px;font-weight:600">2°</div><div class="bar"><div class="bar-in" style="width:8.333333333333332%"><span>14</span></div></div></div><div style="display:flex;align-items:center;gap:9px;margin-bottom:6px"><div style="width:40px;font-size:11px;font-weight:600">3°</div><div class="bar"><div class="bar-in" style="width:6.547619047619048%"><span>11</span></div></div></div><div style="display:flex;align-items:center;gap:9px;margin-bottom:6px"><div style="width:40px;font-size:11px;font-weight:600">4°</div><div class="bar"><div class="bar-in" style="width:6.547619047619048%"><span>11</span></div></div></div><div style="display:flex;align-items:center;gap:9px;margin-bottom:6px"><div style="width:40px;font-size:11px;font-weight:600">5°</div><div class="bar"><div class="bar-in" style="width:10.119047619047619%"><span>17</span></div></div></div><div style="display:flex;align-items:center;gap:9px;margin-bottom:6px"><div style="width:40px;font-size:11px;font-weight:600">6°</div><div class="bar"><div class="bar-in" style="width:7.738095238095238%"><span>13</span></div></div></div><div style="display:flex;align-items:center;gap:9px;margin-bottom:6px"><div style="width:40px;font-size:11px;font-weight:600">7°</div><div class="bar"><div class="bar-in" style="width:11.30952380952381%"><span>19</span></div></div></div><div style="display:flex;align-items:center;gap:9px;margin-bottom:6px"><div style="width:40px;font-size:11px;font-weight:600">8°</div><div class="bar"><div class="bar-in" style="width:5.952380952380952%"><span>10</span></div></div></div><div style="display:flex;align-items:center;gap:9px;margin-bottom:6px"><div style="width:40px;font-size:11px;font-weight:600">1°M</div><div class="bar"><div class="bar-in" style="width:8.928571428571429%"><span>15</span></div></div></div><div style="display:flex;align-items:center;gap:9px;margin-bottom:6px"><div style="width:40px;font-size:11px;font-weight:600">2°M</div><div class="bar"><div class="bar-in" style="width:4.166666666666666%"><span>7</span></div></div></div><div style="display:flex;align-items:center;gap:9px;margin-bottom:6px"><div style="width:40px;font-size:11px;font-weight:600">3°M</div><div class="bar"><div class="bar-in" style="width:5.357142857142857%"><span>9</span></div></div></div><div style="display:flex;align-items:center;gap:9px;margin-bottom:6px"><div style="width:40px;font-size:11px;font-weight:600">4°M</div><div class="bar"><div class="bar-in" style="width:1.1904761904761905%"><span>2</span></div></div></div></div></div></div>
 </div>
-<div style="display:flex;gap:8px;flex-wrap:wrap">
-<button class="b bp" onclick="backupAll()">📦 Respaldar Todo</button>
-<button class="b bs" onclick="document.getElementById('restoreInput').click()">📂 Restaurar Respaldo</button>
-<input type="file" id="restoreInput" accept=".json,.sge" style="display:none" onchange="restoreAll(this)">
-</div>
-</div>
-
-<div style="margin-top:24px;background:#fff8e1;border-radius:8px;border:1px solid #ffe082;padding:18px;max-width:440px"><h3 style="margin-bottom:4px;font-size:12px;color:#f57f17">⚠️ Mantenimiento de Datos</h3><p style="font-size:10.5px;color:var(--tx2);margin-bottom:10px">Convierte evaluaciones antiguas de Básica y Media (I, EP, ML) a la nomenclatura actual (LI, LB, LA). Las evaluaciones de NT1 y NT2 no se modifican.</p><div style="background:var(--wh);border-radius:6px;padding:10px 14px;margin-bottom:8px;font-size:10px;color:#555;border:1px solid #ffe082"><strong>Conversión aplicada solo en Básica y Media:</strong><div style="margin-top:6px;display:grid;grid-template-columns:1fr 1fr;gap:3px 12px"><span>I → LI (Logro inicial)</span><span>EP → LB (Logro básico)</span><span>ML → LA (Logro adecuado)</span><span>NT1/NT2: sin cambios</span></div></div><button class="b bp" onclick="runMigrateNomenclatura()" style="background:#f57f17;border-color:#f57f17">⚠️ Migrar nomenclatura antigua</button><button class="b bp" onclick="runRepairEvaluaciones()" style="margin-top:8px;background:#e65100;border-color:#e65100">🔧 Reparar evaluaciones (tras actualizar nómina)</button><button class="b bs" onclick="diagnosticoEvaluaciones()" style="margin-top:8px">🔍 Diagnóstico de evaluaciones</button></div>
-<div style="margin-top:24px;background:var(--lg);border-radius:8px;border:1px solid #b7d8b7;padding:18px;max-width:440px">
-<h3 style="margin-bottom:4px;font-size:12px;color:var(--gn)">🕐 Puntos de Restauración</h3>
-<p style="font-size:10.5px;color:var(--tx2);margin-bottom:10px">El sistema guarda puntos automáticamente. También puede crear puntos manuales o restaurar a una fecha y hora.</p>
-<div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap"><button class="b bp" onclick="createSnapshot()" style="background:var(--gn)">📌 Crear punto manual</button></div>
-<div style="background:var(--wh);border:1px solid #b7d8b7;border-radius:6px;padding:12px 14px;margin-bottom:12px">
-<label style="display:block;font-size:10.5px;font-weight:600;color:var(--tx);margin-bottom:4px">Restaurar a una fecha y hora</label>
-<div style="display:flex;gap:8px;align-items:center">
-<input type="datetime-local" id="restoreDatetime" style="flex:1;font-size:12px">
-<button class="b bp" onclick="restoreByDate()" style="background:var(--gn);white-space:nowrap">🔄 Restaurar</button>
-</div>
-<p style="font-size:9.5px;color:#888;margin-top:4px">Se restaurará el punto más cercano a la fecha indicada</p>
-</div>
-<div id="snapshotList"><div style="font-size:10.5px;font-weight:600;color:var(--tx);margin-bottom:6px">Historial de puntos (2):</div><div style="display:flex;align-items:center;gap:8px;padding:6px 8px;background:var(--gr);border-radius:5px;margin-bottom:2px;font-size:10.5px"><div style="flex:1"><strong>27-05-2026 01:21 p. m.</strong><span style="background:var(--lb);color:var(--bl);padding:1px 5px;border-radius:8px;font-size:8.5px;font-weight:600;margin-left:4px">Auto</span><span style="color:#888;margin-left:8px">168 alum. / 441 eval.</span></div><button class="b bp bsm" onclick="restoreSnapshot(0)" style="background:var(--gn);font-size:9.5px">Restaurar</button><button class="b bsm" style="color:var(--rd);border:none;font-size:9.5px" onclick="deleteSnapshot(0)">✕</button></div><div style="display:flex;align-items:center;gap:8px;padding:6px 8px;background:var(--wh);border-radius:5px;margin-bottom:2px;font-size:10.5px"><div style="flex:1"><strong>27-04-2026 03:52 p.&nbsp;m.</strong><span style="background:var(--lb);color:var(--bl);padding:1px 5px;border-radius:8px;font-size:8.5px;font-weight:600;margin-left:4px">Auto</span><span style="color:#888;margin-left:8px">116 alum. / 89 eval.</span></div><button class="b bp bsm" onclick="restoreSnapshot(1)" style="background:var(--gn);font-size:9.5px">Restaurar</button><button class="b bsm" style="color:var(--rd);border:none;font-size:9.5px" onclick="deleteSnapshot(1)">✕</button></div></div>
-</div>
-
-<div style="margin-top:16px;background:var(--lr);border-radius:8px;border:1px solid #f5c6cb;padding:18px;max-width:440px">
-<h3 style="margin-bottom:4px;font-size:12px;color:var(--rd)">Zona de Peligro</h3>
-<p style="font-size:10.5px;color:var(--tx2);margin-bottom:10px">Eliminar TODOS los puntos de restauración guardados</p>
-<button class="b bd" onclick="clearSnapshots()">🗑️ Borrar puntos de restauración</button></div>
-
-<div style="margin-top:24px;background:#1a1a2e;border-radius:8px;border:2px solid #e65100;padding:18px;max-width:440px">
-<h3 style="margin-bottom:4px;font-size:12px;color:#ff7043">🔧 Control de Mantención del Sistema</h3>
-<p style="font-size:10.5px;color:#aaa;margin-bottom:14px">Solo visible para administradores. Activa o desactiva el modo mantención para todos los usuarios conectados.</p>
-<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px">
-<button class="b bp" onclick="activateMaintenance()" style="background:#e65100;border-color:#e65100">🔧 Activar mantención y descargar respaldo</button>
-<button class="b bp" onclick="deactivateMaintenance()" style="background:#2e7d32;border-color:#2e7d32">✅ Desactivar mantención</button>
-</div>
-<button class="b bs" onclick="downloadHtmlBackup()" style="font-size:10px;margin-bottom:0">📥 Descargar respaldo del index ahora</button>
-</div></div></div>
-</div>
-<div id="toast"><div class="saved">✓ Guardado en la nube</div></div>
+<div id="toast"></div>
 
 <script>
 
@@ -1973,78 +1938,85 @@ var sorted=[].concat(filtered).sort(sortSt);
 var opts='<option value="">Seleccionar estudiante...</option>';
 sorted.forEach(function(s){opts+='<option value="'+s.id+'" '+(cStu===s.id?'selected':'')+'>'+s.nombre+' — '+s.curso+'</option>';});
 var certHTML='',inputsHTML='';
-var tipoBar='<div class="no-print" style="display:flex;gap:6px;margin-bottom:14px;align-items:center;flex-wrap:wrap">'
-+'<span style="font-size:11px;font-weight:700;color:#555;margin-right:4px">Tipo:</span>'
-+[['anual','📄 Certificado Anual'],['s1','📋 Notas Parciales — 1er Semestre'],['s2','📋 Notas Parciales — 2do Semestre']].map(function(t){
-return '<button class="b '+(cTipo===t[0]?'bp':'bs')+'" onclick="ci(\'tipo\',\''+t[0]+'\')" style="font-size:11px">'+t[1]+'</button>';}).join('')
-+'</div>';
 if(cStu){
 var st=D.students.find(function(s){return s.id===cStu;});
 if(st){
 var gr=getGrades(st),cfg=D.config;
-var baseInputs='<div class="tw no-print" style="padding:16px 20px;margin-bottom:16px">'
-+'<div style="font-size:13px;font-weight:700;color:var(--dk);margin-bottom:12px">✏️ Datos adicionales</div>'
-+'<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px 18px">'
-+'<div><label style="display:block;font-size:10.5px;font-weight:600;color:#555;margin-bottom:3px">Porcentaje de Asistencia</label>'
-+'<input value="'+cAsist+'" oninput="ci(\'a\',this.value)" placeholder="Ej: 95%" style="width:100%"></div>'
-+'<div><label style="display:block;font-size:10.5px;font-weight:600;color:#555;margin-bottom:3px">Año escolar</label>'
-+'<input value="'+cAnioEsc+'" oninput="ci(\'y\',this.value)" placeholder="Ej: 2026" style="width:100%"></div>'
-+'<div><label style="display:block;font-size:10.5px;font-weight:600;color:#555;margin-bottom:3px">Observaciones</label>'
-+'<input value="'+cPromovido+'" oninput="ci(\'p\',this.value)" placeholder="Ej: Promovido al siguiente nivel" style="width:100%"></div>'
-+'<div><label style="display:block;font-size:10.5px;font-weight:600;color:#555;margin-bottom:3px">Nombre del Profesor(a) Jefe</label>'
-+'<input value="'+cProfesor+'" oninput="ci(\'prof\',this.value)" placeholder="Ej: JUAN PÉREZ GONZÁLEZ" style="width:100%"></div>';
 if(cTipo==='anual'){
 var nums=gr.filter(function(g){return (g.t==='num'||g.t==='nt')&&g.nota!=null;});
 var prom=nums.length?Math.round(nums.reduce(function(s,g){return s+g.nota;},0)/nums.length*10)/10:null;
 certHTML='<div id="certWrap">'+buildCertBody(st,gr,cfg,prom)+'</div>';
-inputsHTML=baseInputs
+inputsHTML='<div class="tw no-print" style="padding:16px 20px;margin-bottom:16px">'
++'<div style="font-size:13px;font-weight:700;color:var(--dk);margin-bottom:12px">✏️ Datos adicionales del certificado</div>'
++'<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px 18px">'
++'<div><label style="display:block;font-size:10.5px;font-weight:600;color:#555;margin-bottom:3px">Porcentaje de Asistencia</label>'
++'<input value="'+cAsist+'" oninput="ci(\'a\',this.value)" placeholder="Ej: 95%" style="width:100%"></div>'
 +'<div><label style="display:block;font-size:10.5px;font-weight:600;color:#555;margin-bottom:3px">Situación Final, Promovido a:</label>'
 +'<input value="'+cSituacion+'" oninput="ci(\'s\',this.value)" placeholder="Ej: 2° Básico" style="width:100%"></div>'
++'<div><label style="display:block;font-size:10.5px;font-weight:600;color:#555;margin-bottom:3px">Observaciones</label>'
++'<input value="'+cPromovido+'" oninput="ci(\'p\',this.value)" placeholder="Ej: Es promovido a SEGUNDO año" style="width:100%"></div>'
++'<div><label style="display:block;font-size:10.5px;font-weight:600;color:#555;margin-bottom:3px">Año escolar (recuadro superior)</label>'
++'<input value="'+cAnioEsc+'" oninput="ci(\'y\',this.value)" placeholder="Ej: 1° Semestre 2026" style="width:100%"></div>'
++'<div><label style="display:block;font-size:10.5px;font-weight:600;color:#555;margin-bottom:3px">Nombre del Profesor(a) Jefe</label>'
++'<input value="'+cProfesor+'" oninput="ci(\'prof\',this.value)" placeholder="Ej: JUAN PÉREZ GONZÁLEZ" style="width:100%"></div>'
 +'</div></div>';
-}else{
+} else {
 var sem=cTipo==='s2'?2:1;
-certHTML='<div id="certParcialWrap">'+buildParcialBody(st,gr,cfg,sem)+'</div>';
-var extraRows='';
-var asigNums=gr.filter(function(g){return g.t==='num';});
-asigNums.forEach(function(g){
+var extraInputs='';
+gr.forEach(function(g){
+if(g.t==='con'||g.t==='nt')return;
 var en=cExtraN[g.id]||{};
-extraRows+='<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">'
-+'<div style="font-size:11px;font-weight:600;width:210px;color:var(--tx)">'+g.n+'</div>'
-+'<div><label style="font-size:9.5px;color:#888;display:block">N3 (opcional)</label>'
-+'<input type="number" min="1" max="7" step="0.1" value="'+(en.n3||'')+'" oninput="ciExtraN(\''+g.id+'\',\'n3\',this.value)" placeholder="—" style="width:64px;font-size:12px"></div>'
-+'<div><label style="font-size:9.5px;color:#888;display:block">N4 (opcional)</label>'
-+'<input type="number" min="1" max="7" step="0.1" value="'+(en.n4||'')+'" oninput="ciExtraN(\''+g.id+'\',\'n4\',this.value)" placeholder="—" style="width:64px;font-size:12px"></div>'
+extraInputs+='<div style="display:grid;grid-template-columns:2fr 1fr 1fr;gap:6px;align-items:center;padding:4px 0;border-bottom:1px solid var(--c5)">'
++'<div style="font-size:11px;font-weight:600">'+g.n+'</div>'
++'<div><label style="font-size:9.5px;color:#555">N3 (opc.)</label><input type="number" step="0.1" min="1" max="7" value="'+(en.n3||'')+'" oninput="ciExtraN(\''+g.id+'\',\'n3\',this.value)" style="width:100%;font-size:11px"></div>'
++'<div><label style="font-size:9.5px;color:#555">N4 (opc.)</label><input type="number" step="0.1" min="1" max="7" value="'+(en.n4||'')+'" oninput="ciExtraN(\''+g.id+'\',\'n4\',this.value)" style="width:100%;font-size:11px"></div>'
 +'</div>';});
-inputsHTML=baseInputs+'</div>'
-+(extraRows?'<div style="margin-top:12px;border-top:1px solid var(--c6);padding-top:10px"><div style="font-size:11px;font-weight:700;color:#555;margin-bottom:8px">N3 / N4 opcionales por asignatura:</div>'+extraRows+'</div>':'')
+certHTML='<div id="certParcialWrap">'+buildParcialBody(st,gr,cfg,sem)+'</div>';
+inputsHTML='<div class="tw no-print" style="padding:16px 20px;margin-bottom:16px">'
++'<div style="font-size:13px;font-weight:700;color:var(--dk);margin-bottom:10px">✏️ Datos adicionales</div>'
++'<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px 16px;margin-bottom:12px">'
++'<div><label style="display:block;font-size:10.5px;font-weight:600;color:#555;margin-bottom:3px">Porcentaje de Asistencia</label>'
++'<input value="'+cAsist+'" oninput="ci(\'a\',this.value)" placeholder="Ej: 95%" style="width:100%"></div>'
++'<div><label style="display:block;font-size:10.5px;font-weight:600;color:#555;margin-bottom:3px">Observaciones</label>'
++'<input value="'+cPromovido+'" oninput="ci(\'p\',this.value)" placeholder="Observaciones..." style="width:100%"></div>'
++'<div><label style="display:block;font-size:10.5px;font-weight:600;color:#555;margin-bottom:3px">Año escolar</label>'
++'<input value="'+cAnioEsc+'" oninput="ci(\'y\',this.value)" placeholder="Ej: 2026" style="width:100%"></div>'
++'<div><label style="display:block;font-size:10.5px;font-weight:600;color:#555;margin-bottom:3px">Nombre Profesor(a) Jefe</label>'
++'<input value="'+cProfesor+'" oninput="ci(\'prof\',this.value)" placeholder="Ej: JUAN PÉREZ" style="width:100%"></div>'
++'</div>'
++(extraInputs?'<div style="font-size:11px;font-weight:700;color:var(--dk);margin-bottom:6px">Notas adicionales por asignatura</div>'+extraInputs:'')
 +'</div>';
 }
 }}
-return '<h2 class="pt">Certificados</h2><p class="ps">Generar certificados de calificaciones</p>'
-+'<div class="tw no-print" style="margin-bottom:12px"><details><summary style="cursor:pointer;font-size:11px;font-weight:700;color:var(--dk);padding:10px 14px">📂 Documentos guardados ('+getSavedDocs().length+')</summary><div style="padding:0 14px 10px">'+renderSavedDocsList('Certificado')+'<div style="margin-top:6px">'+renderSavedDocsList('Informe Parcial')+'</div></div></details></div>'
+var tipoBar='<div class="tb no-print" style="margin-bottom:12px;gap:6px">'
++'<button onclick="ci(\'tipo\',\'anual\')" class="b '+(cTipo==='anual'?'bp':'bs')+'" style="font-size:11px">📄 Certificado Anual</button>'
++'<button onclick="ci(\'tipo\',\'s1\')" class="b '+(cTipo==='s1'?'bp':'bs')+'" style="font-size:11px">📋 Notas Parciales — 1er Semestre</button>'
++'<button onclick="ci(\'tipo\',\'s2\')" class="b '+(cTipo==='s2'?'bp':'bs')+'" style="font-size:11px">📋 Notas Parciales — 2do Semestre</button>'
++'</div>';
+return '<h2 class="pt">Certificados</h2><p class="ps">Generar certificado oficial de calificaciones</p>'
++'<div class="tw no-print" style="margin-bottom:12px"><details><summary style="cursor:pointer;font-size:11px;font-weight:700;color:var(--dk);padding:10px 14px">📂 Certificados guardados ('+getSavedDocs().filter(function(d){return d.type==="Certificado"||d.type==="Informe Parcial";}).length+')</summary><div style="padding:0 14px 10px">'+renderSavedDocsList("Certificado")+'</div></details></div>'
 +tipoBar
-+'<div class="tb no-print"><select onchange="cCertCurso=this.value;cStu=\'\';cAsist=\'\';cSituacion=\'\';cPromovido=\'\';cAnioEsc=\'\';cProfesor=\'\';cExtraN={};render()" style="width:130px">'+crsOpts+'</select>'
-+'<select onchange="cStu=this.value;cAsist=\'\';cSituacion=\'\';cPromovido=\'\';cAnioEsc=\'\';cProfesor=\'\';cExtraN={};render()" style="flex:1;max-width:360px">'+opts+'</select>'
++'<div class="tb no-print"><select onchange="cCertCurso=this.value;cStu=\'\';cAsist=\'\';cSituacion=\'\';cPromovido=\'\';cAnioEsc=\'\';cProfesor=\'\';cExtraN={};render()" style="width:130px">'+crsOpts+'</select><select onchange="cStu=this.value;cAsist=\'\';cSituacion=\'\';cPromovido=\'\';cAnioEsc=\'\';cProfesor=\'\';cExtraN={};render()" style="flex:1;max-width:360px">'+opts+'</select>'
 +(cStu?' <button class="b bp" onclick="printCert()">🖨️ Imprimir / PDF</button> <button class="b bs" onclick="saveParcialOrCert()" style="font-size:10px">💾 Guardar</button>':'')
 +'</div>'+inputsHTML+certHTML;
 }
+
 function saveParcialOrCert(){
+var st=D.students.find(function(s){return s.id===cStu;});if(!st)return;
 if(cTipo==='anual'){
 var el=document.getElementById('certBody');if(!el)return;
-var st=D.students.find(function(s){return s.id===cStu;});if(!st)return;
 saveDocument('Certificado',st.nombre,st.curso,cAnioEsc||D.config.year||'',el.outerHTML);
 }else{
 var el2=document.getElementById('certParcialBody');if(!el2)return;
-var st2=D.students.find(function(s){return s.id===cStu;});if(!st2)return;
-var periodo=(cTipo==='s2'?'2do':'1er')+' Semestre '+(cAnioEsc||D.config.year||'');
-saveDocument('Informe Parcial',st2.nombre,st2.curso,periodo,el2.outerHTML);
+var periodo=cTipo==='s2'?'2do Semestre':'1er Semestre';
+saveDocument('Informe Parcial',st.nombre,st.curso,(cAnioEsc||D.config.year||'')+' '+periodo,el2.outerHTML);
 }
 }
 function saveCert(){saveParcialOrCert();}
 function printCert(){
 var el=document.getElementById('certBody')||document.getElementById('certParcialBody');if(!el)return;
 var w=window.open('','_blank','width=900,height=700');
-w.document.write('<html><head><title></title><style>@page{size:letter;margin:10mm 12mm 8mm 12mm}body{margin:0;padding:0}table{border-collapse:collapse}.nota-ok{color:#0d652d}.nota-bad{color:#d93025}</style></head><body>'+el.outerHTML+'</body></html>');
+w.document.write('<html><head><title></title><style>@page{size:letter;margin:10mm 12mm 8mm 12mm}body{margin:0;padding:0}table{border-collapse:collapse}</style></head><body>'+el.outerHTML+'</body></html>');
 w.document.close();setTimeout(function(){w.print();},500);
 }
 
@@ -3752,10 +3724,39 @@ async function matConfAjuste(id){
 }
 
 // ═══════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════
 // SOCIOEMOCIONAL
 // ═══════════════════════════════════════════════════════════
+const EJES_SOCIO = [
+  {
+    id:'eje1', label:'EJE 1', nombre:'Conciencia Emocional y Autoexploración',
+    niveles:{
+      I:  { tag:'Inicial / requiere apoyo',      desc:'Reconoce emociones básicas solo con apoyo visual, verbal o mediante ejemplos del adulto.' },
+      II: { tag:'En proceso / con mediación',    desc:'Reconoce algunas emociones y logra relacionarlas con situaciones simples mediante preguntas guía.' },
+      III:{ tag:'Logrado / autónomo',            desc:'Identifica, nombra y explica sus emociones de manera clara, relacionándolas con experiencias personales.' }
+    }
+  },
+  {
+    id:'eje2', label:'EJE 2', nombre:'Regulación y Expresión de Emociones',
+    niveles:{
+      I:  { tag:'Inicial / requiere apoyo',      desc:'Requiere apoyo constante para expresar lo que siente o utilizar estrategias de calma.' },
+      II: { tag:'En proceso / con mediación',    desc:'Expresa emociones o utiliza estrategias de regulación cuando recibe orientación, modelamiento o recordatorios.' },
+      III:{ tag:'Logrado / autónomo',            desc:'Expresa sus emociones de forma respetuosa y utiliza estrategias de regulación con mínima ayuda o de manera espontánea.' }
+    }
+  },
+  {
+    id:'eje3', label:'EJE 3', nombre:'Autonomía y Desarrollo de la Resiliencia',
+    niveles:{
+      I:  { tag:'Inicial / requiere apoyo',      desc:'Necesita guía para reconocer fortalezas personales, logros o formas de enfrentar dificultades.' },
+      II: { tag:'En proceso / con mediación',    desc:'Identifica algunas fortalezas y puede relacionarlas con situaciones difíciles cuando recibe apoyo del adulto.' },
+      III:{ tag:'Logrado / autónomo',            desc:'Reconoce sus fortalezas, valora sus logros y propone formas positivas de enfrentar dificultades con mayor autonomía.' }
+    }
+  }
+];
 let socioFiltro = '';
 let socioData = {};
+function chipN(v){ if(v==='III') return 'sc-n3'; if(v==='II') return 'sc-n2'; if(v==='I') return 'sc-n1'; return 'sc-off'; }
+function chipColor(v){ if(v==='III') return '#0d652d'; if(v==='II') return '#e37400'; if(v==='I') return '#1a73e8'; return '#aaa'; }
 function rSocio() {
   return `<h2 class="pt">Socioemocional</h2>
 <p class="ps">Evaluación por ejes socioemocionales — ${D.config.schoolName}</p>
@@ -3771,60 +3772,108 @@ function renderSocioUI() {
   const cursos = [...new Set(D.students.map(s => s.curso))].sort((a,b) => ALL_N.indexOf(a)-ALL_N.indexOf(b));
   if (!socioFiltro && cursos.length) socioFiltro = cursos[0];
   const estudiantesCurso = D.students.filter(s => s.curso === socioFiltro).sort(sortSt);
-  const nivOpts = n => ['','I','II','III'].map(v => `<option value="${v}" ${v===n?'selected':''}>${v||'—'}</option>`).join('');
   let filas = '';
   estudiantesCurso.forEach(s => {
     const sd = socioData[s.id] || {};
-    const exento = sd.exento || false;
-    const atendidoBtn = exento
-      ? '<span style="color:var(--tx3);font-size:11px">—</span>'
-      : sd.atendido === true
+    if (sd.exento) {
+      filas += `<tr style="opacity:.45">
+        <td style="font-weight:600">${s.nombre}</td>
+        <td style="text-align:center"><span style="color:var(--tx3);font-size:11px">—</span></td>
+        <td colspan="3"><span style="font-size:11px;color:var(--tx3);font-style:italic">✗ Eximido — ${sd.razon||'sin razón indicada'}</span></td>
+        <td><label style="display:flex;align-items:center;gap:5px;font-size:12px;cursor:pointer;color:var(--rd)">
+          <input type="checkbox" checked onchange="toggleExentoSocio('${s.id}',false)"> Eximido</label></td>
+      </tr>`;
+    } else {
+      const atendidoBtn = sd.atendido === true
         ? `<button onclick="toggleAtendidoSocio('${s.id}')" title="Clic para cambiar" style="background:#e8f5e9;color:#2e7d32;border:none;border-radius:6px;padding:4px 12px;cursor:pointer;font-size:16px;font-weight:700;line-height:1">✓</button>`
         : sd.atendido === false
           ? `<button onclick="toggleAtendidoSocio('${s.id}')" title="Clic para cambiar" style="background:#fce8e6;color:#c62828;border:none;border-radius:6px;padding:4px 12px;cursor:pointer;font-size:16px;font-weight:700;line-height:1">✗</button>`
           : `<button onclick="toggleAtendidoSocio('${s.id}')" title="Marcar asistencia" style="background:var(--c5);color:var(--tx3);border:1px dashed var(--brd);border-radius:6px;padding:4px 12px;cursor:pointer;font-size:13px;line-height:1">—</button>`;
-    filas += `<tr style="opacity:${exento?'0.45':'1'}">
-      <td style="font-weight:600">${s.nombre}</td>
-      <td><span class="badge bb">${s.curso}</span></td>
-      <td style="text-align:center">${atendidoBtn}</td>
-      <td>${exento ? '<span style="color:var(--tx3);font-size:11px">Exento</span>' : `<select onchange="saveSocio('${s.id}',1,this.value)" style="font-size:12px">${nivOpts(sd.eje1||'')}</select>`}</td>
-      <td>${exento ? '<span style="color:var(--tx3);font-size:11px">Exento</span>' : `<select onchange="saveSocio('${s.id}',2,this.value)" style="font-size:12px">${nivOpts(sd.eje2||'')}</select>`}</td>
-      <td>${exento ? '<span style="color:var(--tx3);font-size:11px">Exento</span>' : `<select onchange="saveSocio('${s.id}',3,this.value)" style="font-size:12px">${nivOpts(sd.eje3||'')}</select>`}</td>
-      <td>
-        <label style="display:flex;align-items:center;gap:4px;font-size:11px;cursor:pointer">
-          <input type="checkbox" ${exento?'checked':''} onchange="toggleExentoSocio('${s.id}',this.checked)"> Eximir
-        </label>
-        ${exento ? `<div style="font-size:10px;color:var(--tx3);margin-top:2px">${sd.razon||''}</div>` : ''}
-      </td>
-    </tr>`;
+      let celdas = '';
+      EJES_SOCIO.forEach(eje => {
+        const val = sd[eje.id] || '';
+        let chips = '<div style="display:flex;gap:5px">';
+        ['I','II','III'].forEach(nv => {
+          const cls = chipN(nv);
+          const isSel = val === nv;
+          const desc = eje.niveles[nv].desc;
+          const tag  = eje.niveles[nv].tag;
+          chips += `<div style="position:relative;display:inline-block">
+            <div class="sc-chip ${cls}${isSel?' sc-sel':''}"
+              onclick="saveSocio('${s.id}','${eje.id}','${val===nv?'':nv}')"
+              onmouseenter="showSocioTip(this,'Nivel ${nv} — ${tag}','${desc.replace(/'/g,"\\'")}')"
+              onmouseleave="hideSocioTip()">Nv.${nv}</div>
+          </div>`;
+        });
+        chips += '</div>';
+        celdas += `<td>${chips}</td>`;
+      });
+      filas += `<tr>
+        <td style="font-weight:600">${s.nombre}</td>
+        <td style="text-align:center">${atendidoBtn}</td>
+        ${celdas}
+        <td><label style="display:flex;align-items:center;gap:5px;font-size:12px;cursor:pointer;color:var(--rd)">
+          <input type="checkbox" onchange="toggleExentoSocio('${s.id}',true)"> Eximir</label></td>
+      </tr>`;
+    }
   });
   const filtroOpts = cursos.map(c => `<option value="${c}" ${c===socioFiltro?'selected':''}>${c}</option>`).join('');
   const cont = document.getElementById('socioContainer');
   if (!cont) return;
   cont.innerHTML = `
-    <div class="tb" style="margin-bottom:12px">
+    <div style="margin-bottom:14px;display:flex;gap:10px;align-items:center;flex-wrap:wrap">
       <select onchange="socioFiltro=this.value;renderSocioUI()" style="font-size:13px">${filtroOpts}</select>
-      <button class="b bp" onclick="renderSocioGraficos()" style="margin-left:auto">📊 Ver Gráficos</button>
+      <button class="b bp" onclick="renderSocioGraficos()">📊 Ver Gráficos</button>
+      <div style="display:flex;gap:14px;flex-wrap:wrap;margin-left:auto">
+        <span style="display:flex;align-items:center;gap:5px;font-size:11.5px;font-weight:600"><span style="width:11px;height:11px;border-radius:50%;background:#1a73e8;display:inline-block"></span>Nivel I — Inicial</span>
+        <span style="display:flex;align-items:center;gap:5px;font-size:11.5px;font-weight:600"><span style="width:11px;height:11px;border-radius:50%;background:#e37400;display:inline-block"></span>Nivel II — En proceso</span>
+        <span style="display:flex;align-items:center;gap:5px;font-size:11.5px;font-weight:600"><span style="width:11px;height:11px;border-radius:50%;background:#0d652d;display:inline-block"></span>Nivel III — Logrado</span>
+      </div>
     </div>
     <div class="tw">
       <table>
-        <thead><tr><th>Nombre</th><th>Curso</th><th style="text-align:center">Atendido</th><th>EJE 1</th><th>EJE 2</th><th>EJE 3</th><th>Acción</th></tr></thead>
-        <tbody>${filas||'<tr><td colspan="7" style="padding:30px;text-align:center;color:var(--tx3)">Sin estudiantes en este curso</td></tr>'}</tbody>
+        <thead><tr>
+          <th>Nombre</th>
+          <th style="text-align:center">Atendido</th>
+          <th>EJE 1 · Conciencia Emocional</th>
+          <th>EJE 2 · Regulación y Expresión</th>
+          <th>EJE 3 · Autonomía y Resiliencia</th>
+          <th>Acción</th>
+        </tr></thead>
+        <tbody>${filas||'<tr><td colspan="6" style="padding:30px;text-align:center;color:var(--tx3)">Sin estudiantes en este curso</td></tr>'}</tbody>
       </table>
     </div>
-    <div id="socioGraficos" style="display:none;margin-top:20px"></div>
-  `;
+    <div id="socioTip" style="display:none;position:fixed;background:#222;color:#fff;font-size:11.5px;padding:10px 13px;border-radius:8px;max-width:240px;line-height:1.5;z-index:9999;pointer-events:none;box-shadow:0 4px 16px rgba(0,0,0,.3)"></div>
+    <div id="socioGraficos" style="display:none;margin-top:20px"></div>`;
+}
+function showSocioTip(el, titulo, desc) {
+  const tip = document.getElementById('socioTip');
+  if(!tip) return;
+  tip.innerHTML = `<strong>${titulo}</strong><br><br>${desc}`;
+  tip.style.display = 'block';
+  document.addEventListener('mousemove', _moveSocioTip);
+}
+function _moveSocioTip(e) {
+  const tip = document.getElementById('socioTip');
+  if(tip) { tip.style.left=(e.clientX+14)+'px'; tip.style.top=(e.clientY-10)+'px'; }
+}
+function hideSocioTip() {
+  const tip = document.getElementById('socioTip');
+  if(tip) tip.style.display='none';
+  document.removeEventListener('mousemove', _moveSocioTip);
 }
 function saveSocio(id, eje, valor) {
   if (!socioData[id]) socioData[id] = {};
-  socioData[id]['eje'+eje] = valor;
+  socioData[id][eje] = valor;
   db.collection('sge_socio').doc('evaluaciones').set({ data: socioData }, { merge: false });
+  renderSocioUI();
+  showToast('✓ Guardado');
 }
-function toggleExentoSocio(id, checked) {
+function toggleExentoSocio(id, activar) {
   let razon = '';
-  if (checked) { razon = prompt('Razón de la exención (opcional):') || ''; }
+  if (activar) razon = prompt('Razón de la exención (opcional):') || '';
   if (!socioData[id]) socioData[id] = {};
-  socioData[id].exento = checked;
+  socioData[id].exento = activar;
   socioData[id].razon = razon;
   db.collection('sge_socio').doc('evaluaciones').set({ data: socioData }, { merge: false });
   renderSocioUI();
@@ -3838,42 +3887,31 @@ function toggleAtendidoSocio(id) {
   db.collection('sge_socio').doc('evaluaciones').set({ data: socioData }, { merge: false });
   renderSocioUI();
 }
-function calcSocioStats() {
-  const stats = { eje1:{I:0,II:0,III:0}, eje2:{I:0,II:0,III:0}, eje3:{I:0,II:0,III:0} };
-  Object.values(socioData).forEach(sd => {
-    if (sd.exento) return;
-    ['eje1','eje2','eje3'].forEach(e => { if(sd[e]) stats[e][sd[e]]++; });
-  });
-  return stats;
-}
 function renderSocioGraficos() {
   const el = document.getElementById('socioGraficos');
   if (!el) return;
-  el.style.display = el.style.display === 'none' ? 'block' : 'none';
-  if (el.style.display === 'none') return;
+  if (el.style.display !== 'none') { el.style.display = 'none'; return; }
   const todos = D.students.filter(s => !((socioData[s.id]||{}).exento));
-  const ejes = ['eje1','eje2','eje3'];
-  const labels = ['EJE 1','EJE 2','EJE 3'];
-  const colores = {I:'#1a73e8',II:'#0d652d',III:'#7c3aed'};
-  let html = '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px">';
-  ejes.forEach((eje, i) => {
+  let html = '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px">';
+  EJES_SOCIO.forEach(eje => {
     const cnt = {I:0,II:0,III:0};
-    todos.forEach(s => { const v=(socioData[s.id]||{})[eje]; if(v) cnt[v]++; });
-    const total = cnt.I+cnt.II+cnt.III || 1;
+    todos.forEach(s => { const v=(socioData[s.id]||{})[eje.id]; if(v) cnt[v]++; });
+    const total = cnt.I+cnt.II+cnt.III||1;
     html += `<div class="tw" style="padding:16px">
-      <div style="font-weight:700;font-size:13px;margin-bottom:12px">${labels[i]} — Distribución de Niveles</div>`;
-    ['I','II','III'].forEach(n => {
-      const pct = Math.round(cnt[n]/total*100);
+      <div style="font-weight:700;font-size:13px;margin-bottom:12px;color:var(--dk)">${eje.label} — ${eje.nombre}</div>`;
+    [['I','var(--bl)'],['II','var(--or)'],['III','var(--gn)']].forEach(([nv,col]) => {
+      const pct = Math.round(cnt[nv]/total*100);
       html += `<div style="margin-bottom:8px">
         <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px">
-          <span style="font-weight:600">Nivel ${n}</span><span>${cnt[n]} estudiantes (${pct}%)</span>
+          <span style="font-weight:600">Nivel ${nv} — ${eje.niveles[nv].tag}</span>
+          <span>${cnt[nv]} (${pct}%)</span>
         </div>
-        <div class="bar"><div class="bar-in" style="width:${pct||2}%;background:${colores[n]};min-width:20px"><span>${pct}%</span></div></div>
+        <div class="bar"><div class="bar-in" style="width:${pct||2}%;background:${col};min-width:24px"><span>${pct}%</span></div></div>
       </div>`;
     });
     html += '</div>';
   });
-  // Participación del curso actual (excluye exentos)
+  // Participación del curso filtrado (excluye exentos)
   const estudActivos = D.students.filter(s => s.curso === socioFiltro && !((socioData[s.id]||{}).exento));
   const pAtSi = estudActivos.filter(s => (socioData[s.id]||{}).atendido === true).length;
   const pAtNo = estudActivos.filter(s => (socioData[s.id]||{}).atendido === false).length;
@@ -3883,7 +3921,7 @@ function renderSocioGraficos() {
   const pctNo = Math.round(pAtNo/pTotal*100);
   const pctSin = Math.round(pAtSin/pTotal*100);
   html += `<div class="tw" style="padding:16px">
-    <div style="font-weight:700;font-size:13px;margin-bottom:12px">Participación Plan Socioemocional — ${socioFiltro}</div>
+    <div style="font-weight:700;font-size:13px;margin-bottom:12px;color:var(--dk)">Participación Plan Socioemocional — ${socioFiltro}</div>
     <div style="font-size:10px;color:var(--tx3);margin-bottom:10px">${estudActivos.length} estudiante(s) activos (sin exentos)</div>
     <div style="margin-bottom:8px">
       <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px">
@@ -3906,23 +3944,28 @@ function renderSocioGraficos() {
   </div>`;
   const cursos = [...new Set(D.students.map(s=>s.curso))].sort((a,b)=>ALL_N.indexOf(a)-ALL_N.indexOf(b));
   html += `<div class="tw" style="padding:16px;grid-column:1/-1">
-    <div style="font-weight:700;font-size:13px;margin-bottom:12px">Comparativa por Curso — Promedio de Avance</div>
-    <table style="font-size:11px"><thead><tr><th>Curso</th><th>EJE 1</th><th>EJE 2</th><th>EJE 3</th><th>Total evaluados</th></tr></thead><tbody>`;
-  const nVal = {I:1,II:2,III:3};
+    <div style="font-weight:700;font-size:13px;margin-bottom:12px;color:var(--dk)">Comparativa por Curso</div>
+    <table><thead><tr>
+      <th>Curso</th><th>EJE 1</th><th>EJE 2</th><th>EJE 3</th><th>Evaluados</th>
+    </tr></thead><tbody>`;
+  const nVal={I:1,II:2,III:3};
   cursos.forEach(c => {
     const sts = D.students.filter(s => s.curso===c && !((socioData[s.id]||{}).exento));
-    if (!sts.length) return;
+    if(!sts.length) return;
     const avg = eje => {
       const vals = sts.map(s=>(socioData[s.id]||{})[eje]).filter(v=>v);
-      if (!vals.length) return '—';
-      const a = vals.reduce((s,v)=>s+nVal[v],0)/vals.length;
-      return a.toFixed(1);
+      if(!vals.length) return '—';
+      return (vals.reduce((s,v)=>s+nVal[v],0)/vals.length).toFixed(1);
     };
-    html += `<tr><td><span class="badge bb">${c}</span></td><td>${avg('eje1')}</td><td>${avg('eje2')}</td><td>${avg('eje3')}</td><td>${sts.length}</td></tr>`;
+    html += `<tr><td><span class="badge bb">${c}</span></td>
+      <td style="text-align:center">${avg('eje1')}</td>
+      <td style="text-align:center">${avg('eje2')}</td>
+      <td style="text-align:center">${avg('eje3')}</td>
+      <td style="text-align:center">${sts.length}</td></tr>`;
   });
-  html += '</tbody></table></div>';
-  html += '</div>';
+  html += '</tbody></table></div></div>';
   el.innerHTML = html;
+  el.style.display = 'block';
 }
 
 function exportAsistXls(){
@@ -3945,6 +3988,6 @@ function exportAsistXls(){
 </script>
 
 
-<div id="saveStatus" style="position: fixed; bottom: 20px; right: 20px; background: rgba(0, 0, 0, 0.7); color: var(--wh); padding: 6px 12px; border-radius: 20px; font-size: 10px; z-index: 9999; display: block;">✓ Guardado a las 13:21:58</div>
+<div id="saveStatus" style="position: fixed; bottom: 20px; right: 20px; background: rgba(0, 0, 0, 0.7); color: var(--wh); padding: 6px 12px; border-radius: 20px; font-size: 10px; z-index: 9999; display: none;">✓ Guardado a las 9:20:52</div>
 
 </body></html>
