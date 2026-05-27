@@ -1123,9 +1123,18 @@ function setIndDesc(seg,asig,mes,ind,val){
     });
   },800);
 }
+function getCurrentPer(){
+  var m=new Date().getMonth()+1;
+  if(m>=3&&m<=4)return'0';
+  if(m>=5&&m<=6)return'1';
+  if(m>=7&&m<=9)return'2';
+  if(m>=10&&m<=12)return'3';
+  return'';
+}
 function rEval(){
 var crs=getAllowCursos();
 var as2=eCur?getA(eCur):[];var ao=as2.find(a=>a.id===eAsig);
+if(eCur&&eAsig&&eIndPer===''){eIndPer=getCurrentPer();}
 var cOpts='<option value="">Curso...</option>';crs.forEach(c=>{cOpts+='<option value="'+c+'" '+(eCur===c?'selected':'')+'>'+cursoDisp({curso:c})+'</option>';});
 var aOpts='<option value="">Asignatura...</option>';as2.forEach(a=>{aOpts+='<option value="'+a.id+'" '+(eAsig===a.id?'selected':'')+'>'+a.n+'</option>';});
 var iOpts='<option value="">Período...</option>';IND_PER.forEach(ip=>{iOpts+='<option value="'+ip.id+'" '+(eIndPer===ip.id?'selected':'')+'>'+ip.label+'</option>';});
@@ -3761,9 +3770,17 @@ function renderSocioUI() {
   estudiantesCurso.forEach(s => {
     const sd = socioData[s.id] || {};
     const exento = sd.exento || false;
+    const atendidoBtn = exento
+      ? '<span style="color:var(--tx3);font-size:11px">—</span>'
+      : sd.atendido === true
+        ? `<button onclick="toggleAtendidoSocio('${s.id}')" title="Clic para cambiar" style="background:#e8f5e9;color:#2e7d32;border:none;border-radius:6px;padding:4px 12px;cursor:pointer;font-size:16px;font-weight:700;line-height:1">✓</button>`
+        : sd.atendido === false
+          ? `<button onclick="toggleAtendidoSocio('${s.id}')" title="Clic para cambiar" style="background:#fce8e6;color:#c62828;border:none;border-radius:6px;padding:4px 12px;cursor:pointer;font-size:16px;font-weight:700;line-height:1">✗</button>`
+          : `<button onclick="toggleAtendidoSocio('${s.id}')" title="Marcar asistencia" style="background:var(--c5);color:var(--tx3);border:1px dashed var(--brd);border-radius:6px;padding:4px 12px;cursor:pointer;font-size:13px;line-height:1">—</button>`;
     filas += `<tr style="opacity:${exento?'0.45':'1'}">
       <td style="font-weight:600">${s.nombre}</td>
       <td><span class="badge bb">${s.curso}</span></td>
+      <td style="text-align:center">${atendidoBtn}</td>
       <td>${exento ? '<span style="color:var(--tx3);font-size:11px">Exento</span>' : `<select onchange="saveSocio('${s.id}',1,this.value)" style="font-size:12px">${nivOpts(sd.eje1||'')}</select>`}</td>
       <td>${exento ? '<span style="color:var(--tx3);font-size:11px">Exento</span>' : `<select onchange="saveSocio('${s.id}',2,this.value)" style="font-size:12px">${nivOpts(sd.eje2||'')}</select>`}</td>
       <td>${exento ? '<span style="color:var(--tx3);font-size:11px">Exento</span>' : `<select onchange="saveSocio('${s.id}',3,this.value)" style="font-size:12px">${nivOpts(sd.eje3||'')}</select>`}</td>
@@ -3785,8 +3802,8 @@ function renderSocioUI() {
     </div>
     <div class="tw">
       <table>
-        <thead><tr><th>Nombre</th><th>Curso</th><th>EJE 1</th><th>EJE 2</th><th>EJE 3</th><th>Acción</th></tr></thead>
-        <tbody>${filas||'<tr><td colspan="6" style="padding:30px;text-align:center;color:var(--tx3)">Sin estudiantes en este curso</td></tr>'}</tbody>
+        <thead><tr><th>Nombre</th><th>Curso</th><th style="text-align:center">Atendido</th><th>EJE 1</th><th>EJE 2</th><th>EJE 3</th><th>Acción</th></tr></thead>
+        <tbody>${filas||'<tr><td colspan="7" style="padding:30px;text-align:center;color:var(--tx3)">Sin estudiantes en este curso</td></tr>'}</tbody>
       </table>
     </div>
     <div id="socioGraficos" style="display:none;margin-top:20px"></div>
@@ -3803,6 +3820,15 @@ function toggleExentoSocio(id, checked) {
   if (!socioData[id]) socioData[id] = {};
   socioData[id].exento = checked;
   socioData[id].razon = razon;
+  db.collection('sge_socio').doc('evaluaciones').set({ data: socioData }, { merge: false });
+  renderSocioUI();
+}
+function toggleAtendidoSocio(id) {
+  if (!socioData[id]) socioData[id] = {};
+  const cur = socioData[id].atendido;
+  if (cur === undefined || cur === null) socioData[id].atendido = true;
+  else if (cur === true) socioData[id].atendido = false;
+  else delete socioData[id].atendido;
   db.collection('sge_socio').doc('evaluaciones').set({ data: socioData }, { merge: false });
   renderSocioUI();
 }
@@ -3841,6 +3867,37 @@ function renderSocioGraficos() {
     });
     html += '</div>';
   });
+  // Participación del curso actual (excluye exentos)
+  const estudActivos = D.students.filter(s => s.curso === socioFiltro && !((socioData[s.id]||{}).exento));
+  const pAtSi = estudActivos.filter(s => (socioData[s.id]||{}).atendido === true).length;
+  const pAtNo = estudActivos.filter(s => (socioData[s.id]||{}).atendido === false).length;
+  const pAtSin = estudActivos.length - pAtSi - pAtNo;
+  const pTotal = estudActivos.length || 1;
+  const pctSi = Math.round(pAtSi/pTotal*100);
+  const pctNo = Math.round(pAtNo/pTotal*100);
+  const pctSin = Math.round(pAtSin/pTotal*100);
+  html += `<div class="tw" style="padding:16px">
+    <div style="font-weight:700;font-size:13px;margin-bottom:12px">Participación Plan Socioemocional — ${socioFiltro}</div>
+    <div style="font-size:10px;color:var(--tx3);margin-bottom:10px">${estudActivos.length} estudiante(s) activos (sin exentos)</div>
+    <div style="margin-bottom:8px">
+      <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px">
+        <span style="font-weight:600">✓ Atendido</span><span>${pAtSi} (${pctSi}%)</span>
+      </div>
+      <div class="bar"><div class="bar-in" style="width:${pctSi||2}%;background:#2e7d32;min-width:20px"><span>${pctSi}%</span></div></div>
+    </div>
+    <div style="margin-bottom:8px">
+      <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px">
+        <span style="font-weight:600">✗ No atendido</span><span>${pAtNo} (${pctNo}%)</span>
+      </div>
+      <div class="bar"><div class="bar-in" style="width:${pctNo||2}%;background:#c62828;min-width:20px"><span>${pctNo}%</span></div></div>
+    </div>
+    <div style="margin-bottom:8px">
+      <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px">
+        <span style="font-weight:600">— Sin registro</span><span>${pAtSin} (${pctSin}%)</span>
+      </div>
+      <div class="bar"><div class="bar-in" style="width:${pctSin||2}%;background:#9e9e9e;min-width:20px"><span>${pctSin}%</span></div></div>
+    </div>
+  </div>`;
   const cursos = [...new Set(D.students.map(s=>s.curso))].sort((a,b)=>ALL_N.indexOf(a)-ALL_N.indexOf(b));
   html += `<div class="tw" style="padding:16px;grid-column:1/-1">
     <div style="font-weight:700;font-size:13px;margin-bottom:12px">Comparativa por Curso — Promedio de Avance</div>
