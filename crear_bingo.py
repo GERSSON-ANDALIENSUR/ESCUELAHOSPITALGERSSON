@@ -33,30 +33,54 @@ CATEGORIES = [
 ]
 
 PROMPTS = [
-    "Crea una imagen cuadrada en formato LEGO animado 3D de una representación respetuosa del pueblo Mapuche, con fondo de naturaleza del sur de Chile, bosques nativos y colores cálidos. Estilo educativo, colorido y respetuoso. Sin texto, sin logos, sin marcas de agua, sin caricaturizar. Imagen clara para tarjeta de bingo escolar.",
-    "Crea una imagen cuadrada en formato LEGO animado 3D de una representación respetuosa del pueblo Aymara, con paisaje de altiplano, montañas nevadas, cielo azul y colores andinos vibrantes. Estilo educativo y respetuoso. Sin texto, sin logos, sin marcas de agua. Imagen clara para tarjeta de bingo escolar.",
-    "Crea una imagen cuadrada en formato LEGO animado 3D de una representación respetuosa del pueblo Rapa Nui, con fondo de isla tropical, mar azul y vegetación verde. Estilo educativo, alegre y colorido. Sin texto, sin logos, sin marcas de agua. Imagen clara para tarjeta de bingo escolar.",
-    "Crea una imagen cuadrada en formato LEGO animado 3D de una representación respetuosa del pueblo Quechua, con paisaje andino colorido, textiles tradicionales y montañas de fondo. Estilo educativo y respetuoso. Sin texto, sin logos, sin marcas de agua. Imagen clara para tarjeta de bingo escolar.",
-    "Crea una imagen cuadrada en formato LEGO animado 3D de una representación respetuosa del pueblo Atacameño, con desierto de Atacama, oasis, montañas del norte de Chile y colores tierra cálidos. Estilo educativo y respetuoso. Sin texto, sin logos, sin marcas de agua. Imagen clara para tarjeta de bingo escolar.",
-    "Crea una imagen cuadrada en formato LEGO animado 3D de una representación respetuosa del pueblo Colla, con paisaje cordillerano del norte de Chile, animales andinos y cielo cálido. Estilo educativo y respetuoso. Sin texto, sin logos, sin marcas de agua. Imagen clara para tarjeta de bingo escolar.",
-    "Crea una imagen cuadrada en formato LEGO animado 3D de una representación respetuosa del pueblo Diaguita, con cerámica geométrica colorida, valle del norte chico y colores tierra vibrantes. Estilo educativo y respetuoso. Sin texto, sin logos, sin marcas de agua. Imagen clara para tarjeta de bingo escolar.",
-    "Crea una imagen cuadrada en formato LEGO animado 3D de una representación respetuosa del pueblo Chango, con costa del Pacífico, mar azul, pesca artesanal y embarcación tradicional. Estilo educativo y respetuoso. Sin texto, sin logos, sin marcas de agua. Imagen clara para tarjeta de bingo escolar.",
-    "Crea una imagen cuadrada en formato LEGO animado 3D de una representación respetuosa del pueblo Kawésqar, con canales australes, canoa tradicional, mar frío y paisaje verde del extremo sur de Chile. Estilo educativo y respetuoso. Sin texto, sin logos, sin marcas de agua. Imagen clara para tarjeta de bingo escolar.",
-    "Crea una imagen cuadrada en formato LEGO animado 3D de una representación respetuosa del pueblo Yagán, con canales australes de Tierra del Fuego, canoa, maritorio y paisaje frío y nublado. Estilo educativo y respetuoso. Sin texto, sin logos, sin marcas de agua. Imagen clara para tarjeta de bingo escolar.",
-    "Crea una imagen cuadrada en formato LEGO animado 3D de una representación respetuosa del pueblo Selk'nam, con paisaje de Tierra del Fuego, tonos naturales y enfoque cultural respetuoso, sin teatralizar ceremonias. Estilo educativo. Sin texto, sin logos, sin marcas de agua. Imagen clara para tarjeta de bingo escolar.",
-    "Crea una imagen cuadrada en formato LEGO animado 3D de un moai de Rapa Nui construido con bloques LEGO, sobre una plataforma ahu sencilla, con pasto verde, cielo azul y mar al horizonte. Estilo educativo y colorido. Sin texto, sin logos, sin marcas de agua. Imagen clara para tarjeta de bingo escolar.",
-    "Crea una imagen cuadrada en formato LEGO animado 3D de un kultrún mapuche como objeto cultural, sobre una mesa con sus diseños geométricos visibles, fondo neutro cálido y respetuoso, sin representar rituales. Estilo educativo. Sin texto, sin logos, sin marcas de agua. Imagen clara para tarjeta de bingo escolar.",
-    "Crea una imagen cuadrada en formato LEGO animado 3D de un trarilonco como pieza ornamental mapuche en plata, presentado en una vitrina de museo intercultural con fondo neutro claro. Estilo educativo y respetuoso. Sin texto, sin logos, sin marcas de agua. Imagen clara para tarjeta de bingo escolar.",
-    "Crea una imagen cuadrada en formato LEGO animado 3D de una vasija diaguita con diseños geométricos en rojo y negro, sobre fondo de museo intercultural con colores tierra cálidos. Estilo educativo y respetuoso. Sin texto, sin logos, sin marcas de agua. Imagen clara para tarjeta de bingo escolar.",
-    "Crea una imagen cuadrada en formato LEGO animado 3D de una máscara ceremonial Selk'nam como objeto cultural de museo, con colores naturales y presentada con respeto sobre fondo neutro. Sin burlarse de ceremonias. Sin texto, sin logos, sin marcas de agua. Imagen clara para tarjeta de bingo escolar.",
-    "Crea una imagen cuadrada en formato LEGO animado 3D de una ruca mapuche construida con bloques LEGO, en un entorno natural del sur de Chile con árboles nativos, pasto verde y cielo claro. Estilo educativo y colorido. Sin texto, sin logos, sin marcas de agua. Imagen clara para tarjeta de bingo escolar.",
-    "Crea una imagen cuadrada en formato LEGO animado 3D de una canoa tradicional de pueblos canoeros australes, flotando en canales del sur de Chile con montañas nevadas y agua fría. Estilo educativo y colorido. Sin texto, sin logos, sin marcas de agua. Imagen clara para tarjeta de bingo escolar.",
-    "Crea una imagen cuadrada en formato LEGO animado 3D de una planta de totora en un humedal andino, junto a un lago con montañas al fondo y cielo azul. Estilo educativo y colorido. Sin texto, sin logos, sin marcas de agua. Imagen clara para tarjeta de bingo escolar.",
-    "Crea una imagen cuadrada en formato LEGO animado 3D de una alpaca andina esponjosa y colorida, en un paisaje de altiplano con montañas, paja brava y cielo despejado. Estilo educativo y simpático. Sin texto, sin logos, sin marcas de agua. Imagen clara para tarjeta de bingo escolar.",
-    "Crea una imagen cuadrada en formato LEGO animado 3D de una zampoña andina como instrumento musical, presentada sobre una manta tejida con patrones andinos coloridos y fondo de montañas. Estilo educativo. Sin texto, sin logos, sin marcas de agua. Imagen clara para tarjeta de bingo escolar.",
-    "Crea una imagen cuadrada en formato LEGO animado 3D de una cesta artesanal tejida con fibras naturales y patrones geométricos coloridos, presentada sobre fondo cálido y simple. Estilo educativo. Sin texto, sin logos, sin marcas de agua. Imagen clara para tarjeta de bingo escolar.",
-    "Crea una imagen cuadrada en formato LEGO animado 3D de una quena andina como instrumento musical de viento, sobre una manta con patrones andinos coloridos y fondo de altiplano con montañas. Estilo educativo. Sin texto, sin logos, sin marcas de agua. Imagen clara para tarjeta de bingo escolar.",
-    "Crea una imagen cuadrada en formato LEGO animado 3D de un paisaje del desierto de Atacama con arena dorada, formaciones rocosas, cielo azul intenso y un pequeño oasis con agua al fondo. Estilo educativo y colorido. Sin texto, sin logos, sin marcas de agua. Imagen clara para tarjeta de bingo escolar.",
+    # 1. Mapuche
+    "Imagen cuadrada, formato LEGO animado 3D. Una figura LEGO que representa respetuosamente a una persona del pueblo Mapuche, vestimenta cultural sencilla. Fondo blanco liso, sin decoraciones, sin paisaje, sin objetos adicionales. Solo la figura, centrada. Sin texto, sin logos, sin marcas de agua.",
+    # 2. Aymara
+    "Imagen cuadrada, formato LEGO animado 3D. Una figura LEGO que representa respetuosamente a una persona del pueblo Aymara, vestimenta cultural sencilla con colores andinos. Fondo blanco liso, sin decoraciones, sin paisaje, sin objetos adicionales. Solo la figura, centrada. Sin texto, sin logos, sin marcas de agua.",
+    # 3. Rapa Nui
+    "Imagen cuadrada, formato LEGO animado 3D. Una figura LEGO que representa respetuosamente a una persona del pueblo Rapa Nui, vestimenta cultural sencilla. Fondo blanco liso, sin decoraciones, sin paisaje, sin objetos adicionales. Solo la figura, centrada. Sin texto, sin logos, sin marcas de agua.",
+    # 4. Quechua
+    "Imagen cuadrada, formato LEGO animado 3D. Una figura LEGO que representa respetuosamente a una persona del pueblo Quechua, vestimenta cultural sencilla con colores andinos. Fondo blanco liso, sin decoraciones, sin paisaje, sin objetos adicionales. Solo la figura, centrada. Sin texto, sin logos, sin marcas de agua.",
+    # 5. Atacameño
+    "Imagen cuadrada, formato LEGO animado 3D. Una figura LEGO que representa respetuosamente a una persona del pueblo Atacameño, vestimenta cultural sencilla. Fondo blanco liso, sin decoraciones, sin paisaje, sin objetos adicionales. Solo la figura, centrada. Sin texto, sin logos, sin marcas de agua.",
+    # 6. Colla
+    "Imagen cuadrada, formato LEGO animado 3D. Una figura LEGO que representa respetuosamente a una persona del pueblo Colla, vestimenta cultural sencilla. Fondo blanco liso, sin decoraciones, sin paisaje, sin objetos adicionales. Solo la figura, centrada. Sin texto, sin logos, sin marcas de agua.",
+    # 7. Diaguita
+    "Imagen cuadrada, formato LEGO animado 3D. Una figura LEGO que representa respetuosamente a una persona del pueblo Diaguita, vestimenta cultural sencilla. Fondo blanco liso, sin decoraciones, sin paisaje, sin objetos adicionales. Solo la figura, centrada. Sin texto, sin logos, sin marcas de agua.",
+    # 8. Chango
+    "Imagen cuadrada, formato LEGO animado 3D. Una figura LEGO que representa respetuosamente a una persona del pueblo Chango, vestimenta cultural sencilla. Fondo blanco liso, sin decoraciones, sin paisaje, sin objetos adicionales. Solo la figura, centrada. Sin texto, sin logos, sin marcas de agua.",
+    # 9. Kawésqar
+    "Imagen cuadrada, formato LEGO animado 3D. Una figura LEGO que representa respetuosamente a una persona del pueblo Kawésqar, vestimenta cultural sencilla. Fondo blanco liso, sin decoraciones, sin paisaje, sin objetos adicionales. Solo la figura, centrada. Sin texto, sin logos, sin marcas de agua.",
+    # 10. Yagán
+    "Imagen cuadrada, formato LEGO animado 3D. Una figura LEGO que representa respetuosamente a una persona del pueblo Yagán, vestimenta cultural sencilla. Fondo blanco liso, sin decoraciones, sin paisaje, sin objetos adicionales. Solo la figura, centrada. Sin texto, sin logos, sin marcas de agua.",
+    # 11. Selk'nam
+    "Imagen cuadrada, formato LEGO animado 3D. Una figura LEGO que representa respetuosamente a una persona del pueblo Selk'nam, vestimenta cultural sencilla. Fondo blanco liso, sin decoraciones, sin paisaje, sin objetos adicionales. Solo la figura, centrada. Sin texto, sin logos, sin marcas de agua.",
+    # 12. Moai
+    "Imagen cuadrada, formato LEGO animado 3D. Un solo moai de Rapa Nui construido con bloques LEGO, visto de frente. Fondo blanco liso, sin hierba, sin cielo, sin decoraciones adicionales. Solo el moai, centrado. Sin texto, sin logos, sin marcas de agua.",
+    # 13. Kultrún
+    "Imagen cuadrada, formato LEGO animado 3D. Un solo kultrún mapuche, tambor circular con sus diseños geométricos visibles, visto desde arriba o de frente. Fondo blanco liso, sin mesa, sin decoraciones adicionales. Solo el kultrún, centrado. Sin texto, sin logos, sin marcas de agua.",
+    # 14. Trarilonco
+    "Imagen cuadrada, formato LEGO animado 3D. Un solo trarilonco mapuche, vincha ornamental de plata, flotando sobre fondo blanco liso. Sin vitrina, sin mesa, sin decoraciones adicionales. Solo el trarilonco, centrado. Sin texto, sin logos, sin marcas de agua.",
+    # 15. Vasija Diaguita
+    "Imagen cuadrada, formato LEGO animado 3D. Una sola vasija diaguita con diseños geométricos en rojo y negro, vista de frente. Fondo blanco liso, sin mesa, sin decoraciones adicionales. Solo la vasija, centrada. Sin texto, sin logos, sin marcas de agua.",
+    # 16. Máscara Selk'nam
+    "Imagen cuadrada, formato LEGO animado 3D. Una sola máscara Selk'nam con colores naturales, vista de frente, representada con respeto como objeto cultural. Fondo blanco liso, sin decoraciones adicionales. Solo la máscara, centrada. Sin texto, sin logos, sin marcas de agua.",
+    # 17. Ruca
+    "Imagen cuadrada, formato LEGO animado 3D. Una sola ruca mapuche construida con bloques LEGO, vista de frente o en perspectiva ligera. Fondo blanco liso, sin árboles, sin pasto, sin decoraciones adicionales. Solo la ruca, centrada. Sin texto, sin logos, sin marcas de agua.",
+    # 18. Canoa
+    "Imagen cuadrada, formato LEGO animado 3D. Una sola canoa tradicional de pueblos canoeros del extremo sur de Chile, construida con bloques LEGO, vista de costado. Fondo blanco liso, sin agua, sin montañas, sin decoraciones adicionales. Solo la canoa, centrada. Sin texto, sin logos, sin marcas de agua.",
+    # 19. Totora
+    "Imagen cuadrada, formato LEGO animado 3D. Una sola mata de totora, planta alta con tallos verdes y espiga marrón, construida con bloques LEGO. Fondo blanco liso, sin lago, sin montañas, sin decoraciones adicionales. Solo la planta de totora, centrada. Sin texto, sin logos, sin marcas de agua.",
+    # 20. Alpaca
+    "Imagen cuadrada, formato LEGO animado 3D. Una sola alpaca andina construida con bloques LEGO, vista de frente o de costado. Fondo blanco liso, sin montañas, sin pasto, sin decoraciones adicionales. Solo la alpaca, centrada. Sin texto, sin logos, sin marcas de agua.",
+    # 21. Zampoña
+    "Imagen cuadrada, formato LEGO animado 3D. Una sola zampoña andina, instrumento de tubos de caña, construida con bloques LEGO, vista de frente. Fondo blanco liso, sin manta, sin montañas, sin decoraciones adicionales. Solo la zampoña, centrada. Sin texto, sin logos, sin marcas de agua.",
+    # 22. Cesta
+    "Imagen cuadrada, formato LEGO animado 3D. Una sola cesta artesanal tejida con fibras naturales, construida con bloques LEGO, vista ligeramente desde arriba para mostrar el tejido. Fondo blanco liso, sin decoraciones adicionales. Solo la cesta, centrada. Sin texto, sin logos, sin marcas de agua.",
+    # 23. Quena
+    "Imagen cuadrada, formato LEGO animado 3D. Una sola quena, flauta andina de caña, construida con bloques LEGO, vista de frente. Fondo blanco liso, sin manta, sin montañas, sin decoraciones adicionales. Solo la quena, centrada. Sin texto, sin logos, sin marcas de agua.",
+    # 24. Desierto
+    "Imagen cuadrada, formato LEGO animado 3D. Una escena mínima del desierto de Atacama: solo arena y una pequeña duna, construida con bloques LEGO, sin personajes ni objetos adicionales. Fondo celeste muy liso, sin montañas, sin vegetación, sin decoraciones. Solo el desierto, centrado. Sin texto, sin logos, sin marcas de agua.",
 ]
 
 # ─────────────────────────────────────────────────────────────
