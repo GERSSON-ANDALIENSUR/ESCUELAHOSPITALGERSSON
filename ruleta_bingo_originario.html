@@ -1,0 +1,1350 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#3d2b1f" />
+  <title>Ruleta del Bingo Originario</title>
+  <style>
+    /* =========================================================
+       PALETA PUEBLOS ORIGINARIOS
+       ========================================================= */
+    :root{
+      --bg1: #fef6e4;          /* beige cálido */
+      --bg2: #e8f5e9;          /* verde suave */
+      --card: #ffffff;
+      --text: #3d2b1f;         /* café oscuro */
+      --muted: #7c6b5a;        /* café medio */
+      --accent: #d4651a;       /* naranja tierra */
+      --accent2: #2a9d8f;      /* turquesa suave */
+      --dark: #3d2b1f;         /* café muy oscuro */
+      --ok: #2a9d8f;
+      --danger: #c1440e;       /* rojo terracota */
+      --safe-top: env(safe-area-inset-top);
+      --safe-bottom: env(safe-area-inset-bottom);
+    }
+
+    *{ box-sizing:border-box; -webkit-tap-highlight-color:transparent }
+    html,body{ height:100% }
+
+    body{
+      margin:0;
+      font-family: Arial, Helvetica, sans-serif;
+      color: var(--text);
+      /* Fondo con patrón geométrico inspirado en textiles originarios */
+      background-color: #fef6e4;
+      background-image:
+        repeating-linear-gradient(
+          45deg,
+          rgba(212,101,26,.07) 0px, rgba(212,101,26,.07) 2px,
+          transparent 2px, transparent 20px
+        ),
+        repeating-linear-gradient(
+          -45deg,
+          rgba(42,157,143,.06) 0px, rgba(42,157,143,.06) 2px,
+          transparent 2px, transparent 20px
+        ),
+        linear-gradient(170deg, #fef6e4 0%, #e8f5e9 100%);
+      min-height: 100vh;
+      padding: 16px;
+      touch-action: manipulation;
+      overscroll-behavior: none;
+    }
+
+    /* =========================================================
+       TOPBAR
+       ========================================================= */
+    .topbar{
+      max-width: 1300px;
+      margin: 0 auto 14px;
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+    }
+    .brand{ display:flex; flex-direction:column; gap:3px; }
+    .brand h1{
+      margin: 0;
+      font-size: clamp(22px, 3vw, 34px);
+      letter-spacing: -.03em;
+      color: var(--dark);
+      /* Línea decorativa bajo el título */
+      border-bottom: 4px solid var(--accent);
+      padding-bottom: 4px;
+      display: inline-block;
+    }
+    .brand span{
+      color: var(--muted);
+      font-weight: 700;
+      font-size: 13px;
+    }
+    .status{
+      background: #ecfdf5;
+      color: #166534;
+      border: 1px solid #bbf7d0;
+      border-radius: 999px;
+      padding: 9px 13px;
+      font-weight: 900;
+      font-size: 14px;
+    }
+
+    /* =========================================================
+       LAYOUT PRINCIPAL
+       ========================================================= */
+    .wrap{
+      max-width: 1300px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 400px 1fr;
+      gap: 16px;
+      align-items: start;
+    }
+    .card{
+      background: rgba(255,255,255,.97);
+      border-radius: 22px;
+      box-shadow: 0 14px 34px rgba(61,43,31,.13);
+      padding: 18px;
+      /* Borde decorativo con tono tierra */
+      border: 2px solid rgba(212,101,26,.18);
+    }
+    h2{
+      margin: 0 0 10px;
+      font-size: 19px;
+      color: var(--accent);
+    }
+    p{
+      color: var(--muted);
+      line-height: 1.35;
+      margin: 0 0 12px;
+    }
+    label{
+      display: block;
+      font-size: 14px;
+      font-weight: 900;
+      margin: 10px 0 6px;
+      color: var(--dark);
+    }
+    input[type="text"], input[type="file"]{
+      width: 100%;
+      min-height: 48px;
+      padding: 12px 14px;
+      border-radius: 14px;
+      border: 2px solid #e5d5c5;
+      background: #fffaf5;
+      font-size: 16px;
+      color: var(--text);
+    }
+    input[type="file"]{ font-size:14px }
+
+    /* =========================================================
+       BOTONES
+       ========================================================= */
+    .btns{
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 14px;
+    }
+    button{
+      border: 0;
+      border-radius: 999px;
+      min-height: 48px;
+      padding: 12px 16px;
+      font-weight: 900;
+      font-size: 15px;
+      cursor: pointer;
+      background: #e8d5c0;
+      color: var(--text);
+      box-shadow: 0 5px 12px rgba(61,43,31,.10);
+      touch-action: manipulation;
+      transition: transform .1s;
+    }
+    button:active{ transform:scale(.97) }
+
+    /* Naranja tierra */
+    .primary{
+      background: linear-gradient(135deg, #d4651a, #e8883a);
+      color: white;
+    }
+    /* Turquesa */
+    .secondary{
+      background: linear-gradient(135deg, #2a9d8f, #38b5a5);
+      color: white;
+    }
+    /* Verde campo */
+    .green{
+      background: linear-gradient(135deg, #4a8c3f, #6ab85a);
+      color: white;
+    }
+    /* Rojo terracota */
+    .danger{
+      background: linear-gradient(135deg, #c1440e, #e05020);
+      color: white;
+    }
+    .wide{ flex:1 1 100% }
+
+    /* =========================================================
+       PREVIEW AL AGREGAR
+       ========================================================= */
+    .preview{
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px;
+      border: 2px dashed #e5d5c5;
+      border-radius: 15px;
+      margin-top: 12px;
+      min-height: 82px;
+      background: #fffaf5;
+    }
+    .preview img{
+      width: 62px; height: 62px;
+      object-fit: cover;
+      border-radius: 16px;
+      border: 3px solid white;
+      box-shadow: 0 4px 12px rgba(61,43,31,.18);
+      display: none;
+      flex: 0 0 auto;
+    }
+    .preview .ph{
+      width: 62px; height: 62px;
+      border-radius: 16px;
+      background: #f3ebe0;
+      display: grid;
+      place-items: center;
+      font-size: 11px;
+      color: var(--muted);
+      text-align: center;
+      line-height: 1.1;
+      flex: 0 0 auto;
+    }
+    .small{
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    /* =========================================================
+       LISTA DE ELEMENTOS
+       ========================================================= */
+    .list{
+      margin-top: 12px;
+      display: grid;
+      gap: 8px;
+      max-height: 300px;
+      overflow: auto;
+      padding-right: 4px;
+      -webkit-overflow-scrolling: touch;
+    }
+    .char-item{
+      display: grid;
+      grid-template-columns: 58px 1fr auto;
+      gap: 10px;
+      align-items: center;
+      padding: 10px;
+      border-radius: 15px;
+      background: #fffaf0;
+      border: 1px solid #e8c8a0;
+    }
+    .char-item img{
+      width: 58px; height: 58px;
+      object-fit: cover;
+      border-radius: 14px;
+      border: 3px solid white;
+      box-shadow: 0 4px 10px rgba(61,43,31,.15);
+      background: #f3ebe0;
+    }
+    .char-name{
+      font-weight: 900;
+      word-break: break-word;
+      color: var(--dark);
+    }
+    .icon-btn{
+      border-radius: 12px;
+      padding: 8px 12px;
+      background: #fde8e0;
+      color: #8b2500;
+      box-shadow: none;
+      min-height: 40px;
+      font-size: 13px;
+    }
+
+    /* =========================================================
+       ÁREA DERECHA – RULETA
+       ========================================================= */
+    .right{ display:grid; gap:16px; }
+
+    .wheel-card{
+      position: relative;
+      display: grid;
+      place-items: center;
+      min-height: calc(100vh - 220px);
+      overflow: hidden;
+      /* Fondo sutil para el área de la ruleta */
+      background: rgba(255,255,255,.97);
+    }
+
+    /* Puntero triangular */
+    .pointer{
+      position: absolute;
+      top: 18px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 0; height: 0;
+      border-left: 26px solid transparent;
+      border-right: 26px solid transparent;
+      border-top: 48px solid #3d2b1f;
+      z-index: 3;
+      filter: drop-shadow(0 6px 8px rgba(61,43,31,.30));
+    }
+
+    canvas{
+      width: min(82vmin, 760px);
+      height: auto;
+      max-height: calc(100vh - 260px);
+      filter: drop-shadow(0 18px 28px rgba(61,43,31,.20));
+    }
+
+    /* Botón central GIRAR */
+    .spin-center{
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%,-50%);
+      width: clamp(96px, 13vmin, 124px);
+      height: clamp(96px, 13vmin, 124px);
+      border-radius: 50%;
+      background: var(--dark);
+      color: white;
+      display: grid;
+      place-items: center;
+      font-size: clamp(14px, 2vmin, 18px);
+      font-weight: 900;
+      cursor: pointer;
+      user-select: none;
+      z-index: 2;
+      box-shadow: inset 0 0 0 7px #d4651a, 0 10px 24px rgba(61,43,31,.30);
+      text-align: center;
+      line-height: 1.15;
+      letter-spacing: -.02em;
+    }
+
+    /* =========================================================
+       TARJETA RESULTADO
+       ========================================================= */
+    .result{
+      display: grid;
+      grid-template-columns: 100px 1fr;
+      gap: 14px;
+      align-items: center;
+      padding: 14px;
+      background: linear-gradient(135deg, #3d2b1f, #6b4226);
+      color: white;
+      border-radius: 20px;
+      min-height: 120px;
+    }
+    .result img{
+      width: 90px; height: 90px;
+      object-fit: cover;
+      border-radius: 16px;
+      border: 4px solid #d4651a;
+      background: #2c1810;
+    }
+    .result .name{
+      font-size: clamp(22px, 4vw, 32px);
+      font-weight: 1000;
+      line-height: 1.05;
+      word-break: break-word;
+    }
+    .result .result-label{
+      font-size: 12px;
+      color: #d4a580;
+      margin-bottom: 5px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+    }
+
+    /* =========================================================
+       OVERLAY GANADOR
+       ========================================================= */
+    .overlay{
+      position: fixed;
+      inset: 0;
+      z-index: 999;
+      background:
+        radial-gradient(circle at top left, rgba(212,101,26,.90), transparent 38%),
+        radial-gradient(circle at bottom right, rgba(42,157,143,.85), transparent 38%),
+        rgba(61,43,31,.94);
+      display: none;
+      place-items: center;
+      padding: calc(18px + var(--safe-top)) 18px calc(18px + var(--safe-bottom));
+    }
+    .overlay.show{ display:grid; }
+
+    .winner-card{
+      width: min(860px, 96vw);
+      max-height: 94vh;
+      overflow: auto;
+      background: white;
+      border-radius: 32px;
+      padding: clamp(18px, 4vw, 36px);
+      text-align: center;
+      box-shadow: 0 28px 80px rgba(61,43,31,.50);
+      animation: pop .35s ease-out;
+      -webkit-overflow-scrolling: touch;
+      border: 4px solid #d4651a;
+    }
+    @keyframes pop{
+      from{ transform:scale(.82); opacity:0; }
+      to{   transform:scale(1);   opacity:1; }
+    }
+
+    .winner-title{
+      font-size: clamp(20px, 4.5vw, 36px);
+      font-weight: 1000;
+      color: #d4651a;
+      margin-bottom: 4px;
+      text-transform: uppercase;
+      letter-spacing: .04em;
+    }
+    .winner-subtitle{
+      font-size: clamp(13px, 2vw, 16px);
+      color: var(--muted);
+      margin-bottom: 14px;
+      font-weight: 700;
+    }
+    .winner-img{
+      width: min(380px, 66vw, 44vh);
+      height: min(380px, 66vw, 44vh);
+      object-fit: cover;
+      border-radius: 28px;
+      border: 8px solid #3d2b1f;
+      box-shadow: 0 18px 40px rgba(61,43,31,.25);
+      background: #f3ebe0;
+    }
+    .winner-name{
+      margin-top: 16px;
+      font-size: clamp(36px, 8vw, 78px);
+      line-height: .95;
+      font-weight: 1000;
+      letter-spacing: -.04em;
+      color: #3d2b1f;
+      word-break: break-word;
+    }
+    .winner-note{
+      margin-top: 10px;
+      font-size: clamp(14px, 2.5vw, 18px);
+      color: var(--muted);
+      font-weight: 700;
+    }
+    .winner-question{
+      margin-top: 8px;
+      font-size: clamp(13px, 2.2vw, 16px);
+      color: #2a9d8f;
+      font-weight: 800;
+      font-style: italic;
+    }
+    .winner-actions{
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 22px;
+    }
+    .winner-actions button{
+      font-size: 17px;
+      padding: 14px 22px;
+      min-height: 52px;
+    }
+
+    /* =========================================================
+       MODO PRESENTACIÓN
+       ========================================================= */
+    .presentation .editor-card,
+    .presentation .topbar .brand span,
+    .presentation .topbar .status,
+    .presentation .last-result-card{ display:none; }
+    .presentation .topbar{
+      max-width: 100%;
+      margin-bottom: 8px;
+      justify-content: center;
+    }
+    .presentation .wrap{
+      max-width: 100%;
+      grid-template-columns: 1fr;
+    }
+    .presentation .wheel-card{
+      min-height: calc(100vh - 92px);
+      border-radius: 28px;
+    }
+    .presentation canvas{
+      width: min(92vmin, 900px);
+      max-height: calc(100vh - 140px);
+    }
+
+    /* =========================================================
+       DECORACIÓN: separador con motivo geométrico
+       ========================================================= */
+    .section-divider{
+      height: 3px;
+      background: repeating-linear-gradient(
+        90deg,
+        #d4651a 0px, #d4651a 10px,
+        #2a9d8f 10px, #2a9d8f 20px,
+        #e8c46a 20px, #e8c46a 30px,
+        #4a8c3f 30px, #4a8c3f 40px
+      );
+      border-radius: 2px;
+      margin: 14px 0 16px;
+      opacity: .6;
+    }
+
+    #backupFile{ display:none }
+
+    /* =========================================================
+       RESPONSIVE
+       ========================================================= */
+    @media (max-width: 980px){
+      body{ padding:12px }
+      .wrap{ grid-template-columns:1fr }
+      .wheel-card{ min-height:auto }
+      canvas{
+        width: min(92vw, 72vh);
+        max-height: 72vh;
+      }
+      .list{ max-height:260px }
+      .topbar{ gap:8px }
+    }
+
+    @media (orientation: landscape) and (max-height: 700px){
+      body{ padding:8px }
+      .topbar{ margin-bottom:8px }
+      .brand h1{ font-size:22px }
+      .wrap{ grid-template-columns:360px 1fr; gap:10px }
+      .card{ padding:12px; border-radius:18px }
+      .wheel-card{ min-height:calc(100vh - 98px) }
+      canvas{ width:min(72vh, 680px); max-height:calc(100vh - 130px) }
+      .list{ max-height:180px }
+      .result{ min-height:100px }
+      .result img{ width:76px; height:76px }
+    }
+
+    @media (max-width: 640px){
+      .btns button{ flex:1 1 auto }
+      .result{ grid-template-columns:82px 1fr }
+      .result img{ width:76px; height:76px }
+      .char-item{ grid-template-columns:52px 1fr auto }
+      .char-item img{ width:52px; height:52px }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ===== TOPBAR ===== -->
+  <div class="topbar">
+    <div class="brand">
+      <h1>🎡 Ruleta del Bingo Originario</h1>
+      <span>Pueblos Originarios de Chile · funciona sin internet · guardado local</span>
+    </div>
+    <div id="saveStatus" class="status">Cargando...</div>
+  </div>
+
+  <div class="wrap">
+
+    <!-- ===== PANEL IZQUIERDO – EDITOR ===== -->
+    <section class="card editor-card">
+      <h2>Agregar elemento</h2>
+      <p>Puedes agregar nuevos elementos con imagen. Las imágenes se comprimen automáticamente para funcionar mejor en tablets.</p>
+
+      <label for="charName">Nombre del elemento</label>
+      <input id="charName" type="text" placeholder="Ej.: Kultrún" autocomplete="off" />
+
+      <label for="charImage">Imagen del elemento</label>
+      <input id="charImage" type="file" accept="image/*" />
+
+      <div class="preview">
+        <div id="previewPlaceholder" class="ph">SIN<br>IMAGEN</div>
+        <img id="previewImg" alt="Vista previa">
+        <div>
+          <div style="font-weight:900" id="previewName">Aún no has elegido un elemento</div>
+          <div class="small">Se guardará en este navegador (IndexedDB).</div>
+        </div>
+      </div>
+
+      <div class="btns">
+        <button class="primary" onclick="addCharacter()">Agregar elemento</button>
+        <button class="secondary" onclick="manualSave()">Guardar ruleta</button>
+        <button class="green" onclick="enterPresentationMode()">Modo presentación</button>
+        <button onclick="restoreRemoved()">Restaurar sorteados</button>
+        <button onclick="exportBackup()">Exportar respaldo</button>
+        <button onclick="document.getElementById('backupFile').click()">Importar respaldo</button>
+        <input id="backupFile" type="file" accept="application/json,.json" onchange="importBackup(event)" />
+        <button class="danger wide" onclick="clearAllData()">Borrar todo y restaurar originales</button>
+      </div>
+
+      <div class="small" style="margin-top:12px;">
+        Tip: abre siempre con el mismo navegador (idealmente Chrome) para que no se borre.
+        Usa "Exportar respaldo" como plan seguro.
+      </div>
+
+      <div class="section-divider"></div>
+
+      <h2>Elementos en la ruleta <span style="font-size:14px;color:var(--muted)" id="countAvail"></span></h2>
+      <div id="characterList" class="list"></div>
+
+      <h2 style="margin-top:18px;">Elementos ya sorteados <span style="font-size:14px;color:var(--muted)" id="countRemoved"></span></h2>
+      <div id="removedList" class="list"></div>
+    </section>
+
+    <!-- ===== PANEL DERECHO – RULETA + RESULTADO ===== -->
+    <section class="right">
+
+      <!-- Ruleta -->
+      <section class="card wheel-card">
+        <div class="pointer"></div>
+        <canvas id="wheel" width="900" height="900"></canvas>
+        <div class="spin-center" onclick="spinWheel()">GIRAR<br>RULETA</div>
+      </section>
+
+      <!-- Último resultado -->
+      <section class="card last-result-card">
+        <div class="result">
+          <img id="resultImg" alt="Resultado">
+          <div>
+            <div class="result-label">Elemento seleccionado:</div>
+            <div id="resultName" class="name">Presiona GIRAR RULETA</div>
+          </div>
+        </div>
+        <p class="small" style="margin-top:10px; text-align:center; font-style:italic;">
+          Observa la imagen y nombra el pueblo u objeto que apareció.
+        </p>
+      </section>
+
+    </section>
+  </div>
+
+  <!-- ===== OVERLAY GANADOR ===== -->
+  <div id="overlay" class="overlay">
+    <div class="winner-card">
+      <div class="winner-title">⭐ Elemento sorteado ⭐</div>
+      <div class="winner-subtitle">Gira la ruleta y descubre un elemento de nuestros pueblos originarios</div>
+      <img id="winnerImg" class="winner-img" alt="Elemento sorteado">
+      <div id="winnerName" class="winner-name"></div>
+      <div class="winner-note">Este elemento ya fue quitado de la ruleta.</div>
+      <div class="winner-question">Observa la imagen y nombra el pueblo u objeto que apareció.</div>
+      <div class="winner-actions">
+        <button class="primary" onclick="closeWinner()">Continuar</button>
+        <button class="secondary" onclick="restoreRemoved(); closeWinner()">Restaurar todos</button>
+        <button onclick="exitPresentationMode()">Salir de presentación</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /* =========================================================
+       BASE DE DATOS (IndexedDB) — sin cambios en la lógica
+       ========================================================= */
+    const DB_NAME    = 'RuletaBingoOriginarioDB';
+    const DB_VERSION = 1;
+    const STORE      = 'state';
+    const STATE_KEY  = 'main';
+
+    const nameInput          = document.getElementById('charName');
+    const imageInput         = document.getElementById('charImage');
+    const previewImg         = document.getElementById('previewImg');
+    const previewPlaceholder = document.getElementById('previewPlaceholder');
+    const previewName        = document.getElementById('previewName');
+    const listEl             = document.getElementById('characterList');
+    const removedListEl      = document.getElementById('removedList');
+    const resultImg          = document.getElementById('resultImg');
+    const resultName         = document.getElementById('resultName');
+    const canvas             = document.getElementById('wheel');
+    const ctx                = canvas.getContext('2d');
+    const overlay            = document.getElementById('overlay');
+    const winnerImg          = document.getElementById('winnerImg');
+    const winnerName         = document.getElementById('winnerName');
+    const saveStatus         = document.getElementById('saveStatus');
+    const countAvail         = document.getElementById('countAvail');
+    const countRemoved       = document.getElementById('countRemoved');
+
+    let db             = null;
+    let tempImageData  = "";
+    let characters     = [];
+    let removedCharacters = [];
+    let angle          = 0;
+    let spinning       = false;
+    let imageCache     = new Map();
+    let saveTimer      = null;
+
+    /* =========================================================
+       PALETA INSPIRADA EN PUEBLOS ORIGINARIOS
+       ========================================================= */
+    const colors = [
+      "#d4651a",  /* naranja tierra     */
+      "#2a9d8f",  /* turquesa suave     */
+      "#c1440e",  /* rojo terracota     */
+      "#d4a017",  /* amarillo mostaza   */
+      "#4a8c3f",  /* verde campo        */
+      "#8b5a2b",  /* café madera        */
+      "#e8883a",  /* naranja suave      */
+      "#1d7874",  /* verde azul oscuro  */
+      "#b5700e",  /* dorado oscuro      */
+      "#3d9a6e",  /* verde turquesa     */
+      "#c87941",  /* naranja marrón     */
+      "#5a7a3a",  /* verde oliva        */
+    ];
+
+    /* =========================================================
+       24 ELEMENTOS OFICIALES DEL BINGO ORIGINARIO
+       Rutas: imagenes/<nombre>.png (relativas al HTML)
+       ========================================================= */
+    const DEFAULT_CHARACTERS = [
+      { id:'elem-01', name:'Quena',            image:'imagenes/quena.png'           },
+      { id:'elem-02', name:'Yagán',            image:'imagenes/yagan.png'           },
+      { id:'elem-03', name:"Selk'nam",         image:'imagenes/selknam.png'         },
+      { id:'elem-04', name:'Rapa Nui',         image:'imagenes/rapa_nui.png'        },
+      { id:'elem-05', name:'Mapuche',          image:'imagenes/mapuche.png'         },
+      { id:'elem-06', name:'Kawésqar',         image:'imagenes/kawesqar.png'        },
+      { id:'elem-07', name:'Diaguita',         image:'imagenes/diaguita.png'        },
+      { id:'elem-08', name:'Colla',            image:'imagenes/colla.png'           },
+      { id:'elem-09', name:'Chango',           image:'imagenes/chango.png'          },
+      { id:'elem-10', name:'Aymara',           image:'imagenes/aymara.png'          },
+      { id:'elem-11', name:'Atacameño',        image:'imagenes/atacameno.png'       },
+      { id:'elem-12', name:'Quechua',          image:'imagenes/quechua.png'         },
+      { id:'elem-13', name:'Trarilonko',       image:'imagenes/trarilonko.png'      },
+      { id:'elem-14', name:'Moai',             image:'imagenes/moai.png'            },
+      { id:'elem-15', name:'Kultrún',          image:'imagenes/kultrun.png'         },
+      { id:'elem-16', name:'Vasija Diaguita',  image:'imagenes/vasija_diaguita.png' },
+      { id:'elem-17', name:"Máscara Selk'nam", image:'imagenes/mascara_selknam.png' },
+      { id:'elem-18', name:'Ruka',             image:'imagenes/ruka.png'            },
+      { id:'elem-19', name:'Canoa',            image:'imagenes/canoa.png'           },
+      { id:'elem-20', name:'Totora',           image:'imagenes/totora.png'          },
+      { id:'elem-21', name:'Alpaca',           image:'imagenes/alpaca.png'          },
+      { id:'elem-22', name:'Zampoña',          image:'imagenes/zampona.png'         },
+      { id:'elem-23', name:'Cesta',            image:'imagenes/cesta.png'           },
+      { id:'elem-24', name:'Desierto',         image:'imagenes/desierto.png'        },
+    ];
+
+    /* =========================================================
+       ESTADO / GUARDADO
+       ========================================================= */
+    function setStatus(text, ok=true){
+      saveStatus.textContent = text;
+      saveStatus.style.background   = ok ? '#ecfdf5' : '#fef2f2';
+      saveStatus.style.color        = ok ? '#166534' : '#991b1b';
+      saveStatus.style.borderColor  = ok ? '#bbf7d0' : '#fecaca';
+    }
+
+    function openDB(){
+      return new Promise((resolve, reject) => {
+        if(!window.indexedDB){
+          reject(new Error('IndexedDB no disponible.')); return;
+        }
+        const req = indexedDB.open(DB_NAME, DB_VERSION);
+        req.onupgradeneeded = (e) => {
+          const database = e.target.result;
+          if(!database.objectStoreNames.contains(STORE)){
+            database.createObjectStore(STORE, { keyPath:'key' });
+          }
+        };
+        req.onsuccess = () => { db = req.result; resolve(db); };
+        req.onerror   = () => reject(req.error);
+      });
+    }
+
+    function saveToDB(){
+      return new Promise((resolve, reject) => {
+        if(!db){ reject(new Error('DB no iniciada.')); return; }
+        const tx    = db.transaction(STORE, 'readwrite');
+        const store = tx.objectStore(STORE);
+        store.put({
+          key: STATE_KEY,
+          characters,
+          removedCharacters,
+          lastResult: {
+            name:  resultName.textContent || '',
+            image: resultImg.src || ''
+          },
+          savedAt: new Date().toISOString()
+        });
+        tx.oncomplete = () => resolve();
+        tx.onerror    = () => reject(tx.error);
+      });
+    }
+
+    function loadFromDB(){
+      return new Promise((resolve, reject) => {
+        if(!db){ reject(new Error('DB no iniciada.')); return; }
+        const tx  = db.transaction(STORE, 'readonly');
+        const req = tx.objectStore(STORE).get(STATE_KEY);
+        req.onsuccess = () => resolve(req.result || null);
+        req.onerror   = () => reject(req.error);
+      });
+    }
+
+    async function clearDB(){
+      if(!db) return;
+      return new Promise((resolve, reject) => {
+        const tx = db.transaction(STORE, 'readwrite');
+        tx.objectStore(STORE).delete(STATE_KEY);
+        tx.oncomplete = resolve;
+        tx.onerror    = () => reject(tx.error);
+      });
+    }
+
+    function scheduleSave(){
+      clearTimeout(saveTimer);
+      setStatus('Guardando...', true);
+      saveTimer = setTimeout(async () => {
+        try{
+          await saveToDB();
+          setStatus('Guardado ✓', true);
+        }catch(e){
+          console.error(e);
+          setStatus('No se pudo guardar', false);
+        }
+      }, 300);
+    }
+
+    async function manualSave(){
+      try{
+        await saveToDB();
+        setStatus('Guardado ✓', true);
+        alert('Ruleta guardada correctamente en este navegador.');
+      }catch(e){
+        console.error(e);
+        setStatus('Error al guardar', false);
+        alert('No se pudo guardar. Usa "Exportar respaldo" como alternativa segura.');
+      }
+    }
+
+    /* =========================================================
+       EVENTOS
+       ========================================================= */
+    imageInput.addEventListener('change', handleImageSelect);
+
+    nameInput.addEventListener('input', () => {
+      previewName.textContent = nameInput.value.trim() || 'Aún no has elegido un elemento';
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if(e.key === 'Escape') closeWinner();
+      if(e.key === ' ' && !overlay.classList.contains('show')){
+        e.preventDefault();
+        spinWheel();
+      }
+    });
+
+    window.addEventListener('resize', () => { drawWheel(); });
+
+    /* =========================================================
+       MANEJO DE IMAGEN
+       ========================================================= */
+    async function handleImageSelect(e){
+      const file = e.target.files[0];
+      if(!file) return;
+      try{
+        setStatus('Procesando imagen...', true);
+        tempImageData = await compressImage(file, 720, 0.82);
+        previewImg.src = tempImageData;
+        previewImg.style.display = 'block';
+        previewPlaceholder.style.display = 'none';
+        setStatus('Imagen lista', true);
+      }catch(err){
+        console.error(err);
+        alert('No se pudo cargar la imagen. Prueba con otro archivo.');
+        setStatus('Error con imagen', false);
+      }
+    }
+
+    function compressImage(file, maxSize=720, quality=0.82){
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onerror = () => reject(reader.error);
+        reader.onload = () => {
+          const img = new Image();
+          img.onerror = () => reject(new Error('Imagen inválida'));
+          img.onload = () => {
+            const ratio = Math.min(1, maxSize / Math.max(img.width, img.height));
+            const w = Math.max(1, Math.round(img.width  * ratio));
+            const h = Math.max(1, Math.round(img.height * ratio));
+            const c = document.createElement('canvas');
+            c.width = w; c.height = h;
+            const x = c.getContext('2d');
+            x.fillStyle = '#ffffff';
+            x.fillRect(0,0,w,h);
+            x.drawImage(img,0,0,w,h);
+            let data;
+            try{
+              data = c.toDataURL('image/webp', quality);
+              if(!data.startsWith('data:image/webp')) data = c.toDataURL('image/jpeg', quality);
+            }catch(ex){ data = c.toDataURL('image/jpeg', quality); }
+            resolve(data);
+          };
+          img.src = reader.result;
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+
+    /* =========================================================
+       AGREGAR ELEMENTO
+       ========================================================= */
+    function addCharacter(){
+      const name = nameInput.value.trim();
+      if(!name){ alert('Escribe el nombre del elemento.'); return; }
+      if(!tempImageData){ alert('Selecciona una imagen para el elemento.'); return; }
+
+      characters.push({
+        id:    String(Date.now()) + '-' + String(Math.random()).slice(2),
+        name,
+        image: tempImageData
+      });
+      cacheImage(tempImageData);
+
+      nameInput.value = '';
+      imageInput.value = '';
+      tempImageData = '';
+      previewImg.src = '';
+      previewImg.style.display = 'none';
+      previewPlaceholder.style.display = 'grid';
+      previewName.textContent = 'Aún no has elegido un elemento';
+
+      renderAll();
+      drawWheel();
+      scheduleSave();
+    }
+
+    /* =========================================================
+       RENDERIZADO DE LISTAS
+       ========================================================= */
+    function renderAll(){
+      renderList();
+      renderRemovedList();
+      if(countAvail)   countAvail.textContent   = `(${characters.length})`;
+      if(countRemoved) countRemoved.textContent = `(${removedCharacters.length})`;
+    }
+
+    function renderList(){
+      if(characters.length === 0){
+        listEl.innerHTML = '<div class="small">No quedan elementos en la ruleta. Restaura los sorteados.</div>';
+        return;
+      }
+      listEl.innerHTML = characters.map((c, i) => `
+        <div class="char-item">
+          <img src="${c.image}" alt="${escapeHtml(c.name)}" onerror="this.style.opacity='.3'">
+          <div>
+            <div class="char-name">${i+1}. ${escapeHtml(c.name)}</div>
+            <div class="small">Disponible para sorteo</div>
+          </div>
+          <button class="icon-btn" onclick="removeCharacterManual('${c.id}')">Quitar</button>
+        </div>
+      `).join('');
+    }
+
+    function renderRemovedList(){
+      if(removedCharacters.length === 0){
+        removedListEl.innerHTML = '<div class="small">Aún no hay elementos sorteados.</div>';
+        return;
+      }
+      removedListEl.innerHTML = removedCharacters.map((c, i) => `
+        <div class="char-item">
+          <img src="${c.image}" alt="${escapeHtml(c.name)}" onerror="this.style.opacity='.3'">
+          <div>
+            <div class="char-name">${i+1}. ${escapeHtml(c.name)}</div>
+            <div class="small">Ya salió en el sorteo</div>
+          </div>
+          <button class="icon-btn" onclick="returnOne('${c.id}')">Volver</button>
+        </div>
+      `).join('');
+    }
+
+    function removeCharacterManual(id){
+      const idx = characters.findIndex(c => String(c.id) === String(id));
+      if(idx === -1) return;
+      const [char] = characters.splice(idx, 1);
+      removedCharacters.push(char);
+      renderAll(); drawWheel(); scheduleSave();
+    }
+
+    function returnOne(id){
+      const idx = removedCharacters.findIndex(c => String(c.id) === String(id));
+      if(idx === -1) return;
+      const [char] = removedCharacters.splice(idx, 1);
+      characters.push(char);
+      cacheImage(char.image);
+      renderAll(); drawWheel(); scheduleSave();
+    }
+
+    function restoreRemoved(){
+      if(removedCharacters.length === 0){
+        alert('No hay elementos sorteados para restaurar.'); return;
+      }
+      characters = characters.concat(removedCharacters);
+      removedCharacters = [];
+      characters.forEach(c => cacheImage(c.image));
+      renderAll(); drawWheel(); scheduleSave();
+    }
+
+    async function clearAllData(){
+      if(!confirm('¿Seguro que quieres borrar todo y volver a los 24 elementos originales?')) return;
+      characters         = DEFAULT_CHARACTERS.map(c => ({...c}));
+      removedCharacters  = [];
+      imageCache.clear();
+      resultImg.removeAttribute('src');
+      resultName.textContent = 'Presiona GIRAR RULETA';
+      characters.forEach(c => cacheImage(c.image));
+      renderAll(); drawWheel();
+      try{
+        await saveToDB();
+        setStatus('Restaurado ✓', true);
+      }catch(e){
+        console.error(e);
+        setStatus('Error al guardar', false);
+      }
+    }
+
+    /* =========================================================
+       RESPALDO JSON
+       ========================================================= */
+    function exportBackup(){
+      const data = {
+        app:'ruleta-bingo-originario',
+        version: 2,
+        exportedAt: new Date().toISOString(),
+        characters,
+        removedCharacters
+      };
+      const blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json'});
+      const url  = URL.createObjectURL(blob);
+      const a    = document.createElement('a');
+      a.href     = url;
+      a.download = `respaldo_ruleta_bingo_originario_${new Date().toISOString().slice(0,10)}.json`;
+      document.body.appendChild(a);
+      a.click(); a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+      setStatus('Respaldo exportado', true);
+    }
+
+    async function importBackup(event){
+      const file = event.target.files[0];
+      event.target.value = '';
+      if(!file) return;
+      try{
+        const data = JSON.parse(await file.text());
+        if(!Array.isArray(data.characters) || !Array.isArray(data.removedCharacters)){
+          throw new Error('Archivo no válido');
+        }
+        characters        = data.characters;
+        removedCharacters = data.removedCharacters;
+        imageCache.clear();
+        [...characters, ...removedCharacters].forEach(c => cacheImage(c.image));
+        renderAll(); drawWheel();
+        await saveToDB();
+        setStatus('Respaldo importado ✓', true);
+        alert('Respaldo importado y guardado correctamente.');
+      }catch(e){
+        console.error(e);
+        setStatus('Error al importar', false);
+        alert('No se pudo importar este respaldo.');
+      }
+    }
+
+    /* =========================================================
+       MODO PRESENTACIÓN
+       ========================================================= */
+    function enterPresentationMode(){
+      document.body.classList.add('presentation');
+      requestFullscreenSafe();
+      drawWheel();
+    }
+
+    function exitPresentationMode(){
+      document.body.classList.remove('presentation');
+      if(document.fullscreenElement && document.exitFullscreen){
+        document.exitFullscreen().catch(() => {});
+      }
+      closeWinner();
+      drawWheel();
+    }
+
+    function requestFullscreenSafe(){
+      const el = document.documentElement;
+      if(el.requestFullscreen)            el.requestFullscreen().catch(() => {});
+      else if(el.webkitRequestFullscreen) el.webkitRequestFullscreen();
+    }
+
+    /* =========================================================
+       CACHÉ DE IMÁGENES
+       ========================================================= */
+    function cacheImage(src){
+      if(!src) return null;
+      if(imageCache.has(src)) return imageCache.get(src);
+      const img = new Image();
+      img.onload = () => drawWheel();
+      img.src = src;
+      imageCache.set(src, img);
+      return img;
+    }
+
+    /* =========================================================
+       DIBUJO DE LA RULETA
+       ========================================================= */
+    function drawWheel(){
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      const cx = canvas.width  / 2;
+      const cy = canvas.height / 2;
+      const radius = 410;
+
+      if(characters.length === 0){
+        /* Mensaje cuando no hay elementos */
+        ctx.fillStyle = '#3d2b1f';
+        ctx.font = 'bold 38px Arial';
+        ctx.textAlign = 'center';
+        ctx.fillText('No quedan elementos', cx, cy - 22);
+        ctx.font = '22px Arial';
+        ctx.fillStyle = '#7c6b5a';
+        ctx.fillText('Restaura los sorteados o agrega nuevos', cx, cy + 26);
+        return;
+      }
+
+      const slice = (Math.PI * 2) / characters.length;
+
+      characters.forEach((char, i) => {
+        const start = angle + i * slice;
+        const end   = start + slice;
+        const mid   = start + slice / 2;
+
+        /* Segmento coloreado */
+        ctx.beginPath();
+        ctx.moveTo(cx, cy);
+        ctx.arc(cx, cy, radius, start, end);
+        ctx.closePath();
+        ctx.fillStyle = colors[i % colors.length];
+        ctx.fill();
+
+        /* Borde entre segmentos */
+        ctx.beginPath();
+        ctx.moveTo(cx, cy);
+        ctx.arc(cx, cy, radius, start, end);
+        ctx.closePath();
+        ctx.strokeStyle = 'rgba(255,255,255,.25)';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+        ctx.save();
+        ctx.translate(cx, cy);
+        ctx.rotate(mid);
+
+        const imgRadius = Math.min(252, radius * 0.59);
+        const imgSize   = Math.max(58, Math.min(116, 600 / Math.max(4, characters.length)));
+        const imgX = imgRadius - imgSize / 2;
+        const imgY = -imgSize / 2 - 30;
+
+        /* Imagen del elemento (si ya cargó) */
+        const img = cacheImage(char.image);
+        if(img && img.complete && img.naturalWidth > 0){
+          ctx.save();
+          roundRectPath(ctx, imgX, imgY, imgSize, imgSize, 16);
+          ctx.clip();
+          ctx.drawImage(img, imgX, imgY, imgSize, imgSize);
+          ctx.restore();
+
+          ctx.save();
+          ctx.strokeStyle = 'rgba(255,255,255,.9)';
+          ctx.lineWidth = 5;
+          roundRectPath(ctx, imgX, imgY, imgSize, imgSize, 16);
+          ctx.stroke();
+          ctx.restore();
+        }
+
+        /* Nombre del elemento */
+        ctx.fillStyle  = 'white';
+        ctx.font       = characters.length > 12 ? 'bold 17px Arial' : 'bold 22px Arial';
+        ctx.textAlign  = 'center';
+        ctx.shadowColor = 'rgba(0,0,0,.40)';
+        ctx.shadowBlur  = 4;
+        wrapText(ctx, char.name, imgRadius, imgY + imgSize + 26,
+                 Math.max(96, imgSize + 60), 23);
+
+        ctx.restore();
+      });
+
+      /* Borde exterior blanco */
+      ctx.beginPath();
+      ctx.arc(cx, cy, radius, 0, Math.PI * 2);
+      ctx.lineWidth   = 14;
+      ctx.strokeStyle = '#ffffff';
+      ctx.shadowBlur  = 0;
+      ctx.stroke();
+
+      /* Borde decorativo naranja tierra */
+      ctx.beginPath();
+      ctx.arc(cx, cy, radius - 8, 0, Math.PI * 2);
+      ctx.lineWidth   = 4;
+      ctx.strokeStyle = '#d4651a';
+      ctx.stroke();
+
+      /* Centro oscuro */
+      ctx.beginPath();
+      ctx.arc(cx, cy, 70, 0, Math.PI * 2);
+      ctx.fillStyle   = '#3d2b1f';
+      ctx.fill();
+      ctx.lineWidth   = 10;
+      ctx.strokeStyle = '#d4651a';
+      ctx.stroke();
+    }
+
+    /* =========================================================
+       UTILIDADES DE CANVAS
+       ========================================================= */
+    function wrapText(context, text, x, y, maxWidth, lineHeight){
+      const words   = text.split(' ');
+      let line      = '';
+      const lines   = [];
+      for(let n = 0; n < words.length; n++){
+        const test = line + words[n] + ' ';
+        if(context.measureText(test).width > maxWidth && n > 0){
+          lines.push(line.trim());
+          line = words[n] + ' ';
+        } else {
+          line = test;
+        }
+      }
+      lines.push(line.trim());
+      const limited = lines.slice(0, 2);
+      const startY  = y - ((limited.length - 1) * lineHeight) / 2;
+      limited.forEach((l, i) => context.fillText(l, x, startY + i * lineHeight));
+    }
+
+    function roundRectPath(ctx, x, y, w, h, r){
+      ctx.beginPath();
+      ctx.moveTo(x+r, y);
+      ctx.lineTo(x+w-r, y);
+      ctx.quadraticCurveTo(x+w, y,   x+w, y+r);
+      ctx.lineTo(x+w, y+h-r);
+      ctx.quadraticCurveTo(x+w, y+h, x+w-r, y+h);
+      ctx.lineTo(x+r, y+h);
+      ctx.quadraticCurveTo(x,   y+h, x,     y+h-r);
+      ctx.lineTo(x, y+r);
+      ctx.quadraticCurveTo(x,   y,   x+r,   y);
+      ctx.closePath();
+    }
+
+    /* =========================================================
+       GIRO DE LA RULETA
+       ========================================================= */
+    function spinWheel(){
+      if(spinning) return;
+      if(characters.length === 0){
+        alert('No quedan elementos. Restaura los sorteados o agrega nuevos.'); return;
+      }
+
+      spinning = true;
+      resultName.textContent = 'Girando...';
+
+      const slice      = (Math.PI * 2) / characters.length;
+      const extraTurns = 7 + Math.random() * 4;
+      const target     = Math.random() * Math.PI * 2;
+      const startAngle = angle;
+      const endAngle   = angle + extraTurns * Math.PI * 2 + target;
+      const duration   = 4300;
+      const startTime  = performance.now();
+
+      function easeOutCubic(t){ return 1 - Math.pow(1 - t, 3); }
+
+      function animate(now){
+        const elapsed = now - startTime;
+        const t = Math.min(elapsed / duration, 1);
+        angle = startAngle + (endAngle - startAngle) * easeOutCubic(t);
+        drawWheel();
+
+        if(t < 1){
+          requestAnimationFrame(animate);
+        } else {
+          spinning = false;
+          angle    = angle % (Math.PI * 2);
+          const pointerAngle  = (Math.PI * 1.5 - angle + Math.PI * 2) % (Math.PI * 2);
+          const selectedIndex = Math.floor(pointerAngle / slice) % characters.length;
+          showWinnerAndRemove(selectedIndex, characters[selectedIndex]);
+        }
+      }
+      requestAnimationFrame(animate);
+    }
+
+    /* =========================================================
+       MOSTRAR GANADOR Y QUITAR DE LA RULETA
+       ========================================================= */
+    function showWinnerAndRemove(index, char){
+      resultImg.src          = char.image;
+      resultName.textContent = char.name;
+      winnerImg.src          = char.image;
+      winnerName.textContent = char.name;
+      overlay.classList.add('show');
+
+      characters.splice(index, 1);
+      removedCharacters.push(char);
+      angle = 0;
+
+      renderAll();
+      drawWheel();
+      scheduleSave();
+    }
+
+    function closeWinner(){ overlay.classList.remove('show'); }
+
+    /* =========================================================
+       UTILIDAD HTML ESCAPE
+       ========================================================= */
+    function escapeHtml(text){
+      return String(text).replace(/[&<>"']/g, m =>
+        ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'})[m]
+      );
+    }
+
+    /* =========================================================
+       INICIALIZACIÓN
+       Carga desde IndexedDB; si no hay datos, usa los 24
+       elementos por defecto del Bingo Originario.
+       ========================================================= */
+    async function init(){
+      try{
+        await openDB();
+        const saved = await loadFromDB();
+        if(saved && (
+          (Array.isArray(saved.characters)        && saved.characters.length > 0) ||
+          (Array.isArray(saved.removedCharacters) && saved.removedCharacters.length > 0)
+        )){
+          /* Restaurar estado guardado */
+          characters        = Array.isArray(saved.characters)        ? saved.characters        : [];
+          removedCharacters = Array.isArray(saved.removedCharacters) ? saved.removedCharacters : [];
+          if(saved.lastResult && saved.lastResult.name){
+            resultName.textContent = saved.lastResult.name;
+            if(saved.lastResult.image) resultImg.src = saved.lastResult.image;
+          }
+        } else {
+          /* Primera vez: cargar los 24 elementos por defecto */
+          characters = DEFAULT_CHARACTERS.map(c => ({...c}));
+          await saveToDB();
+        }
+        [...characters, ...removedCharacters].forEach(c => cacheImage(c.image));
+        renderAll();
+        drawWheel();
+        setStatus('Guardado activo ✓', true);
+      }catch(e){
+        console.error(e);
+        /* Fallback sin IndexedDB */
+        characters = DEFAULT_CHARACTERS.map(c => ({...c}));
+        characters.forEach(c => cacheImage(c.image));
+        renderAll();
+        drawWheel();
+        setStatus('Modo sin guardado', false);
+        alert('Este navegador no permitió el guardado automático. Usa "Exportar respaldo" para no perder los cambios.');
+      }
+    }
+
+    init();
+  </script>
+</body>
+</html>
