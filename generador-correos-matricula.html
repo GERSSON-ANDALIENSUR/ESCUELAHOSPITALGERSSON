@@ -63,7 +63,7 @@
   .app-body {
     display: grid;
     grid-template-columns: 260px 1fr;
-    min-height: calc(100vh - 82px);
+    height: calc(100vh - 82px);
   }
 
   /* SIDEBAR */
@@ -71,6 +71,7 @@
     background: var(--surface);
     border-right: 1px solid var(--border);
     padding: 28px 0;
+    overflow-y: auto;
   }
   .sidebar-label {
     font-size: 10px; font-weight: 600; letter-spacing: 0.1em;
@@ -112,6 +113,7 @@
   .main {
     padding: 36px 40px;
     overflow-y: auto;
+    height: 100%;
   }
 
   .page { display: none; }
@@ -454,6 +456,10 @@
             <div class="field-hint" id="hint-esc-comuna"></div>
           </div>
         </div>
+        <div class="btn-row" style="margin-top:16px;">
+          <button class="btn" onclick="dedupeEscuelas(true)">🧹 Eliminar escuelas/correos duplicados</button>
+          <div class="help-text" id="dedupe-status" style="margin-top:0;"></div>
+        </div>
       </div>
 
       <div class="btn-row">
@@ -707,6 +713,7 @@ function restoreState() {
           fijo.style.display = 'block';
           fijo.textContent = document.getElementById('col-nombre').value;
         }
+        dedupeEscuelas(false);
       } else {
         autoGuess();
       }
@@ -810,7 +817,39 @@ function autoGuess() {
       }
     }
   });
+  dedupeEscuelas(false);
   persistAll();
+}
+
+// DEDUPLICAR ESCUELAS
+function dedupeEscuelas(manual) {
+  const cn = document.getElementById('col-esc-nombre').value;
+  const cc = document.getElementById('col-esc-correo').value;
+  const statusEl = document.getElementById('dedupe-status');
+  if (!cn || !cc) {
+    if (manual && statusEl) statusEl.textContent = 'Primero selecciona las columnas de nombre y correo del establecimiento.';
+    return 0;
+  }
+  const seen = new Set();
+  const before = escuelas.length;
+  escuelas = escuelas.filter(e => {
+    const key = normalize(e[cn]||'') + '|' + normalize(e[cc]||'');
+    if (!key.trim().replace('|','')) return true;
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+  const removed = before - escuelas.length;
+  if (removed > 0) {
+    document.getElementById('badge-escuelas').innerHTML = `<span class="upload-badge badge-ok">✓ ${escuelas.length} escuelas (se eliminaron ${removed} duplicadas)</span>`;
+    persistAll();
+  }
+  if (manual && statusEl) {
+    statusEl.textContent = removed > 0
+      ? `✓ Se eliminaron ${removed} escuela(s)/correo(s) duplicados. Quedan ${escuelas.length}.`
+      : 'No se encontraron duplicados (mismo nombre y correo).';
+  }
+  return removed;
 }
 
 // FORMAT DATE
