@@ -288,7 +288,6 @@
 
   /* NOMINA STATUS */
   .nomina-status-text { font-size: 14px; color: var(--text2); }
-  .sync-status { font-size: 12px; margin-top: 8px; }
 
   /* SEARCH BOX */
   .search-box { position: relative; margin-bottom: 12px; }
@@ -373,7 +372,6 @@
       <div class="card section-gap" id="nomina-status-card" style="display:none;">
         <div class="card-title">Nómina actual guardada</div>
         <div class="nomina-status-text" id="nomina-status-text"></div>
-        <div class="sync-status" id="sync-status"></div>
       </div>
 
       <div class="upload-grid">
@@ -396,7 +394,6 @@
       <p class="help-text">¿No tienes los archivos a mano? Puedes explorar la herramienta con datos de ejemplo. Si vuelves a subir un archivo, reemplazará la nómina actual guardada.</p>
       <div class="btn-row">
         <button class="btn btn-primary" onclick="goStep2real()">Continuar →</button>
-        <button class="btn" onclick="syncFromSheets(false)">🔄 Actualizar desde Google Sheets</button>
         <button class="btn-demo" onclick="loadDemo()">Usar datos de ejemplo</button>
       </div>
     </div>
@@ -617,8 +614,6 @@ const DEMO_ESCUELAS = [
   {'Establecimiento':'Liceo Bicentenario Concepción','Correo':'secretaria@liceobicentenario.cl','Comuna':'Concepción'},
 ];
 
-const SHEET_MATRICULA_URL = 'https://docs.google.com/spreadsheets/d/1jFVZtuYMTJpMIYIc4nBfXTiJO6AVCCk6KBPCfxF6bZU/export?format=csv&gid=0';
-
 // FILE READING
 function readExcel(file, cb) {
   const r = new FileReader();
@@ -726,47 +721,7 @@ function updateNominaStatus() {
   if (!card || !text) return;
   if (matriculas.length === 0 && escuelas.length === 0) { card.style.display = 'none'; return; }
   card.style.display = 'block';
-  const lastSync = localStorage.getItem('gcm_last_sync');
-  let syncTxt = '';
-  if (lastSync) {
-    const d = new Date(lastSync);
-    syncTxt = ` · Última sincronización: ${d.toLocaleDateString('es-CL')} ${d.toLocaleTimeString('es-CL',{hour:'2-digit',minute:'2-digit'})}`;
-  }
-  text.innerHTML = `<span style="color:var(--text); font-weight:500;">${matriculas.length}</span> estudiante(s) en la nómina &nbsp;·&nbsp; <span style="color:var(--text); font-weight:500;">${escuelas.length}</span> escuela(s) registradas${syncTxt}`;
-}
-
-function showSyncStatus(msg, kind) {
-  const el = document.getElementById('sync-status');
-  if (!el) return;
-  el.textContent = msg;
-  el.style.color = kind === 'ok' ? 'var(--accent)' : kind === 'err' ? 'var(--red)' : 'var(--text2)';
-}
-
-// SINCRONIZACIÓN CON GOOGLE SHEETS (nómina de estudiantes)
-function syncFromSheets(auto) {
-  if (!auto) showSyncStatus('Sincronizando con Google Sheets…', '');
-  fetch(SHEET_MATRICULA_URL)
-    .then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.text(); })
-    .then(csv => {
-      const wb = XLSX.read(csv, {type:'string'});
-      const ws = wb.Sheets[wb.SheetNames[0]];
-      const data = XLSX.utils.sheet_to_json(ws, {defval:'', raw:false});
-      if (data.length === 0) throw new Error('La hoja está vacía');
-      matriculas = data; headers_m = Object.keys(data[0]);
-      localStorage.setItem('gcm_last_sync', new Date().toISOString());
-      document.getElementById('badge-matricula').innerHTML = `<span class="upload-badge badge-ok">✓ ${data.length} registros (Google Sheets)</span>`;
-      document.getElementById('zone-matricula').classList.add('has-file');
-      persistAll();
-      showSyncStatus(`✓ Sincronizado — ${data.length} estudiantes desde Google Sheets`, 'ok');
-    })
-    .catch(err => {
-      showSyncStatus(
-        auto
-          ? '⚠ No se pudo sincronizar automáticamente con Google Sheets (usando la nómina guardada). Verifica que la hoja esté compartida como "Cualquier persona con el enlace".'
-          : '⚠ Error al sincronizar: ' + err.message + '. Verifica que la hoja esté compartida como "Cualquier persona con el enlace".',
-        'err'
-      );
-    });
+  text.innerHTML = `<span style="color:var(--text); font-weight:500;">${matriculas.length}</span> estudiante(s) en la nómina &nbsp;·&nbsp; <span style="color:var(--text); font-weight:500;">${escuelas.length}</span> escuela(s) registradas`;
 }
 
 // STEP NAVIGATION
@@ -1113,7 +1068,6 @@ function renderEscuelasPage() {
 
 // INICIALIZACIÓN
 restoreState();
-syncFromSheets(true);
 </script>
 </body>
 </html>
