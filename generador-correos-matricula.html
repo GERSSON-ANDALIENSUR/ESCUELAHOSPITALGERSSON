@@ -741,6 +741,7 @@ function goStep(n) {
     num.textContent = i < n ? '✓' : i;
   }
   currentStep = n;
+  if (n === 3) buildLista();
   if (n === 4) renderEscuelasPage();
 }
 
@@ -751,7 +752,6 @@ function goStep2real() {
 
 function goStep3real() {
   currentStudentIndex = -1;
-  buildLista();
   goStep(3);
   document.getElementById('preview-section').style.display = 'none';
   document.getElementById('preview-placeholder').style.display = 'flex';
