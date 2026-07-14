@@ -1,0 +1,1119 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Generador de Correos — Coordinación de Trayectorias</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap');
+
+  :root {
+    --bg: #f4f1ec;
+    --surface: #ffffff;
+    --surface2: #edeae4;
+    --border: #d8d3ca;
+    --border2: #c9c3b8;
+    --text: #1a1714;
+    --text2: #6b6560;
+    --text3: #9e9890;
+    --accent: #2d5a3d;
+    --accent-light: #e8f0ea;
+    --accent2: #8b4513;
+    --red: #c0392b;
+    --red-light: #fdf0ee;
+    --info: #1a4a6b;
+    --info-light: #e8f0f7;
+    --shadow: 0 2px 12px rgba(26,23,20,0.08);
+    --shadow-lg: 0 8px 32px rgba(26,23,20,0.12);
+    --radius: 10px;
+    --radius-sm: 6px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 0;
+  }
+
+  /* HEADER */
+  .app-header {
+    background: var(--accent);
+    color: white;
+    padding: 20px 40px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .app-header .icon {
+    width: 40px; height: 40px;
+    background: rgba(255,255,255,0.15);
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px;
+  }
+  .app-header h1 { font-size: 17px; font-weight: 600; letter-spacing: -0.01em; }
+  .app-header p { font-size: 13px; opacity: 0.75; margin-top: 2px; }
+
+  /* LAYOUT */
+  .app-body {
+    display: grid;
+    grid-template-columns: 260px 1fr;
+    min-height: calc(100vh - 82px);
+  }
+
+  /* SIDEBAR */
+  .sidebar {
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    padding: 28px 0;
+  }
+  .sidebar-label {
+    font-size: 10px; font-weight: 600; letter-spacing: 0.1em;
+    color: var(--text3); text-transform: uppercase;
+    padding: 0 24px; margin-bottom: 8px;
+  }
+  .step-item {
+    display: flex; align-items: center; gap: 12px;
+    padding: 12px 24px;
+    cursor: pointer;
+    border-left: 3px solid transparent;
+    transition: all 0.15s;
+  }
+  .step-item:hover { background: var(--surface2); }
+  .step-item.active {
+    border-left-color: var(--accent);
+    background: var(--accent-light);
+  }
+  .step-item.done { opacity: 0.6; }
+  .step-num {
+    width: 26px; height: 26px; border-radius: 50%;
+    background: var(--surface2); border: 1.5px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 600; flex-shrink: 0;
+    font-family: 'DM Mono', monospace;
+  }
+  .step-item.active .step-num {
+    background: var(--accent); color: white; border-color: var(--accent);
+  }
+  .step-item.done .step-num {
+    background: var(--accent-light); color: var(--accent); border-color: var(--accent);
+    font-size: 14px;
+  }
+  .step-info { flex: 1; }
+  .step-title { font-size: 13px; font-weight: 500; }
+  .step-desc { font-size: 11px; color: var(--text3); margin-top: 1px; }
+
+  /* MAIN CONTENT */
+  .main {
+    padding: 36px 40px;
+    overflow-y: auto;
+  }
+
+  .page { display: none; }
+  .page.active { display: block; }
+
+  .page-title {
+    font-size: 22px; font-weight: 600; letter-spacing: -0.02em;
+    margin-bottom: 6px;
+  }
+  .page-sub { font-size: 14px; color: var(--text2); margin-bottom: 28px; }
+
+  /* CARDS */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px 24px;
+    box-shadow: var(--shadow);
+  }
+  .card + .card { margin-top: 16px; }
+
+  .card-title {
+    font-size: 11px; font-weight: 600; letter-spacing: 0.08em;
+    text-transform: uppercase; color: var(--text2);
+    margin-bottom: 16px;
+  }
+
+  /* UPLOAD */
+  .upload-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
+  .upload-zone {
+    border: 2px dashed var(--border2);
+    border-radius: var(--radius);
+    padding: 28px 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.15s;
+    background: var(--surface);
+  }
+  .upload-zone:hover { border-color: var(--accent); background: var(--accent-light); }
+  .upload-zone.has-file { border-color: var(--accent); border-style: solid; }
+  .upload-zone input { display: none; }
+  .upload-icon { font-size: 28px; margin-bottom: 8px; }
+  .upload-title { font-size: 14px; font-weight: 500; margin-bottom: 4px; }
+  .upload-sub { font-size: 12px; color: var(--text2); }
+  .upload-badge {
+    display: inline-flex; align-items: center; gap: 5px;
+    margin-top: 10px; padding: 4px 12px;
+    border-radius: 20px; font-size: 12px; font-weight: 500;
+  }
+  .badge-ok { background: var(--accent-light); color: var(--accent); }
+  .badge-err { background: var(--red-light); color: var(--red); }
+
+  /* FORM */
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .form-grid.cols3 { grid-template-columns: 1fr 1fr 1fr; }
+  .field { display: flex; flex-direction: column; gap: 5px; }
+  .field.full { grid-column: span 2; }
+  label { font-size: 12px; font-weight: 500; color: var(--text2); }
+  select, input[type=text] {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px; padding: 9px 12px;
+    border: 1px solid var(--border); border-radius: var(--radius-sm);
+    background: var(--surface); color: var(--text);
+    transition: border-color 0.15s;
+    appearance: auto;
+  }
+  select:focus, input[type=text]:focus {
+    outline: none; border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(45,90,61,0.1);
+  }
+  .field-hint {
+    font-size: 11px; color: var(--accent); font-weight: 500;
+    display: flex; align-items: center; gap: 4px;
+  }
+
+  /* BUTTONS */
+  .btn-row { display: flex; gap: 10px; align-items: center; margin-top: 24px; }
+  .btn {
+    font-family: 'DM Sans', sans-serif;
+    padding: 10px 22px; border-radius: var(--radius-sm);
+    font-size: 13px; font-weight: 500; cursor: pointer;
+    border: 1px solid var(--border); background: var(--surface);
+    color: var(--text); transition: all 0.15s;
+  }
+  .btn:hover { background: var(--surface2); }
+  .btn-primary {
+    background: var(--accent); color: white; border-color: var(--accent);
+  }
+  .btn-primary:hover { background: #234a30; }
+  .btn-gmail {
+    background: #EA4335; color: white; border-color: #EA4335;
+    display: flex; align-items: center; gap: 7px;
+  }
+  .btn-gmail:hover { background: #c0392b; }
+  .btn-copy { display: flex; align-items: center; gap: 7px; }
+  .btn-demo { font-size: 12px; color: var(--text2); text-decoration: underline; background: none; border: none; cursor: pointer; }
+  .btn-demo:hover { color: var(--text); }
+
+  /* STUDENT LIST */
+  .student-list { margin-bottom: 20px; }
+  .student-count { font-size: 12px; color: var(--text2); margin-bottom: 12px; }
+  .student-card {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 12px 16px; border-radius: var(--radius-sm);
+    border: 1px solid var(--border); background: var(--surface);
+    cursor: pointer; transition: all 0.12s; margin-bottom: 6px;
+  }
+  .student-card:hover { border-color: var(--accent); box-shadow: var(--shadow); }
+  .student-card.selected { border-color: var(--accent); background: var(--accent-light); }
+  .student-name { font-size: 14px; font-weight: 500; }
+  .student-rut { font-size: 12px; color: var(--text2); font-family: 'DM Mono', monospace; margin-top: 2px; }
+  .student-origen { font-size: 12px; color: var(--text3); margin-top: 1px; }
+  .student-fecha {
+    font-size: 11px; font-family: 'DM Mono', monospace;
+    background: var(--surface2); color: var(--text2);
+    padding: 3px 10px; border-radius: 20px; white-space: nowrap;
+  }
+
+  /* EMAIL PREVIEW */
+  .preview-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius); box-shadow: var(--shadow-lg);
+    overflow: hidden;
+  }
+  .preview-header {
+    background: var(--surface2); border-bottom: 1px solid var(--border);
+    padding: 16px 20px;
+  }
+  .preview-meta { font-size: 13px; color: var(--text2); margin-bottom: 4px; }
+  .preview-meta span { color: var(--text); font-weight: 500; }
+  .preview-body { padding: 20px 24px; }
+  .email-header-block {
+    background: var(--info-light); border-left: 3px solid var(--info);
+    border-radius: var(--radius-sm); padding: 12px 16px;
+    margin-bottom: 16px; font-family: 'DM Mono', monospace;
+    font-size: 13px; line-height: 1.8; color: var(--info);
+  }
+  .email-body-text {
+    font-size: 13px; line-height: 1.9; white-space: pre-wrap;
+    color: var(--text); font-family: 'DM Sans', sans-serif;
+  }
+  .preview-actions {
+    padding: 14px 20px; border-top: 1px solid var(--border);
+    display: flex; gap: 10px; align-items: center;
+    background: var(--surface2);
+  }
+  .no-email-warn {
+    font-size: 12px; color: var(--red);
+    display: flex; align-items: center; gap: 5px;
+  }
+
+  /* DIVIDER */
+  .section-gap { margin-bottom: 20px; }
+
+  /* HELP */
+  .help-text { font-size: 12px; color: var(--text3); margin-top: 6px; }
+
+  /* TABS */
+  .tabs { display: flex; gap: 0; margin-bottom: 20px; border: 1px solid var(--border); border-radius: var(--radius-sm); overflow: hidden; width: fit-content; }
+  .tab-btn {
+    padding: 9px 22px; font-size: 13px; font-weight: 500;
+    font-family: 'DM Sans', sans-serif;
+    border: none; cursor: pointer; transition: all 0.15s;
+    background: var(--surface); color: var(--text2);
+  }
+  .tab-btn:not(:last-child) { border-right: 1px solid var(--border); }
+  .tab-btn.active { background: var(--accent); color: white; }
+  .tab-btn:not(.active):hover { background: var(--surface2); }
+
+  /* SCROLL */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+
+  /* NOMINA STATUS */
+  .nomina-status-text { font-size: 14px; color: var(--text2); }
+  .sync-status { font-size: 12px; margin-top: 8px; }
+
+  /* SEARCH BOX */
+  .search-box { position: relative; margin-bottom: 12px; }
+  .search-box input {
+    width: 100%; padding: 9px 12px 9px 34px;
+    border: 1px solid var(--border); border-radius: var(--radius-sm);
+    font-family: 'DM Sans', sans-serif; font-size: 13px;
+    background: var(--surface); color: var(--text);
+  }
+  .search-box input:focus {
+    outline: none; border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(45,90,61,0.1);
+  }
+  .search-icon {
+    position: absolute; left: 11px; top: 50%; transform: translateY(-50%);
+    font-size: 13px; color: var(--text3); pointer-events: none;
+  }
+
+  /* GENERAR CORREOS LAYOUT */
+  .gencorreo-grid { display: grid; grid-template-columns: 340px 1fr; gap: 20px; align-items: start; }
+  .gencorreo-preview-col { position: sticky; top: 20px; max-height: calc(100vh - 60px); overflow-y: auto; }
+
+  /* ESCUELAS PAGE */
+  .filter-row { display: flex; gap: 12px; margin-bottom: 16px; align-items: flex-end; flex-wrap: wrap; }
+  .filter-row .search-box { flex: 1; min-width: 220px; margin-bottom: 0; }
+  .filter-row .field { min-width: 200px; margin-bottom: 0; }
+</style>
+</head>
+<body>
+
+<div class="app-header">
+  <div class="icon">✉</div>
+  <div>
+    <h1>Generador de Correos — Coordinación de Trayectorias</h1>
+    <p>Escuela Hospital → Establecimiento de origen del estudiante</p>
+  </div>
+</div>
+
+<div class="app-body">
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div class="sidebar-label">Pasos</div>
+    <div class="step-item active" id="nav1" onclick="goStep(1)">
+      <div class="step-num" id="snum1">1</div>
+      <div class="step-info">
+        <div class="step-title">Cargar archivos</div>
+        <div class="step-desc">Nómina y lista de escuelas</div>
+      </div>
+    </div>
+    <div class="step-item" id="nav2" onclick="goStep(2)">
+      <div class="step-num" id="snum2">2</div>
+      <div class="step-info">
+        <div class="step-title">Configurar columnas</div>
+        <div class="step-desc">Mapear datos del Excel</div>
+      </div>
+    </div>
+    <div class="step-item" id="nav3" onclick="goStep(3)">
+      <div class="step-num" id="snum3">3</div>
+      <div class="step-info">
+        <div class="step-title">Generar correos</div>
+        <div class="step-desc">Previsualizar y enviar</div>
+      </div>
+    </div>
+    <div class="step-item" id="nav4" onclick="goStep(4)">
+      <div class="step-num" id="snum4">4</div>
+      <div class="step-info">
+        <div class="step-title">Escuelas registradas</div>
+        <div class="step-desc">Ver y filtrar por comuna</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN -->
+  <div class="main">
+
+    <!-- PASO 1 -->
+    <div class="page active" id="p1">
+      <div class="page-title">Cargar archivos</div>
+      <div class="page-sub">Sube la nómina de matrícula y tu lista de correos de escuelas de origen.</div>
+
+      <div class="card section-gap" id="nomina-status-card" style="display:none;">
+        <div class="card-title">Nómina actual guardada</div>
+        <div class="nomina-status-text" id="nomina-status-text"></div>
+        <div class="sync-status" id="sync-status"></div>
+      </div>
+
+      <div class="upload-grid">
+        <div class="upload-zone" id="zone-matricula" onclick="document.getElementById('f-matricula').click()">
+          <input type="file" id="f-matricula" accept=".xlsx,.xls,.csv">
+          <div class="upload-icon">📋</div>
+          <div class="upload-title">Nómina de matrícula</div>
+          <div class="upload-sub">Archivo Excel con los estudiantes matriculados</div>
+          <div id="badge-matricula"></div>
+        </div>
+        <div class="upload-zone" id="zone-escuelas" onclick="document.getElementById('f-escuelas').click()">
+          <input type="file" id="f-escuelas" accept=".xlsx,.xls,.csv">
+          <div class="upload-icon">🏫</div>
+          <div class="upload-title">Lista de escuelas</div>
+          <div class="upload-sub">Archivo con nombres y correos de establecimientos</div>
+          <div id="badge-escuelas"></div>
+        </div>
+      </div>
+
+      <p class="help-text">¿No tienes los archivos a mano? Puedes explorar la herramienta con datos de ejemplo. Si vuelves a subir un archivo, reemplazará la nómina actual guardada.</p>
+      <div class="btn-row">
+        <button class="btn btn-primary" onclick="goStep2real()">Continuar →</button>
+        <button class="btn" onclick="syncFromSheets(false)">🔄 Actualizar desde Google Sheets</button>
+        <button class="btn-demo" onclick="loadDemo()">Usar datos de ejemplo</button>
+      </div>
+    </div>
+
+    <!-- PASO 2 -->
+    <div class="page" id="p2">
+      <div class="page-title">Configurar columnas</div>
+      <div class="page-sub">Indica qué columna del Excel corresponde a cada dato. La herramienta detecta automáticamente las más comunes.</div>
+
+      <div class="card section-gap">
+        <div class="card-title">Columnas de la nómina de matrícula</div>
+        <div class="form-grid">
+          <div class="field">
+            <label>RUT del estudiante</label>
+            <select id="col-rut" onchange="persistAll()"></select>
+            <div class="field-hint" id="hint-rut"></div>
+          </div>
+          <div class="field" id="field-nombre">
+            <label>Nombre del estudiante</label>
+            <select id="col-nombre" onchange="persistAll()"></select>
+            <div id="nombre-fijo" style="display:none; font-size:13px; padding:9px 12px; border:1px solid var(--accent); border-radius:var(--radius-sm); background:var(--accent-light); color:var(--accent); font-weight:500;"></div>
+            <div class="field-hint" id="hint-nombre"></div>
+          </div>
+          <div class="field">
+            <label>Curso / Nivel</label>
+            <select id="col-curso" onchange="persistAll()"></select>
+            <div class="field-hint" id="hint-curso"></div>
+          </div>
+          <div class="field">
+            <label>Fecha matrícula <span style="color:var(--info);font-size:11px;">(columna M)</span></label>
+            <select id="col-fecha" onchange="persistAll()"></select>
+            <div class="field-hint" id="hint-fecha"></div>
+          </div>
+          <div class="field full">
+            <label>Establecimiento de origen</label>
+            <select id="col-origen" onchange="persistAll()"></select>
+            <div class="field-hint" id="hint-origen"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Columnas de la lista de escuelas</div>
+        <div class="form-grid">
+          <div class="field">
+            <label>Nombre del establecimiento</label>
+            <select id="col-esc-nombre" onchange="persistAll()"></select>
+            <div class="field-hint" id="hint-esc-nombre"></div>
+          </div>
+          <div class="field">
+            <label>Correo del establecimiento</label>
+            <select id="col-esc-correo" onchange="persistAll()"></select>
+            <div class="field-hint" id="hint-esc-correo"></div>
+          </div>
+          <div class="field">
+            <label>Comuna</label>
+            <select id="col-esc-comuna" onchange="persistAll()"></select>
+            <div class="field-hint" id="hint-esc-comuna"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn btn-primary" onclick="goStep3real()">Generar correos →</button>
+        <button class="btn" onclick="goStep(1)">← Volver</button>
+      </div>
+    </div>
+
+    <!-- PASO 3 -->
+    <div class="page" id="p3">
+      <div class="page-title">Generar correos</div>
+      <div class="page-sub">Selecciona el tipo de correo y luego un estudiante para previsualizar.</div>
+
+      <div class="tabs">
+        <button class="tab-btn active" id="tab-matricula" onclick="setTipoCorreo('matricula')">📋 Matrícula</button>
+        <button class="tab-btn" id="tab-alta" onclick="setTipoCorreo('alta')">🏥 Alta</button>
+      </div>
+
+      <div id="fecha-alta-row" style="display:none; margin-bottom:20px;">
+        <div class="field" style="max-width:260px;">
+          <label>Fecha de alta del estudiante</label>
+          <input type="text" id="fecha-alta-input" placeholder="Ej: 15/05/2025" oninput="refreshPreview()">
+          <div class="field-hint" style="color:var(--text3);">Formato DD/MM/AAAA</div>
+        </div>
+      </div>
+
+      <div class="gencorreo-grid">
+
+        <div>
+          <div class="search-box">
+            <span class="search-icon">🔍</span>
+            <input type="text" id="search-alumno" placeholder="Buscar por nombre o RUT..." oninput="buildLista()">
+          </div>
+          <div class="student-count" id="student-count"></div>
+          <div class="student-list" id="lista-alumnos"></div>
+        </div>
+
+        <div class="gencorreo-preview-col">
+          <div id="preview-section" style="display:none;">
+            <div class="preview-card">
+              <div class="preview-header">
+                <div class="preview-meta">Para: <span id="prev-para"></span></div>
+                <div class="preview-meta">Asunto: <span id="prev-asunto"></span></div>
+                <div id="warn-no-email" class="no-email-warn" style="display:none; margin-top:6px;">
+                  ⚠ Correo no encontrado en la lista de escuelas
+                </div>
+              </div>
+              <div class="preview-body">
+                <div class="email-header-block" id="prev-header"></div>
+                <div class="email-body-text" id="prev-body"></div>
+              </div>
+              <div class="preview-actions">
+                <button class="btn btn-gmail" onclick="abrirGmail()">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M24 5.457v13.909c0 .904-.732 1.636-1.636 1.636h-3.819V11.73L12 16.64l-6.545-4.91v9.273H1.636A1.636 1.636 0 0 1 0 19.366V5.457c0-2.023 2.309-3.178 3.927-1.964L5.455 4.64 12 9.548l6.545-4.91 1.528-1.145C21.69 2.28 24 3.434 24 5.457z"/></svg>
+                  Abrir en Gmail
+                </button>
+                <button class="btn btn-copy" onclick="copiarCorreo()">
+                  📋 <span id="copy-label">Copiar texto</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div id="preview-placeholder" style="display:flex; align-items:center; justify-content:center; height:300px; color:var(--text3); font-size:14px; text-align:center;">
+            ← Selecciona un estudiante<br>para ver el correo
+          </div>
+        </div>
+
+      </div>
+
+      <div class="btn-row">
+        <button class="btn" onclick="goStep(2)">← Volver</button>
+      </div>
+    </div>
+
+    <!-- PASO 4 -->
+    <div class="page" id="p4">
+      <div class="page-title">Escuelas registradas</div>
+      <div class="page-sub">Consulta las escuelas cargadas desde tu lista y filtra por comuna.</div>
+
+      <div class="filter-row">
+        <div class="search-box">
+          <span class="search-icon">🔍</span>
+          <input type="text" id="search-escuela" placeholder="Buscar por nombre..." oninput="renderEscuelasPage()">
+        </div>
+        <div class="field">
+          <label>Filtrar por comuna</label>
+          <select id="filter-comuna" onchange="renderEscuelasPage()"><option value="">Todas las comunas</option></select>
+        </div>
+      </div>
+
+      <div class="student-count" id="escuela-count"></div>
+      <div class="student-list" id="lista-escuelas"></div>
+
+      <div class="btn-row">
+        <button class="btn" onclick="goStep(3)">← Volver</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+let matriculas = [], escuelas = [], headers_m = [], headers_e = [];
+let currentEmail = {};
+let currentStep = 1;
+let tipoCorreo = 'matricula';
+let currentStudentIndex = -1;
+
+const PLANTILLA_ALTA = `Estimado/a Director/a:
+
+Junto con saludar, le informo que con fecha {{FECHA_ALTA}} se ha dado de alta al estudiante antes señalado que ha sido paciente del HGGB, por lo que cesa su atención en nuestro Establecimiento Educacional Escuela Común Hospital. En esta misma fecha, procedemos a gestionar la baja del estudiante en el sistema SIGE.
+
+El/la estudiante durante su permanencia en nuestra Escuela ha recibido atención socioemocional y educación compensatoria.
+
+Agradecemos el apoyo brindado durante este proceso y solicitamos la reincorporación del/la estudiante a su establecimiento de origen. A continuación, compartimos algunas sugerencias que podrían facilitar su reintegración:
+
+•  Brindar un entorno de apoyo emocional donde el/la estudiante se sienta seguro/a y comprendido/a.
+•  Considerar una reintegración gradual, permitiendo adaptación progresiva a la rutina escolar.
+•  Proporcionar recursos adicionales, como tutoría o apoyo individualizado, para favorecer la nivelación académica.
+•  Fomentar la comprensión y empatía entre sus pares mediante acciones formativas.
+•  Realizar un seguimiento regular del progreso del/la estudiante.
+•  Mantener una actitud flexible y receptiva ante las necesidades cambiantes que puedan surgir.
+
+Quedamos atentos ante cualquier consulta o coordinación que se requiera respecto del proceso educativo realizado en nuestra Escuela.
+
+Asimismo, le recordamos que el/la estudiante sigue perteneciendo a su establecimiento de origen. De acuerdo con la Resolución N° 9256/2024, sección 7.1.5, que aprueba el Protocolo para el proceso de matrícula de las escuelas hospitalarias, el estudiante puede estar en colisión de matrícula mientras dure su hospitalización o tratamiento médico ambulatorio.
+
+En caso de que la vacante haya sido ocupada, solicitamos autorizar el excedente de matrícula mediante Resolución Exenta, a través de la Secretaría Ministerial de Educación correspondiente.
+
+Sin otro particular, se despide atentamente,`;
+
+const PLANTILLA = `Estimado Director(a),
+
+Espero que se encuentre bien. Me dirijo a usted para informarle que nuestra Escuela Hospital desde el {{FECHA}}, ha comenzado a brindar atención al estudiante antes mencionado, quien es paciente del Hospital Regional de Concepción (HGGB).
+
+Nuestro compromiso es ofrecer apoyo socioemocional y educación compensatoria, con un enfoque especial en las asignaturas de Lenguaje y Matemática. Para optimizar este proceso, es fundamental establecer una coordinación efectiva con el profesor jefe de su establecimiento de origen, con el fin de intercambiar información relevante mientras el estudiante se encuentre hospitalizado o en tratamiento médico.
+
+Para facilitar esta coordinación, hemos diseñado una "Encuesta de Entrada", la cual debe ser completada por el profesor jefe o la Unidad Técnico-Pedagógica (UTP) de su establecimiento. Esto nos permitirá determinar el tipo de apoyo y orientación que se otorgará en las asignaturas mencionadas. Puede acceder a la encuesta en el siguiente enlace:
+
+Encuesta de Entrada: https://forms.gle/3X14aBGgz7RxH9Yc6
+
+Asimismo, le recordamos que el/la estudiante sigue perteneciendo a su establecimiento de origen. De acuerdo con la Resolución N° 9256/2024, sección 7.1.5, que aprueba el Protocolo para el proceso de matrícula de las escuelas hospitalarias, el estudiante puede estar en colisión de matrícula mientras dure su hospitalización o tratamiento médico ambulatorio.
+
+Quedamos atentos a cualquier consulta o inquietud. No dude en contactarnos para brindarle la orientación necesaria.
+
+Si desea conocer más sobre nuestro Establecimiento Educacional, puede visitarnos en Instagram: @escuelahospital.
+
+Atentamente,`;
+
+const DEMO_MATRICULAS = [
+  {'RUT':'22.111.222-3','nombre del estudiante':'Sofía Araya Rojas','Curso':'4° Básico','fecha matricula':'28/04/2025','Establecimiento Origen':'Escuela Básica Los Pinos'},
+  {'RUT':'21.333.444-5','nombre del estudiante':'Matías Fuentes Silva','Curso':'1° Medio','fecha matricula':'30/04/2025','Establecimiento Origen':'Liceo Bicentenario Concepción'},
+  {'RUT':'23.555.666-7','nombre del estudiante':'Valentina Muñoz Torres','Curso':'6° Básico','fecha matricula':'02/05/2025','Establecimiento Origen':'Escuela Básica Los Pinos'},
+];
+const DEMO_ESCUELAS = [
+  {'Establecimiento':'Escuela Básica Los Pinos','Correo':'contacto@lospinos.cl','Comuna':'Concepción'},
+  {'Establecimiento':'Liceo Bicentenario Concepción','Correo':'secretaria@liceobicentenario.cl','Comuna':'Concepción'},
+];
+
+const SHEET_MATRICULA_URL = 'https://docs.google.com/spreadsheets/d/1jFVZtuYMTJpMIYIc4nBfXTiJO6AVCCk6KBPCfxF6bZU/export?format=csv&gid=0';
+
+// FILE READING
+function readExcel(file, cb) {
+  const r = new FileReader();
+  r.onload = e => {
+    const wb = XLSX.read(e.target.result, {type:'binary'});
+    const ws = wb.Sheets[wb.SheetNames[0]];
+    const data = XLSX.utils.sheet_to_json(ws, {defval:'', raw:false});
+    cb(data, data.length > 0 ? Object.keys(data[0]) : []);
+  };
+  r.readAsBinaryString(file);
+}
+
+document.getElementById('f-matricula').addEventListener('change', function() {
+  if (!this.files[0]) return;
+  readExcel(this.files[0], (data, h) => {
+    matriculas = data; headers_m = h;
+    document.getElementById('badge-matricula').innerHTML = `<span class="upload-badge badge-ok">✓ ${data.length} registros cargados</span>`;
+    document.getElementById('zone-matricula').classList.add('has-file');
+    persistAll();
+  });
+});
+
+document.getElementById('f-escuelas').addEventListener('change', function() {
+  if (!this.files[0]) return;
+  readExcel(this.files[0], (data, h) => {
+    escuelas = data; headers_e = h;
+    document.getElementById('badge-escuelas').innerHTML = `<span class="upload-badge badge-ok">✓ ${data.length} escuelas cargadas</span>`;
+    document.getElementById('zone-escuelas').classList.add('has-file');
+    persistAll();
+  });
+});
+
+// DEMO
+function loadDemo() {
+  matriculas = DEMO_MATRICULAS; escuelas = DEMO_ESCUELAS;
+  headers_m = Object.keys(DEMO_MATRICULAS[0]); headers_e = Object.keys(DEMO_ESCUELAS[0]);
+  document.getElementById('badge-matricula').innerHTML = `<span class="upload-badge badge-ok">✓ 3 estudiantes (demo)</span>`;
+  document.getElementById('badge-escuelas').innerHTML = `<span class="upload-badge badge-ok">✓ 2 escuelas (demo)</span>`;
+  document.getElementById('zone-matricula').classList.add('has-file');
+  document.getElementById('zone-escuelas').classList.add('has-file');
+  populateSelects(); autoGuess(); goStep(2);
+}
+
+// PERSISTENCIA (localStorage)
+function persistAll() {
+  try {
+    localStorage.setItem('gcm_matriculas', JSON.stringify(matriculas));
+    localStorage.setItem('gcm_headers_m', JSON.stringify(headers_m));
+    localStorage.setItem('gcm_escuelas', JSON.stringify(escuelas));
+    localStorage.setItem('gcm_headers_e', JSON.stringify(headers_e));
+    const colmap = {};
+    ['col-rut','col-nombre','col-curso','col-fecha','col-origen','col-esc-nombre','col-esc-correo','col-esc-comuna'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) colmap[id] = el.value;
+    });
+    localStorage.setItem('gcm_colmap', JSON.stringify(colmap));
+  } catch (e) { /* almacenamiento no disponible */ }
+  updateNominaStatus();
+}
+
+function restoreState() {
+  try {
+    const m = localStorage.getItem('gcm_matriculas');
+    const hm = localStorage.getItem('gcm_headers_m');
+    const e = localStorage.getItem('gcm_escuelas');
+    const he = localStorage.getItem('gcm_headers_e');
+    const cm = localStorage.getItem('gcm_colmap');
+    if (m) matriculas = JSON.parse(m);
+    if (hm) headers_m = JSON.parse(hm);
+    if (e) escuelas = JSON.parse(e);
+    if (he) headers_e = JSON.parse(he);
+    if (matriculas.length) {
+      document.getElementById('badge-matricula').innerHTML = `<span class="upload-badge badge-ok">✓ ${matriculas.length} registros guardados</span>`;
+      document.getElementById('zone-matricula').classList.add('has-file');
+    }
+    if (escuelas.length) {
+      document.getElementById('badge-escuelas').innerHTML = `<span class="upload-badge badge-ok">✓ ${escuelas.length} escuelas guardadas</span>`;
+      document.getElementById('zone-escuelas').classList.add('has-file');
+    }
+    if (matriculas.length || escuelas.length) {
+      populateSelects();
+      if (cm) {
+        const map = JSON.parse(cm);
+        Object.entries(map).forEach(([id, val]) => {
+          const el = document.getElementById(id);
+          if (el && val) el.value = val;
+        });
+        if (document.getElementById('col-nombre').value) {
+          document.getElementById('col-nombre').style.display = 'none';
+          const fijo = document.getElementById('nombre-fijo');
+          fijo.style.display = 'block';
+          fijo.textContent = document.getElementById('col-nombre').value;
+        }
+      } else {
+        autoGuess();
+      }
+    }
+  } catch (e) { /* almacenamiento corrupto o no disponible */ }
+  updateNominaStatus();
+}
+
+function updateNominaStatus() {
+  const card = document.getElementById('nomina-status-card');
+  const text = document.getElementById('nomina-status-text');
+  if (!card || !text) return;
+  if (matriculas.length === 0 && escuelas.length === 0) { card.style.display = 'none'; return; }
+  card.style.display = 'block';
+  const lastSync = localStorage.getItem('gcm_last_sync');
+  let syncTxt = '';
+  if (lastSync) {
+    const d = new Date(lastSync);
+    syncTxt = ` · Última sincronización: ${d.toLocaleDateString('es-CL')} ${d.toLocaleTimeString('es-CL',{hour:'2-digit',minute:'2-digit'})}`;
+  }
+  text.innerHTML = `<span style="color:var(--text); font-weight:500;">${matriculas.length}</span> estudiante(s) en la nómina &nbsp;·&nbsp; <span style="color:var(--text); font-weight:500;">${escuelas.length}</span> escuela(s) registradas${syncTxt}`;
+}
+
+function showSyncStatus(msg, kind) {
+  const el = document.getElementById('sync-status');
+  if (!el) return;
+  el.textContent = msg;
+  el.style.color = kind === 'ok' ? 'var(--accent)' : kind === 'err' ? 'var(--red)' : 'var(--text2)';
+}
+
+// SINCRONIZACIÓN CON GOOGLE SHEETS (nómina de estudiantes)
+function syncFromSheets(auto) {
+  if (!auto) showSyncStatus('Sincronizando con Google Sheets…', '');
+  fetch(SHEET_MATRICULA_URL)
+    .then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.text(); })
+    .then(csv => {
+      const wb = XLSX.read(csv, {type:'string'});
+      const ws = wb.Sheets[wb.SheetNames[0]];
+      const data = XLSX.utils.sheet_to_json(ws, {defval:'', raw:false});
+      if (data.length === 0) throw new Error('La hoja está vacía');
+      matriculas = data; headers_m = Object.keys(data[0]);
+      localStorage.setItem('gcm_last_sync', new Date().toISOString());
+      document.getElementById('badge-matricula').innerHTML = `<span class="upload-badge badge-ok">✓ ${data.length} registros (Google Sheets)</span>`;
+      document.getElementById('zone-matricula').classList.add('has-file');
+      persistAll();
+      showSyncStatus(`✓ Sincronizado — ${data.length} estudiantes desde Google Sheets`, 'ok');
+    })
+    .catch(err => {
+      showSyncStatus(
+        auto
+          ? '⚠ No se pudo sincronizar automáticamente con Google Sheets (usando la nómina guardada). Verifica que la hoja esté compartida como "Cualquier persona con el enlace".'
+          : '⚠ Error al sincronizar: ' + err.message + '. Verifica que la hoja esté compartida como "Cualquier persona con el enlace".',
+        'err'
+      );
+    });
+}
+
+// STEP NAVIGATION
+function goStep(n) {
+  for (let i = 1; i <= 4; i++) {
+    document.getElementById('p' + i).classList.toggle('active', i === n);
+    const nav = document.getElementById('nav' + i);
+    const num = document.getElementById('snum' + i);
+    nav.className = 'step-item' + (i === n ? ' active' : i < n ? ' done' : '');
+    num.textContent = i < n ? '✓' : i;
+  }
+  currentStep = n;
+  if (n === 4) renderEscuelasPage();
+}
+
+function goStep2real() {
+  if (matriculas.length === 0) { loadDemo(); return; }
+  populateSelects(); autoGuess(); goStep(2);
+}
+
+function goStep3real() {
+  currentStudentIndex = -1;
+  buildLista();
+  goStep(3);
+  document.getElementById('preview-section').style.display = 'none';
+  document.getElementById('preview-placeholder').style.display = 'flex';
+}
+
+// SELECTS
+function normalize(s) {
+  return (s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').trim();
+}
+
+function populateSelects() {
+  ['col-rut','col-nombre','col-curso','col-fecha','col-origen'].forEach(id => {
+    const sel = document.getElementById(id);
+    sel.innerHTML = '<option value="">— seleccionar —</option>' + headers_m.map(h => `<option value="${h}">${h}</option>`).join('');
+  });
+  ['col-esc-nombre','col-esc-correo','col-esc-comuna'].forEach(id => {
+    const sel = document.getElementById(id);
+    sel.innerHTML = '<option value="">— seleccionar —</option>' + headers_e.map(h => `<option value="${h}">${h}</option>`).join('');
+  });
+}
+
+function autoGuess() {
+  const guesses = {
+    'col-rut': ['rut','run'],
+    'col-nombre': ['nombre del estudiante','nombre estudiante','nombre alumno','nombre del alumno','nombres y apellidos','apellidos y nombres','nombre completo','nombre y apellido','nombre del nino','nombre del niño','estudiante','alumno','nombre','nombres'],
+    'col-curso': ['curso','nivel','grado'],
+    'col-fecha': ['fecha matricula','fecha de matricula','fecha'],
+    'col-origen': ['establecimiento origen','escuela origen','origen','procedencia'],
+    'col-esc-nombre': ['establecimiento','escuela','nombre'],
+    'col-esc-correo': ['correo','email','mail'],
+    'col-esc-comuna': ['comuna','ciudad']
+  };
+  const hints = {
+    'col-rut':'hint-rut','col-nombre':'hint-nombre','col-curso':'hint-curso',
+    'col-fecha':'hint-fecha','col-origen':'hint-origen',
+    'col-esc-nombre':'hint-esc-nombre','col-esc-correo':'hint-esc-correo','col-esc-comuna':'hint-esc-comuna'
+  };
+  Object.entries(guesses).forEach(([id, keys]) => {
+    const sel = document.getElementById(id);
+    const headers = id.startsWith('col-esc') ? headers_e : headers_m;
+    let found = '';
+    for (const key of keys) {
+      const m = headers.find(h => normalize(h) === normalize(key));
+      if (m) { found = m; break; }
+    }
+    if (!found) {
+      for (const key of keys) {
+        const m = headers.find(h => normalize(h).includes(normalize(key)));
+        if (m) { found = m; break; }
+      }
+    }
+    if (found) {
+      sel.value = found;
+      const hintEl = document.getElementById(hints[id]);
+      if (id === 'col-nombre') {
+        sel.style.display = 'none';
+        const fijo = document.getElementById('nombre-fijo');
+        fijo.style.display = 'block';
+        fijo.textContent = found;
+        if (hintEl) hintEl.innerHTML = '✓ Detectado automáticamente desde el Excel';
+      } else {
+        if (hintEl) hintEl.innerHTML = '✓ detectado automáticamente';
+      }
+    }
+  });
+  persistAll();
+}
+
+// FORMAT DATE
+function formatFecha(val) {
+  if (!val) return '';
+  const str = String(val).trim();
+  const meses = ['ENERO','FEBRERO','MARZO','ABRIL','MAYO','JUNIO','JULIO','AGOSTO','SEPTIEMBRE','OCTUBRE','NOVIEMBRE','DICIEMBRE'];
+  const dmy = str.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2,4})$/);
+  let d;
+  if (dmy) {
+    const yr = dmy[3].length === 2 ? '20' + dmy[3] : dmy[3];
+    d = new Date(parseInt(yr), parseInt(dmy[2]) - 1, parseInt(dmy[1]));
+  } else {
+    d = new Date(str);
+  }
+  if (!isNaN(d.getTime())) return `${d.getDate()} DE ${meses[d.getMonth()]}`;
+  return str.toUpperCase();
+}
+
+// BUILD LIST
+function buildLista() {
+  const cn = document.getElementById('col-nombre').value;
+  const co = document.getElementById('col-origen').value;
+  const cf = document.getElementById('col-fecha').value;
+  const cr = document.getElementById('col-rut').value;
+  const searchEl = document.getElementById('search-alumno');
+  const term = normalize(searchEl ? searchEl.value : '');
+  const contenedor = document.getElementById('lista-alumnos');
+  contenedor.innerHTML = '';
+  let shown = 0;
+  matriculas.forEach((m, i) => {
+    const nombre = cn ? (m[cn]||'') : '';
+    const origen = co ? (m[co]||'') : '';
+    const rut = cr ? (m[cr]||'') : '';
+    const fecha = cf ? formatFecha(m[cf]) : '';
+    if (term && !normalize(nombre).includes(term) && !normalize(rut).includes(term)) return;
+    shown++;
+    const div = document.createElement('div');
+    div.className = 'student-card';
+    div.innerHTML = `
+      <div>
+        <div class="student-name">${nombre}</div>
+        <div class="student-rut">${rut}</div>
+        <div class="student-origen">${origen}</div>
+      </div>
+      <div class="student-fecha">${fecha}</div>`;
+    div.onclick = () => {
+      document.querySelectorAll('.student-card').forEach(c => c.classList.remove('selected'));
+      div.classList.add('selected');
+      mostrarPreview(i);
+    };
+    contenedor.appendChild(div);
+  });
+  document.getElementById('student-count').textContent = term
+    ? `${shown} de ${matriculas.length} estudiante(s) — haz clic para generar el correo`
+    : `${matriculas.length} estudiante(s) — haz clic para generar el correo`;
+}
+
+// SIMILITUD DE TEXTO (para emparejar escuelas con distinta ortografía/mayúsculas/síntesis)
+function levenshtein(a, b) {
+  const m = a.length, n = b.length;
+  if (!m) return n;
+  if (!n) return m;
+  const dp = [];
+  for (let i = 0; i <= m; i++) { dp.push([i]); }
+  for (let j = 1; j <= n; j++) { dp[0][j] = j; }
+  for (let i = 1; i <= m; i++) {
+    for (let j = 1; j <= n; j++) {
+      dp[i][j] = a[i-1] === b[j-1] ? dp[i-1][j-1] : 1 + Math.min(dp[i-1][j], dp[i][j-1], dp[i-1][j-1]);
+    }
+  }
+  return dp[m][n];
+}
+
+function similarity(a, b) {
+  const na = normalize(a), nb = normalize(b);
+  if (!na || !nb) return 0;
+  if (na === nb) return 1;
+  if (na.includes(nb) || nb.includes(na)) return 0.9;
+  const dist = levenshtein(na, nb);
+  return 1 - dist / Math.max(na.length, nb.length);
+}
+
+function getOverrides() {
+  try { return JSON.parse(localStorage.getItem('gcm_school_overrides') || '{}'); } catch (e) { return {}; }
+}
+function saveOverride(origenNorm, escuelaNombre) {
+  const o = getOverrides();
+  o[origenNorm] = escuelaNombre;
+  try { localStorage.setItem('gcm_school_overrides', JSON.stringify(o)); } catch (e) {}
+}
+function getRejected() {
+  try { return JSON.parse(localStorage.getItem('gcm_school_rejected') || '[]'); } catch (e) { return []; }
+}
+function saveRejected(origenNorm, candidateNorm) {
+  const r = getRejected();
+  r.push(origenNorm + '|' + candidateNorm);
+  try { localStorage.setItem('gcm_school_rejected', JSON.stringify(r)); } catch (e) {}
+}
+
+// RESOLVE EMAIL
+function resolveCorreo(origen) {
+  const cn = document.getElementById('col-esc-nombre').value;
+  const cc = document.getElementById('col-esc-correo').value;
+  if (!cn || !cc || !origen) return '';
+  const origenNorm = normalize(origen);
+
+  // 1. Coincidencias ya confirmadas por el usuario
+  const overrides = getOverrides();
+  if (overrides[origenNorm]) {
+    const saved = escuelas.find(e => normalize(e[cn]||'') === normalize(overrides[origenNorm]));
+    if (saved) return saved[cc];
+  }
+
+  // 2. Coincidencia exacta (ignorando tildes/mayúsculas)
+  const exact = escuelas.find(e => normalize(e[cn]||'') === origenNorm);
+  if (exact) return exact[cc];
+
+  // 3. Coincidencia difusa, con confirmación del usuario
+  let best = null, bestScore = 0;
+  escuelas.forEach(e => {
+    const score = similarity(origen, e[cn]||'');
+    if (score > bestScore) { bestScore = score; best = e; }
+  });
+  if (best && bestScore >= 0.6) {
+    const candNorm = normalize(best[cn]);
+    const rejected = getRejected();
+    if (rejected.includes(origenNorm + '|' + candNorm)) return '';
+    const ok = confirm(`No se encontró una coincidencia exacta en la lista de escuelas.\n\n¿La escuela "${origen}" es esta: "${best[cn]}"?`);
+    if (ok) {
+      saveOverride(origenNorm, best[cn]);
+      return best[cc];
+    } else {
+      saveRejected(origenNorm, candNorm);
+      return '';
+    }
+  }
+  return '';
+}
+
+// TIPO CORREO
+function setTipoCorreo(tipo) {
+  tipoCorreo = tipo;
+  document.getElementById('tab-matricula').classList.toggle('active', tipo === 'matricula');
+  document.getElementById('tab-alta').classList.toggle('active', tipo === 'alta');
+  document.getElementById('fecha-alta-row').style.display = tipo === 'alta' ? 'block' : 'none';
+  refreshPreview();
+}
+
+function refreshPreview() {
+  if (currentStudentIndex >= 0) mostrarPreview(currentStudentIndex);
+}
+
+// SHOW PREVIEW
+function mostrarPreview(i) {
+  currentStudentIndex = i;
+  const m = matriculas[i];
+  const get = id => { const v = document.getElementById(id).value; return v ? (m[v]||'') : ''; };
+  const nombre = get('col-nombre');
+  const rut    = get('col-rut');
+  const curso  = get('col-curso');
+  const fechaRaw = document.getElementById('col-fecha').value ? m[document.getElementById('col-fecha').value] : '';
+  const fecha  = formatFecha(fechaRaw);
+  const origen = get('col-origen');
+  const correo_dest = resolveCorreo(origen);
+
+  let asunto, body;
+  if (tipoCorreo === 'alta') {
+    const fechaAltaRaw = document.getElementById('fecha-alta-input').value || '';
+    const fechaAlta = fechaAltaRaw ? formatFecha(fechaAltaRaw) : '[FECHA DE ALTA]';
+    asunto = `Alta de matrícula — ${nombre}`;
+    body = PLANTILLA_ALTA
+      .replace('{{NOMBRE}}', nombre)
+      .replace('{{FECHA_INGRESO}}', fecha)
+      .replace('{{FECHA_ALTA}}', fechaAlta);
+  } else {
+    asunto = `Comunicado de matrícula — ${nombre}`;
+    body = PLANTILLA
+      .replace('{{FECHA}}', fecha);
+  }
+
+  const header = `${rut}\n${nombre}\n${curso}`;
+  currentEmail = { asunto, body, para: correo_dest, header };
+
+  document.getElementById('prev-para').textContent = correo_dest || '(no encontrado)';
+  document.getElementById('prev-asunto').textContent = asunto;
+  document.getElementById('prev-header').textContent = header;
+  document.getElementById('prev-body').textContent = body;
+
+  const warn = document.getElementById('warn-no-email');
+  warn.style.display = correo_dest ? 'none' : 'flex';
+
+  document.getElementById('preview-section').style.display = 'block';
+  document.getElementById('preview-placeholder').style.display = 'none';
+}
+
+// GMAIL
+function abrirGmail() {
+  const fullBody = `${currentEmail.header}\n\n${currentEmail.body}`;
+  const url = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(currentEmail.para||'')}&su=${encodeURIComponent(currentEmail.asunto)}&body=${encodeURIComponent(fullBody)}`;
+  window.open(url, '_blank');
+}
+
+// COPY
+function copiarCorreo() {
+  const txt = `Para: ${currentEmail.para}\nAsunto: ${currentEmail.asunto}\n\n${currentEmail.header}\n\n${currentEmail.body}`;
+  navigator.clipboard.writeText(txt).then(() => {
+    const lbl = document.getElementById('copy-label');
+    lbl.textContent = 'Copiado ✓';
+    setTimeout(() => lbl.textContent = 'Copiar texto', 1800);
+  });
+}
+
+// ESCUELAS REGISTRADAS
+function populateComunaFilter() {
+  const cco = document.getElementById('col-esc-comuna').value;
+  const sel = document.getElementById('filter-comuna');
+  const current = sel.value;
+  if (!cco) { sel.innerHTML = '<option value="">Todas las comunas</option>'; return; }
+  const comunas = [...new Set(escuelas.map(e => (e[cco]||'').toString().trim()).filter(Boolean))].sort();
+  sel.innerHTML = '<option value="">Todas las comunas</option>' + comunas.map(c => `<option value="${c}">${c}</option>`).join('');
+  if (comunas.includes(current)) sel.value = current;
+}
+
+function renderEscuelasPage() {
+  populateComunaFilter();
+  const cn = document.getElementById('col-esc-nombre').value;
+  const cc = document.getElementById('col-esc-correo').value;
+  const cco = document.getElementById('col-esc-comuna').value;
+  const term = normalize(document.getElementById('search-escuela').value || '');
+  const comunaSel = document.getElementById('filter-comuna').value;
+  const cont = document.getElementById('lista-escuelas');
+  cont.innerHTML = '';
+  let shown = 0;
+  escuelas.forEach(e => {
+    const nombre = cn ? (e[cn]||'') : '';
+    const correo = cc ? (e[cc]||'') : '';
+    const comuna = cco ? (e[cco]||'') : '';
+    if (term && !normalize(nombre).includes(term)) return;
+    if (comunaSel && (comuna||'').toString().trim() !== comunaSel) return;
+    shown++;
+    const div = document.createElement('div');
+    div.className = 'student-card';
+    div.style.cursor = 'default';
+    div.innerHTML = `
+      <div>
+        <div class="student-name">${nombre}</div>
+        <div class="student-rut">${correo || '—'}</div>
+      </div>
+      <div class="student-fecha">${comuna || '—'}</div>`;
+    cont.appendChild(div);
+  });
+  document.getElementById('escuela-count').textContent = `${shown} de ${escuelas.length} escuela(s) registradas`;
+}
+
+// INICIALIZACIÓN
+restoreState();
+syncFromSheets(true);
+</script>
+</body>
+</html>
