@@ -261,6 +261,114 @@ h2.pt{font-size:17px}
   [data-theme="p9"] .b{padding:8px 16px;border-radius:10px}
   [data-theme="p1"] .tw,[data-theme="p3"] .tw,[data-theme="p9"] .tw{border-radius:10px}
 }
+
+/* ══════════════════════════════════════════════════
+   EVALUACIÓN DIAGNÓSTICA — pantallas y modal
+   ══════════════════════════════════════════════════ */
+.diag-breadcrumb{display:flex;align-items:center;flex-wrap:wrap;gap:6px;font-size:0.86rem;color:var(--tx2);margin-bottom:12px}
+.diag-breadcrumb b{color:var(--dk)}
+.diag-hint{font-size:0.82rem;color:var(--tx3);margin-top:10px;text-align:center}
+
+.diag-subject-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:18px;max-width:820px;margin:22px auto}
+.diag-subject-card{position:relative;text-align:left;cursor:pointer;border:2px solid var(--c6);border-radius:16px;padding:24px 22px;background:var(--wh);box-shadow:0 2px 10px rgba(0,0,0,.05);transition:.16s;display:flex;flex-direction:column;gap:10px}
+.diag-subject-card:hover,.diag-subject-card:focus-visible{transform:translateY(-3px);box-shadow:0 10px 26px rgba(0,0,0,.12);outline:none}
+.diag-subject-card:focus-visible{border-color:var(--bl)}
+.diag-subject-card.lang{border-color:#c7d7fb}
+.diag-subject-card.math{border-color:#bfe8d9}
+.diag-subject-card .diag-ic{width:52px;height:52px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:26px}
+.diag-subject-card.lang .diag-ic{background:var(--lb);color:var(--bl)}
+.diag-subject-card.math .diag-ic{background:var(--lg);color:var(--gn)}
+.diag-subject-card h3{font-size:1.18rem;color:var(--dk);font-weight:800}
+.diag-subject-card p{font-size:0.87rem;color:var(--tx2);line-height:1.4}
+.diag-subject-card .diag-enter{margin-top:6px;font-size:0.85rem;font-weight:700}
+.diag-subject-card.lang .diag-enter{color:var(--bl)}
+.diag-subject-card.math .diag-enter{color:var(--gn)}
+
+.diag-status-badge{padding:3px 10px;border-radius:14px;font-size:0.79rem;font-weight:700;display:inline-flex;align-items:center;gap:4px;white-space:nowrap}
+.diag-st-not_started{background:var(--c5);color:var(--tx2)}
+.diag-st-in_progress{background:#fff8e1;color:#b26a00}
+.diag-st-completed{background:#e8f5e9;color:#2e7d32}
+.diag-st-pending_reapplication{background:#ffebee;color:#c62828}
+
+.diag-overlay{position:fixed;inset:0;background:rgba(15,23,42,.55);backdrop-filter:blur(2px);display:flex;align-items:center;justify-content:center;z-index:500;padding:20px;animation:fadeIn .15s ease}
+.diag-modal{background:var(--wh);border-radius:16px;box-shadow:0 24px 64px rgba(0,0,0,.28);width:100%;max-width:880px;max-height:92vh;display:flex;flex-direction:column;overflow:hidden}
+.diag-modal-head{padding:18px 26px;border-bottom:1px solid var(--c6);display:flex;justify-content:space-between;align-items:flex-start;gap:14px;flex-shrink:0}
+.diag-modal-head h2{font-size:1.28rem;color:var(--dk);font-weight:800}
+.diag-modal-head .sub{font-size:0.86rem;color:var(--tx2);margin-top:2px}
+.diag-modal-meta{text-align:right;font-size:0.82rem;color:var(--tx2);line-height:1.55}
+.diag-modal-meta b{color:var(--dk)}
+.diag-modal-close{background:none;border:none;font-size:20px;line-height:1;color:var(--tx3);cursor:pointer;padding:4px 8px;border-radius:6px}
+.diag-modal-close:hover{background:var(--c5);color:var(--tx)}
+.diag-modal-close:focus-visible{outline:2px solid var(--bl)}
+
+.diag-steps{display:flex;gap:2px;padding:10px 22px;border-bottom:1px solid var(--c6);overflow-x:auto;flex-shrink:0;background:var(--c4)}
+.diag-step{display:flex;align-items:center;gap:7px;padding:7px 12px;border-radius:8px;font-size:0.79rem;font-weight:600;color:var(--tx3);white-space:nowrap;cursor:pointer;border:none;background:none}
+.diag-step .n{width:20px;height:20px;border-radius:50%;background:var(--c6);color:var(--tx2);display:flex;align-items:center;justify-content:center;font-size:0.72rem;font-weight:700;flex-shrink:0}
+.diag-step.current{color:var(--dk);background:var(--wh);box-shadow:0 1px 4px rgba(0,0,0,.08)}
+.diag-step.current .n{background:var(--bl);color:var(--wh)}
+.diag-step.done .n{background:var(--gn);color:var(--wh)}
+.diag-step.done{color:var(--dk)}
+
+.diag-modal-body{padding:22px 26px;overflow-y:auto;flex:1}
+.diag-modal-foot{padding:14px 26px;border-top:1px solid var(--c6);display:flex;justify-content:space-between;align-items:center;gap:10px;flex-shrink:0;flex-wrap:wrap}
+.diag-save-indicator{font-size:0.78rem;color:var(--tx3)}
+
+.diag-step-title{font-size:1.05rem;font-weight:800;color:var(--dk);margin-bottom:4px}
+.diag-q{font-size:0.92rem;font-weight:700;color:var(--tx);margin:18px 0 10px}
+.diag-q:first-child{margin-top:0}
+.diag-req::after{content:' *';color:var(--rd)}
+
+.diag-choice-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px}
+.diag-choice-card{border:2px solid var(--c6);border-radius:12px;padding:14px 16px;cursor:pointer;background:var(--wh);text-align:left;transition:.12s}
+.diag-choice-card:hover{border-color:var(--tx3)}
+.diag-choice-card:focus-visible{outline:2px solid var(--bl)}
+.diag-choice-card.sel{box-shadow:0 0 0 2px currentColor inset}
+.diag-choice-card b{display:block;font-size:0.93rem;margin-bottom:3px}
+.diag-choice-card span{font-size:0.79rem;color:var(--tx2)}
+.diag-choice-card.ok{color:var(--gn)}.diag-choice-card.ok.sel{background:var(--lg)}
+.diag-choice-card.warn{color:#b26a00}.diag-choice-card.warn.sel{background:#fff8e1}
+.diag-choice-card.bad{color:var(--rd)}.diag-choice-card.bad.sel{background:var(--lr)}
+.diag-choice-card.neutral{color:var(--bl)}.diag-choice-card.neutral.sel{background:var(--lb)}
+
+.diag-radio-list,.diag-check-list{display:flex;flex-direction:column;gap:6px}
+.diag-radio-opt,.diag-check-opt{display:flex;align-items:flex-start;gap:8px;font-size:0.88rem;padding:6px 8px;border-radius:8px;cursor:pointer}
+.diag-radio-opt:hover,.diag-check-opt:hover{background:var(--c4)}
+.diag-chip-grid{display:flex;flex-wrap:wrap;gap:8px}
+.diag-chip{border:1.5px solid var(--c6);border-radius:20px;padding:6px 14px;font-size:0.83rem;font-weight:600;cursor:pointer;background:var(--wh);color:var(--tx2)}
+.diag-chip:hover{border-color:var(--bl)}
+.diag-chip.sel{background:var(--bl);border-color:var(--bl);color:var(--wh)}
+.diag-chip:focus-visible{outline:2px solid var(--bl)}
+
+.diag-indicator-row{border:1px solid var(--c6);border-radius:10px;padding:12px 14px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap}
+.diag-indicator-title{flex:1;min-width:220px;font-size:0.9rem;color:var(--tx);font-weight:600;display:flex;align-items:center;gap:6px}
+.diag-info-btn{background:none;border:1px solid var(--c6);color:var(--tx3);border-radius:50%;width:17px;height:17px;font-size:0.68rem;line-height:1;cursor:pointer;flex-shrink:0}
+.diag-level-group{display:flex;gap:6px;flex-wrap:wrap}
+.diag-level-btn{border:1.5px solid var(--c6);background:var(--wh);border-radius:8px;padding:6px 11px;font-size:0.79rem;font-weight:700;cursor:pointer;color:var(--tx2)}
+.diag-level-btn:focus-visible{outline:2px solid var(--bl)}
+.diag-level-btn.sel{color:var(--wh);border-color:transparent}
+.diag-level-btn.no-obs{font-weight:600;color:var(--tx3)}
+.diag-level-btn.no-obs.sel{background:var(--tx3);color:var(--wh)}
+
+.diag-dim-notobs{background:var(--c4);border:1px dashed var(--c6);border-radius:10px;padding:14px;font-size:0.85rem;color:var(--tx2);margin-top:10px}
+
+textarea.diag-obs{width:100%;min-height:70px;padding:8px 10px;border:1px solid var(--brd);border-radius:8px;font:0.88rem 'DM Sans',sans-serif;resize:vertical}
+
+.diag-synth-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-bottom:16px}
+.diag-synth-card{border-radius:12px;padding:14px 16px;border:1.5px solid var(--c6)}
+.diag-synth-card .lvl{font-size:1.05rem;font-weight:800}
+.diag-global-result{text-align:center;padding:20px;border-radius:14px;margin-bottom:16px}
+.diag-global-result .lvl{font-size:1.7rem;font-weight:800}
+
+.diag-legacy-note{font-size:0.76rem;color:var(--tx3);margin-top:2px}
+
+@media(max-width:900px){
+  .diag-overlay{padding:0}
+  .diag-modal{max-width:100%;max-height:100vh;height:100vh;border-radius:0}
+  .diag-modal-head{flex-direction:column}
+  .diag-modal-meta{text-align:left}
+  .diag-indicator-row{flex-direction:column;align-items:stretch}
+  .diag-level-group{justify-content:flex-start}
+}
 </style>
 <!-- Firebase SDK (gratuito, sin instalación) -->
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
@@ -531,7 +639,10 @@ let _dirtyEvals = new Set(); // IDs de Estudiantes con evaluaciones modificadas
 let _saveTimer  = null;
 let _saving     = false;
 let _diagDirty  = false;
+let _diagEvalDirty = false;
 let _asistDirty = false;
+let _saveListeners = [];
+function onNextSave(cb){_saveListeners.push(cb);}
 // ═══════════════════════════════════════════════════════════════
 const ESCALA={NL:0,LI:25,LB:50,LA:75,L:100};
 const ESCALA_NT={NL:0,I:33,EP:67,L:100};
@@ -693,7 +804,7 @@ const EMBEDDED_STATE=/*__EMBEDDED_DATA__*/null/*__END_EMBEDDED__*/;
 
 let D;
 async function load(){
-if(EMBEDDED_STATE){D=JSON.parse(JSON.stringify(EMBEDDED_STATE));if(!D.indDescriptions)D.indDescriptions={};if(!D.profesoresJefe)D.profesoresJefe={};return;}
+if(EMBEDDED_STATE){D=JSON.parse(JSON.stringify(EMBEDDED_STATE));if(!D.indDescriptions)D.indDescriptions={};if(!D.profesoresJefe)D.profesoresJefe={};if(!D.diagnosticoEval)D.diagnosticoEval={};return;}
 try{
   const[configSnap,studentsSnap,descSnap,pjSnap]=await Promise.all([
     db.collection('sge').doc('config').get(),
@@ -707,7 +818,8 @@ try{
     indDescriptions: descSnap.exists     ? (descSnap.data().v||{})        : {},
     profesoresJefe:  pjSnap.exists       ? (pjSnap.data().v||{})          : {},
     evaluations:     {},
-    asistencia:      {}
+    asistencia:      {},
+    diagnosticoEval: {}
   };
   
   if (D.students && D.students.length > 0) {
@@ -742,6 +854,8 @@ try{
   });
   const diagSnap=await db.collection('sge_diag').doc('data').get();
   D.diagnostico=diagSnap.exists?(diagSnap.data().v||{}):{};
+  const diagEvalSnap=await db.collection('sge_diag_eval').doc('data').get();
+  D.diagnosticoEval=diagEvalSnap.exists?(diagEvalSnap.data().v||{}):{};
   const asistSnap=await db.collection('sge_asistencia').doc('data').get();
   D.asistencia=asistSnap.exists?(asistSnap.data().v||{}):{};
   if(Object.keys(D.asistencia).length===0){
@@ -749,7 +863,7 @@ try{
   }
 }catch(e){
   console.error('Error cargando datos:',e);
-  D={students:JSON.parse(JSON.stringify(INITIAL_STUDENTS)),evaluations:{},diagnostico:{},asistencia:{},indDescriptions:{},profesoresJefe:{},config:{...DEFAULT_CFG}};
+  D={students:JSON.parse(JSON.stringify(INITIAL_STUDENTS)),evaluations:{},diagnostico:{},diagnosticoEval:{},asistencia:{},indDescriptions:{},profesoresJefe:{},config:{...DEFAULT_CFG}};
   showToast('⚠ Error al cargar — verifica tu conexión');
 }
 }
@@ -791,15 +905,21 @@ async function _doSave(){
       await db.collection('sge_diag').doc('data').set({v:D.diagnostico||{}});
       _diagDirty=false;
     }
+    if(_diagEvalDirty){
+      await db.collection('sge_diag_eval').doc('data').set({v:D.diagnosticoEval||{}});
+      _diagEvalDirty=false;
+    }
     if(_asistDirty){
       await db.collection('sge_asistencia').doc('data').set({v:D.asistencia||{}});
       _asistDirty=false;
     }
     autoSnapshot();
     showToast('✓ Guardado en la nube');var ss=document.getElementById('saveStatus');if(ss){ss.textContent='✓ Guardado a las '+new Date().toLocaleTimeString();setTimeout(()=>ss.style.display='none', 3000);}
+    var _sl=_saveListeners;_saveListeners=[];_sl.forEach(function(cb){try{cb(true);}catch(e3){}});
   }catch(e){
     console.error('Error guardando:',e);
     showToast('⚠ Error al guardar: '+e.message);
+    var _sl2=_saveListeners;_saveListeners=[];_sl2.forEach(function(cb){try{cb(false);}catch(e3){}});
   }finally{_saving=false;}
 }
 function markAllEvalsDirty(){Object.keys(D.evaluations||{}).forEach(sid=>_dirtyEvals.add(sid));}
@@ -1709,99 +1829,951 @@ const DIAG_CATS=[
   {v:'D',l:'Destacado',col:'#2e7d32',bg:'#e8f5e9'}
 ];
 let diagCur='';
+let diagSubject='';
+let diagWizard=null;
+let _diagSaveLocalTimer=null;
+
+// ── Configuración: niveles, rangos y descriptores (centralizado) ──────────
+const DIAG_LEVELS=[
+  {v:'insuficiente',l:'Insuficiente',n:1,col:'#c62828',bg:'#ffebee'},
+  {v:'adecuado',l:'Adecuado',n:2,col:'#e37400',bg:'#fff8e1'},
+  {v:'competente',l:'Competente',n:3,col:'#1565c0',bg:'#e3f2fd'},
+  {v:'destacado',l:'Destacado',n:4,col:'#2e7d32',bg:'#e8f5e9'}
+];
+const DIAG_LEVEL_DESCRIPTORS={
+  insuficiente:'La habilidad no se evidencia o aparece de forma muy limitada, incluso con apoyo.',
+  adecuado:'La habilidad se evidencia parcialmente o con apoyo frecuente.',
+  competente:'La habilidad se evidencia de manera suficiente, clara y acorde al nivel esperado.',
+  destacado:'La habilidad se evidencia de manera autónoma, consistente, profunda o superior a lo esperado.'
+};
+// Rangos de clasificación por promedio — únicos, no repetir en otros componentes.
+const DIAG_LEVEL_RANGES=[
+  {max:1.74,v:'insuficiente'},
+  {max:2.49,v:'adecuado'},
+  {max:3.24,v:'competente'},
+  {max:4.0001,v:'destacado'}
+];
+function diagLevelInfo(v){return DIAG_LEVELS.find(function(l){return l.v===v;});}
+function diagIndicatorValue(level){var info=diagLevelInfo(level);return info?info.n:null;}
+function diagLevelFromAvg(avg){
+  for(var i=0;i<DIAG_LEVEL_RANGES.length;i++){if(avg<=DIAG_LEVEL_RANGES[i].max)return DIAG_LEVEL_RANGES[i].v;}
+  return 'destacado';
+}
+
+// ── Grupos de curso (Grupo A-D) ────────────────────────────────────────────
+const DIAG_COURSE_GROUPS={
+  '1°':'grades_1_3','2°':'grades_1_3','3°':'grades_1_3',
+  '4°':'grades_4_6','5°':'grades_4_6','6°':'grades_4_6',
+  '7°':'grades_7_8','8°':'grades_7_8',
+  '1°M':'secondary','2°M':'secondary','3°M':'secondary','4°M':'secondary'
+};
+const DIAG_GROUP_LABELS={grades_1_3:'1° a 3° Básico',grades_4_6:'4° a 6° Básico',grades_7_8:'7° y 8° Básico',secondary:'Educación Media'};
+function diagCourseGroup(curso){return DIAG_COURSE_GROUPS[curso]||'grades_1_3';}
+// Reutiliza la lista de asignaturas por curso ya existente (getA_internal) — allí "lenguaje"
+// ya cambia de nombre según el curso, evitando duplicar la regla 1°-6°/7°-4°M.
+function diagLanguageLabel(curso){
+  var asigs=getA_internal(curso);
+  var l=asigs.find(function(a){return a.id==='lenguaje';});
+  return l?l.n:'Lenguaje y Comunicación';
+}
+function diagSubjectLabel(subjectId,curso){
+  if(subjectId==='mathematics')return 'Matemática';
+  if(subjectId==='language')return diagLanguageLabel(curso);
+  return '';
+}
+
+const DIAG_SUBJECTS=[
+  {id:'language',cls:'lang',icon:'📖',desc:'Evaluación diagnóstica de comunicación oral, lectura y escritura.',legacyKey:'lenguaje'},
+  {id:'mathematics',cls:'math',icon:'🔢',desc:'Evaluación diagnóstica de habilidades y aprendizajes matemáticos.',legacyKey:'matematica'}
+];
+
+// ── Pasos del instrumento por asignatura ───────────────────────────────────
+const DIAG_STEPS_LANGUAGE=[
+  {id:'application',n:'Aplicación'},
+  {id:'support',n:'Modalidad y apoyos'},
+  {id:'oralCommunication',n:'Comunicación oral'},
+  {id:'reading',n:'Lectura'},
+  {id:'writing',n:'Escritura'},
+  {id:'synthesis',n:'Síntesis'}
+];
+const DIAG_STEPS_MATH=[
+  {id:'application',n:'Aplicación'},
+  {id:'support',n:'Modalidad y apoyos'},
+  {id:'mathematics',n:'Matemática'},
+  {id:'synthesis',n:'Síntesis'}
+];
+function diagSteps(subjectId){return subjectId==='mathematics'?DIAG_STEPS_MATH:DIAG_STEPS_LANGUAGE;}
+function diagDimensionIds(subjectId){return subjectId==='mathematics'?['mathematics']:['oralCommunication','reading','writing'];}
+// Dimensiones donde corresponde preguntar "¿fue posible observarla?" (permiten notObservable).
+const DIAG_OBSERVABLE_DIMS=['reading','writing'];
+
+// ── Opciones de las pantallas 1 y 2 ────────────────────────────────────────
+const DIAG_COMPLETION_OPTS=[
+  {v:'complete',l:'Sí, completa',d:'Se realizó la actividad completa de principio a fin.',cls:'ok'},
+  {v:'partial',l:'Parcialmente',d:'Se realizó solo una parte de la actividad o fue necesario interrumpirla.',cls:'warn'},
+  {v:'not_possible',l:'No fue posible',d:'No existieron condiciones suficientes para desarrollar la actividad.',cls:'bad'}
+];
+const DIAG_PAUSES_OPTS=[
+  {v:'none',l:'No'},
+  {v:'one',l:'Sí, una pausa'},
+  {v:'multiple',l:'Sí, varias pausas'},
+  {v:'ended_early',l:'La actividad debió finalizar antes'}
+];
+const DIAG_INFLUENCING_FACTORS=[
+  {v:'salud',l:'Estado de salud'},{v:'dolor',l:'Dolor o malestar'},{v:'fatiga',l:'Fatiga o somnolencia'},
+  {v:'emocional',l:'Estado emocional'},{v:'procedimiento_medico',l:'Procedimiento médico'},
+  {v:'interrupcion_externa',l:'Interrupción externa'},{v:'tiempo_insuficiente',l:'Tiempo insuficiente'},
+  {v:'baja_disposicion',l:'Baja disposición'},{v:'otro',l:'Otro'}
+];
+const DIAG_RESPONSE_MODES=[
+  {v:'oral',l:'Expresión oral'},{v:'escritura_autonoma',l:'Escritura autónoma'},{v:'escritura_apoyo',l:'Escritura con apoyo'},
+  {v:'dictado_adulto',l:'Dictado al adulto'},{v:'dibujo',l:'Dibujo'},{v:'seleccion_alternativas',l:'Selección de alternativas'},
+  {v:'gestos',l:'Gestos o señalamiento'},{v:'imagenes',l:'Uso de imágenes'},
+  {v:'caa',l:'Sistema de comunicación aumentativa o alternativa'},{v:'combinacion',l:'Combinación de modalidades'}
+];
+const DIAG_SUPPORTS=[
+  {v:'instrucciones_claras',l:'Instrucciones claras y breves'},{v:'repeticion',l:'Repetición de instrucciones'},
+  {v:'explicacion_individual',l:'Explicación individual'},{v:'modelado',l:'Modelado o ejemplo'},
+  {v:'preguntas_guiadas',l:'Preguntas guiadas'},{v:'apoyo_visual',l:'Apoyo visual'},
+  {v:'lectura_docente',l:'Lectura de preguntas por parte del docente'},{v:'tiempo_adicional',l:'Tiempo adicional'},
+  {v:'pausas',l:'Pausas'},{v:'acompanamiento_adulto',l:'Acompañamiento de un adulto'},
+  {v:'material_concreto',l:'Material concreto'},{v:'ninguno',l:'No necesitó apoyos adicionales'},{v:'otro',l:'Otro'}
+];
+const DIAG_OBSERVED_OPTS=[
+  {v:'yes',l:'Sí'},{v:'partial',l:'Parcialmente'},{v:'not_possible',l:'No fue posible observarla'}
+];
+
+// ── Configuración de indicadores por asignatura / dimensión / grupo de curso ──
+// Estructura centralizada y editable: no se repiten criterios dentro de los componentes visuales.
+function diagMkIndicators(dimension,titlesByGroup){
+  var out={};
+  Object.keys(titlesByGroup).forEach(function(group){
+    out[group]=titlesByGroup[group].map(function(title,i){
+      return {id:dimension+'_'+group+'_'+(i+1),title:title,dimension:dimension,courseGroup:group,order:i+1,active:true};
+    });
+  });
+  return out;
+}
+const DIAG_INDICATORS={
+  language:{
+    oralCommunication:diagMkIndicators('oralCommunication',{
+      grades_1_3:['Comprende preguntas orales simples.','Expresa información personal.','Comunica gustos o intereses.','Responde de manera relacionada con la pregunta.','Mantiene una interacción breve con el docente.'],
+      grades_4_6:['Comprende preguntas e instrucciones orales.','Expresa experiencias e información personal.','Organiza sus ideas al hablar.','Amplía sus respuestas.','Mantiene una conversación respetando turnos.'],
+      grades_7_8:['Comprende preguntas orales de distinta complejidad.','Expresa información personal con claridad.','Organiza y relaciona sus ideas.','Fundamenta o amplía sus respuestas.','Participa activamente en una interacción oral.'],
+      secondary:['Comprende preguntas y consignas orales complejas.','Comunica ideas con claridad y precisión.','Organiza un discurso coherente.','Fundamenta opiniones o experiencias.','Ajusta su expresión al propósito comunicativo.']
+    }),
+    reading:diagMkIndicators('reading',{
+      grades_1_3:['Reconoce palabras o frases breves.','Comprende preguntas escritas simples.','Sigue instrucciones escritas breves.','Identifica información explícita.','Relaciona imágenes con información escrita.','Comprende el sentido general de un mensaje breve.'],
+      grades_4_6:['Identifica información explícita.','Reconoce la idea principal.','Interpreta vocabulario según el contexto.','Relaciona distintas partes de un texto.','Realiza inferencias simples.','Expresa una opinión basada en lo leído.'],
+      grades_7_8:['Comprende el sentido global del texto.','Identifica información relevante.','Realiza inferencias.','Interpreta significados o intenciones.','Relaciona el texto con experiencias o conocimientos.','Fundamenta respuestas a partir de lo leído.'],
+      secondary:['Comprende información explícita e implícita.','Identifica ideas principales y secundarias.','Interpreta relaciones entre ideas.','Realiza inferencias complejas.','Evalúa información del texto.','Fundamenta una interpretación o reflexión.']
+    }),
+    writing:diagMkIndicators('writing',{
+      grades_1_3:['Representa una idea mediante dibujo, palabra o frase.','Escribe información relacionada con la consigna.','Construye palabras o frases comprensibles.','Organiza información básica.','Utiliza vocabulario relacionado con su experiencia.','Completa su producción según sus posibilidades.'],
+      grades_4_6:['Produce ideas relacionadas con la consigna.','Organiza sus ideas en una secuencia comprensible.','Construye oraciones relacionadas entre sí.','Utiliza vocabulario pertinente.','Agrega detalles o información relevante.','Revisa o completa su producción.'],
+      grades_7_8:['Desarrolla ideas pertinentes.','Organiza la información de manera coherente.','Utiliza vocabulario adecuado al propósito.','Relaciona y amplía sus ideas.','Construye un texto comprensible.','Revisa y mejora aspectos de su producción.'],
+      secondary:['Desarrolla ideas con claridad y profundidad.','Organiza el texto de manera coherente.','Utiliza vocabulario pertinente y variado.','Fundamenta o amplía sus planteamientos.','Mantiene relación entre propósito, contenido y forma.','Revisa y mejora su producción.']
+    })
+  },
+  mathematics:{
+    mathematics:diagMkIndicators('mathematics',{
+      grades_1_3:['Reconoce y utiliza números en situaciones simples.','Resuelve problemas breves de suma o resta con apoyo concreto.','Identifica formas y patrones sencillos.','Compara cantidades, longitudes o tamaños.','Explica de manera simple cómo resolvió una actividad.'],
+      grades_4_6:['Utiliza operaciones matemáticas para resolver problemas cotidianos.','Interpreta datos presentados en tablas o gráficos simples.','Reconoce y aplica propiedades de figuras geométricas.','Estima y calcula medidas con unidades pertinentes.','Explica el procedimiento utilizado para llegar a un resultado.'],
+      grades_7_8:['Aplica operaciones y procedimientos matemáticos en distintos contextos.','Resuelve problemas que requieren más de un paso.','Interpreta y representa información matemática de diversas formas.','Utiliza razonamiento lógico para justificar procedimientos.','Verifica la razonabilidad de sus resultados.'],
+      secondary:['Aplica conceptos y procedimientos matemáticos de mayor complejidad.','Resuelve problemas contextualizados que requieren planificación.','Interpreta y analiza información cuantitativa.','Fundamenta procedimientos y resultados con argumentos matemáticos.','Evalúa la pertinencia de distintas estrategias de resolución.']
+    })
+  }
+};
+function getDiagIndicators(subjectId,dimension,courseGroup){
+  var bySubject=DIAG_INDICATORS[subjectId];
+  var byDim=bySubject&&bySubject[dimension];
+  var list=(byDim&&byDim[courseGroup])||[];
+  return list.filter(function(i){return i.active;});
+}
+
+// ── Funciones puras de cálculo ─────────────────────────────────────────────
+function diagCalcDimension(indicatorResults){
+  var total=indicatorResults.length;
+  var observed=indicatorResults.filter(function(r){return r.evidenceStatus==='observed'&&r.level;});
+  var notObserved=indicatorResults.filter(function(r){return r.evidenceStatus==='not_observed';}).length;
+  if(total===0||observed.length===0){
+    return {status:'not_evaluated',calculatedLevel:null,avg:null,evaluatedCount:0,notObservedCount:notObserved};
+  }
+  var sum=observed.reduce(function(a,r){return a+diagIndicatorValue(r.level);},0);
+  var avg=sum/observed.length;
+  return {
+    status:notObserved>0?'partially_evaluated':'evaluated',
+    calculatedLevel:diagLevelFromAvg(avg),
+    avg:avg,
+    evaluatedCount:observed.length,
+    notObservedCount:notObserved
+  };
+}
+function diagCalcGlobal(dimensionResults){
+  var vals=Object.keys(dimensionResults).map(function(k){return dimensionResults[k];})
+    .filter(function(d){return d.status!=='not_evaluated'&&d.calculatedLevel;});
+  if(!vals.length)return null;
+  var sum=vals.reduce(function(a,d){return a+diagIndicatorValue(d.calculatedLevel);},0);
+  return diagLevelFromAvg(sum/vals.length);
+}
+function diagEvidenceLimited(dimensionResults){
+  var totalCount=0,totalNotObs=0;
+  Object.keys(dimensionResults).forEach(function(k){
+    var d=dimensionResults[k];
+    totalCount+=(d.evaluatedCount+d.notObservedCount);
+    totalNotObs+=d.notObservedCount;
+  });
+  if(totalCount===0)return false;
+  return (totalNotObs/totalCount)>0.4;
+}
+
+// ── Registro de evaluación ─────────────────────────────────────────────────
+function diagNewEvaluation(studentId,courseId,subjectId,teacherId){
+  var dims={};
+  diagDimensionIds(subjectId).forEach(function(id){dims[id]={indicators:{},notObservable:false,observableAnswer:'',observation:''};});
+  return {
+    id:studentId+'_'+subjectId,
+    studentId:studentId,courseId:courseId,subjectId:subjectId,teacherId:teacherId||'',
+    instrumentType:subjectId==='mathematics'?'diagnostico_matematica':'todo_sobre_mi',
+    instrumentVersion:'1.0',
+    status:'not_started',currentStep:0,
+    startedAt:new Date().toISOString(),updatedAt:new Date().toISOString(),completedAt:null,
+    application:{completion:null,pauses:null,influencingFactors:[],otherFactor:'',observation:''},
+    responseAndSupport:{responseModes:[],supports:[],otherSupport:'',observation:''},
+    dimensions:dims,
+    summary:{globalLevel:null,evidenceLimited:false,automaticStrengths:'',finalStrengths:'',automaticAreasToImprove:'',finalAreasToImprove:''}
+  };
+}
+function diagGetEval(studentId,subjectId){
+  return (D.diagnosticoEval&&D.diagnosticoEval[studentId]&&D.diagnosticoEval[studentId][subjectId])||null;
+}
+function diagLegacyValue(studentId,subjectId){
+  var key=(DIAG_SUBJECTS.find(function(s){return s.id===subjectId;})||{}).legacyKey;
+  var v=D.diagnostico&&D.diagnostico[studentId]&&D.diagnostico[studentId][key];
+  return v?DIAG_CATS.find(function(c){return c.v===v;}):null;
+}
+
+// ── Síntesis automática y triangulación ────────────────────────────────────
+function diagComputeDimensionResults(draft){
+  var results={};
+  diagDimensionIds(draft.subjectId).forEach(function(dimId){
+    var dimState=draft.dimensions[dimId]||{indicators:{},notObservable:false};
+    if(DIAG_OBSERVABLE_DIMS.indexOf(dimId)>=0&&dimState.notObservable){
+      results[dimId]={status:'not_evaluated',calculatedLevel:null,avg:null,evaluatedCount:0,notObservedCount:0,indicatorResults:[]};
+      return;
+    }
+    var indicators=getDiagIndicators(draft.subjectId,dimId,diagCourseGroup(draft.courseId));
+    var arr=indicators.map(function(ind){
+      var r=dimState.indicators[ind.id]||{evidenceStatus:'not_observed'};
+      return {id:ind.id,title:ind.title,evidenceStatus:r.evidenceStatus,level:r.level};
+    });
+    var calc=diagCalcDimension(arr);
+    calc.indicatorResults=arr;
+    results[dimId]=calc;
+  });
+  return results;
+}
+function diagCleanForSentence(t){return t.charAt(0).toLowerCase()+t.slice(1).replace(/\.$/,'');}
+function diagGenerateSynthesis(draft){
+  var dimResults=diagComputeDimensionResults(draft);
+  var globalLevel=diagCalcGlobal(dimResults);
+  var evidenceLimited=diagEvidenceLimited(dimResults);
+  var strong=[],weak=[];
+  Object.keys(dimResults).forEach(function(dimId){
+    (dimResults[dimId].indicatorResults||[]).forEach(function(r){
+      if(r.level==='competente'||r.level==='destacado')strong.push(r.title);
+      if(r.level==='insuficiente'||r.level==='adecuado')weak.push(r.title);
+    });
+  });
+  var strengthsText=strong.length
+    ? 'El estudiante evidencia '+strong.slice(0,4).map(diagCleanForSentence).join('; ')+'.'
+    : 'Aún no se cuenta con evidencia suficiente para identificar fortalezas consolidadas en esta aplicación.';
+  var areasText=weak.length
+    ? 'Requiere fortalecer '+weak.slice(0,4).map(diagCleanForSentence).join('; ')+'. Se beneficiaría de apoyos guiados y práctica sistemática en estos aspectos.'
+    : 'No se identifican aspectos prioritarios a mejorar a partir de la evidencia disponible en esta aplicación.';
+  var notes=[];
+  if(draft.subjectId==='language'){
+    var oral=dimResults.oralCommunication,writing=dimResults.writing,reading=dimResults.reading;
+    if(oral&&writing&&oral.calculatedLevel&&writing.calculatedLevel){
+      if(diagIndicatorValue(oral.calculatedLevel)>=3&&diagIndicatorValue(writing.calculatedLevel)<=2){
+        notes.push('Expresa oralmente ideas más complejas de las que logra registrar por escrito. Se recomienda utilizar planificación oral antes de la producción escrita.');
+      }
+    }
+    if(reading&&writing&&reading.calculatedLevel&&writing.calculatedLevel){
+      if(diagIndicatorValue(reading.calculatedLevel)>diagIndicatorValue(writing.calculatedLevel)){
+        notes.push('Comprende información que todavía requiere mayor apoyo para expresar por escrito.');
+      }
+    }
+  }
+  var supportsUsed=(draft.responseAndSupport.supports||[]).filter(function(s){return s!=='ninguno';});
+  if(supportsUsed.length>=3){
+    notes.push('El desempeño observado estuvo acompañado por apoyos pedagógicos que facilitaron la participación.');
+  }
+  if(evidenceLimited){
+    notes.push('La evidencia disponible es limitada y debe complementarse en próximas sesiones.');
+  }
+  if(draft.application.completion==='partial'){
+    notes.push('La síntesis corresponde a una aproximación inicial basada en la evidencia disponible.');
+  }
+  return {
+    dimResults:dimResults,globalLevel:globalLevel,evidenceLimited:evidenceLimited,
+    automaticStrengths:strengthsText,
+    automaticAreasToImprove:notes.length?areasText+' '+notes.join(' '):areasText
+  };
+}
+function diagEsc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+const DIAG_STATUS_LABELS={not_started:'Sin evaluar',in_progress:'En progreso',completed:'Finalizada',pending_reapplication:'Pendiente de nueva aplicación'};
+const DIAG_DIM_LABELS={oralCommunication:'Comunicación oral',reading:'Lectura',writing:'Escritura',mathematics:'Matemática'};
+const DIAG_DIM_TITLES={oralCommunication:'3. Comunicación oral',reading:'4. Lectura',writing:'5. Escritura',mathematics:'3. Matemática'};
+function diagDimLabel(dimId){return DIAG_DIM_LABELS[dimId]||dimId;}
+
+// ── Página principal ────────────────────────────────────────────────────────
+function diagCourseOptions(){
+  var CURSOS_DIAG=['1°','2°','3°','4°','5°','6°','7°','8°','1°M','2°M','3°M','4°M'];
+  var allowed=getAllowCursos().filter(function(c){return CURSOS_DIAG.indexOf(c)>=0;});
+  return allowed.map(function(c){return '<option value="'+c+'" '+(diagCur===c?'selected':'')+'>'+(CURSO_DISPLAY_MAP[c]||c)+'</option>';}).join('');
+}
+function diagChangeCurso(newCurso){
+  if(diagWizard&&diagWizard.dirty&&!diagWizard.readOnly){
+    if(!confirm('Hay una evaluación con cambios sin guardar. ¿Deseas cambiar de curso de todas formas? Se perderán los cambios no guardados desde el último autoguardado.')){render();return;}
+    diagCloseWizard(true);
+  }else if(diagWizard){
+    diagCloseWizard(true);
+  }
+  diagCur=newCurso;render();
+}
+function diagSelectSubject(subjectId){diagSubject=subjectId;render();}
+function diagChangeSubject(){
+  if(diagWizard&&diagWizard.dirty&&!diagWizard.readOnly){
+    if(!confirm('Hay una evaluación con cambios sin guardar. ¿Deseas cambiar de asignatura? Se perderán los cambios no guardados desde el último autoguardado.'))return;
+    diagCloseWizard(true);
+  }else if(diagWizard){
+    diagCloseWizard(true);
+  }
+  diagSubject='';render();
+}
 
 function rDiag(){
-  const CURSOS_DIAG=['1°','2°','3°','4°','5°','6°','7°','8°','1°M','2°M','3°M','4°M'];
-  const curOpts=CURSOS_DIAG.map(c=>`<option value="${c}" ${diagCur===c?'selected':''}>${CURSO_DISPLAY_MAP[c]||c}</option>`).join('');
-  const legend=DIAG_CATS.map(c=>`<span style="display:inline-flex;align-items:center;gap:4px;margin-right:8px"><span style="width:11px;height:11px;border-radius:2px;background:${c.bg};border:1.5px solid ${c.col};display:inline-block"></span><span style="color:${c.col};font-weight:700;font-size:0.85rem">${c.l}</span></span>`).join('');
-
-  let summaryHtml='', tableHtml='';
-
-  if(diagCur){
-    const sts=D.students.filter(s=>s.curso===diagCur).sort((a,b)=>(a.nombre||'').localeCompare(b.nombre||''));
-    const diag=D.diagnostico||{};
-
-    // Resumen por categoría
-    const sum={lenguaje:{I:0,A:0,C:0,D:0},matematica:{I:0,A:0,C:0,D:0}};
-    sts.forEach(s=>{
-      const d=diag[s.id]||{};
-      if(d.lenguaje&&sum.lenguaje[d.lenguaje]!==undefined)sum.lenguaje[d.lenguaje]++;
-      if(d.matematica&&sum.matematica[d.matematica]!==undefined)sum.matematica[d.matematica]++;
-    });
-    const total=sts.length||1;
-
-    const mkCard=(asig,label)=>{
-      const cats=DIAG_CATS.map(c=>{
-        const n=sum[asig][c.v];
-        const pct=Math.round(n/total*100);
-        return `<div style="flex:1;text-align:center;background:${c.bg};border-radius:8px;padding:10px 6px;border:1.5px solid ${c.col}20">
-          <div style="font-size:1.5rem;font-weight:800;color:${c.col}">${n}</div>
-          <div style="font-size:0.72rem;font-weight:700;color:${c.col};line-height:1.2">${c.l}</div>
-          <div style="font-size:0.68rem;color:${c.col}99;margin-top:2px">${pct}%</div>
-        </div>`;
-      }).join('');
-      return `<div class="tw" style="padding:14px;flex:1">
-        <div style="font-size:0.88rem;font-weight:700;color:var(--dk);margin-bottom:10px">📊 ${label}</div>
-        <div style="display:flex;gap:8px">${cats}</div>
-      </div>`;
-    };
-    summaryHtml=`<div style="display:flex;gap:12px;margin-bottom:16px;flex-wrap:wrap">
-      ${mkCard('lenguaje','Lenguaje y Literatura')}
-      ${mkCard('matematica','Matemática')}
-    </div>`;
-
-    // Tabla de estudiantes
-    const mkSel=(sid,asig,val)=>{
-      const c=DIAG_CATS.find(x=>x.v===val);
-      const bg=c?c.bg:'var(--wh)';const col=c?c.col:'var(--tx)';
-      const opts=['','I','A','C','D'].map(v=>{
-        const dc=DIAG_CATS.find(x=>x.v===v);
-        return `<option value="${v}" ${val===v?'selected':''}>${v?(dc?dc.l:''):'— Sin evaluar —'}</option>`;
-      }).join('');
-      return `<select onchange="saveDiagCat('${sid}','${asig}',this.value,this)" style="width:100%;padding:5px 8px;border:1px solid var(--brd);border-radius:6px;font:0.88rem 'DM Sans',sans-serif;background:${bg};color:${col};font-weight:600">${opts}</select>`;
-    };
-
-    let rows='';
-    if(!sts.length){
-      rows=`<tr><td colspan="3" style="padding:28px;text-align:center;color:var(--tx3)">No hay estudiantes en este curso</td></tr>`;
-    }else{
-      sts.forEach((s,i)=>{
-        const d=diag[s.id]||{};
-        rows+=`<tr style="background:${i%2?'var(--c4)':'var(--wh)'}">
-          <td style="font-weight:600">${s.nombre}</td>
-          <td style="width:220px;padding:5px 10px">${mkSel(s.id,'lenguaje',d.lenguaje||'')}</td>
-          <td style="width:220px;padding:5px 10px">${mkSel(s.id,'matematica',d.matematica||'')}</td>
-        </tr>`;
-      });
-    }
-    tableHtml=`<div class="tw">
-      <table>
-        <thead><tr>
-          <th>Nombre del Estudiante</th>
-          <th style="text-align:center;width:220px">Lenguaje y Literatura</th>
-          <th style="text-align:center;width:220px">Matemática</th>
-        </tr></thead>
-        <tbody>${rows}</tbody>
-      </table>
-    </div>`;
-  }else{
-    tableHtml=`<div class="tw" style="padding:32px;text-align:center;color:var(--tx3);font-size:0.92rem">Seleccione un curso para ver los estudiantes</div>`;
+  var curOpts=diagCourseOptions();
+  var courseSelectHtml='<div class="tb no-print" style="margin-bottom:14px">'
+    +'<select onchange="diagChangeCurso(this.value)" style="width:180px" aria-label="Seleccionar curso">'
+    +'<option value="">Seleccione curso…</option>'+curOpts
+    +'</select></div>';
+  var head='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">'
+    +'<h2 class="pt" style="margin:0">Evaluación Diagnóstica</h2>'
+    +'<div class="no-print" style="display:flex;gap:6px">'
+    +(diagCur&&diagSubject?'<button class="b bs" onclick="printSection(\'Evaluación Diagnóstica\')" style="font-size:10px">🖨️ Imprimir listado</button>':'')
+    +'</div></div>';
+  if(!diagCur){
+    return head+'<p class="ps">Selecciona un curso para comenzar la evaluación diagnóstica.</p>'+courseSelectHtml
+      +'<div class="tw" style="padding:40px;text-align:center;color:var(--tx3);font-size:0.92rem">Seleccione un curso para continuar</div>';
   }
+  if(!diagSubject){
+    return head+'<p class="ps">'+cursoDisp({curso:diagCur})+' — elige el área que deseas revisar y evaluar.</p>'+courseSelectHtml
+      +diagSubjectCardsHtml();
+  }
+  return head+courseSelectHtml+diagBreadcrumbHtml()+diagStatsHtml()+diagTableHtml();
+}
 
-  return `<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
-    <h2 class="pt" style="margin:0">Evaluación Diagnóstica</h2>
-    <div class="no-print" style="display:flex;gap:6px">
-      <button class="b bs" onclick="printSection('Evaluación Diagnóstica')" style="font-size:10px">🖨️ Imprimir</button>
-    </div>
-  </div>
-  <p class="ps">Clasificación diagnóstica para Lenguaje y Matemática — 1° Básico a 4° Medio</p>
-  <div class="tb no-print" style="margin-bottom:14px;flex-wrap:wrap;gap:10px">
-    <select onchange="diagCur=this.value;render()" style="width:160px">
-      <option value="">Seleccione curso…</option>${curOpts}
-    </select>
-    <div style="font-size:0.82rem">${legend}</div>
-  </div>
-  ${summaryHtml}${tableHtml}`;
+function diagSubjectCardsHtml(){
+  var cards=DIAG_SUBJECTS.map(function(s){
+    var label=diagSubjectLabel(s.id,diagCur);
+    return '<div class="diag-subject-card '+s.cls+'" tabindex="0" role="button" aria-label="Entrar a '+label+'" '
+      +'onclick="diagSelectSubject(\''+s.id+'\')" onkeydown="if(event.key===\'Enter\'||event.key===\' \'){event.preventDefault();diagSelectSubject(\''+s.id+'\')}">'
+      +'<div class="diag-ic" aria-hidden="true">'+s.icon+'</div>'
+      +'<h3>'+label+'</h3>'
+      +'<p>'+s.desc+'</p>'
+      +'<span class="diag-enter">Entrar a '+label+' →</span>'
+      +'</div>';
+  }).join('');
+  return '<div style="text-align:center;font-size:1.2rem;font-weight:800;color:var(--dk);margin-top:12px">¿Qué asignatura deseas evaluar?</div>'
+    +'<p class="ps" style="text-align:center">Selecciona un área para revisar el curso, evaluar estudiantes y consultar los resultados diagnósticos.</p>'
+    +'<div class="diag-subject-cards">'+cards+'</div>'
+    +'<p class="diag-hint">Podrás regresar y cambiar de asignatura en cualquier momento.</p>';
+}
+function diagBreadcrumbHtml(){
+  var label=diagSubjectLabel(diagSubject,diagCur);
+  return '<div class="diag-breadcrumb">'
+    +'<span>Evaluación Diagnóstica</span> › <b>'+cursoDisp({curso:diagCur})+'</b> › <b>'+label+'</b>'
+    +'<button class="b bs bsm no-print" style="margin-left:10px" onclick="diagChangeSubject()">Cambiar asignatura</button>'
+    +'</div>';
+}
+function diagStatsHtml(){
+  var sts=D.students.filter(function(s){return s.curso===diagCur;});
+  var byStatus={not_started:0,in_progress:0,completed:0,pending_reapplication:0};
+  var byLevel={insuficiente:0,adecuado:0,competente:0,destacado:0};
+  sts.forEach(function(s){
+    var ev=diagGetEval(s.id,diagSubject);
+    var status=ev?ev.status:'not_started';
+    byStatus[status]=(byStatus[status]||0)+1;
+    if(status==='completed'&&ev.summary.globalLevel)byLevel[ev.summary.globalLevel]++;
+  });
+  var total=sts.length||1;
+  var statusCards=[
+    {k:'not_started',l:'Sin evaluar',col:'var(--tx2)',bg:'var(--c5)'},
+    {k:'in_progress',l:'En progreso',col:'#b26a00',bg:'#fff8e1'},
+    {k:'completed',l:'Finalizada',col:'#2e7d32',bg:'#e8f5e9'},
+    {k:'pending_reapplication',l:'Pend. reaplicación',col:'#c62828',bg:'#ffebee'}
+  ].map(function(c){
+    return '<div style="flex:1;min-width:110px;text-align:center;background:'+c.bg+';border-radius:8px;padding:10px 6px">'
+      +'<div style="font-size:1.3rem;font-weight:800;color:'+c.col+'">'+byStatus[c.k]+'</div>'
+      +'<div style="font-size:0.7rem;font-weight:700;color:'+c.col+'">'+c.l+'</div></div>';
+  }).join('');
+  var levelCards=DIAG_LEVELS.map(function(l){
+    var n=byLevel[l.v];var pct=Math.round(n/total*100);
+    return '<div style="flex:1;text-align:center;background:'+l.bg+';border-radius:8px;padding:10px 6px;border:1.5px solid '+l.col+'20">'
+      +'<div style="font-size:1.3rem;font-weight:800;color:'+l.col+'">'+n+'</div>'
+      +'<div style="font-size:0.7rem;font-weight:700;color:'+l.col+'">'+l.l+'</div>'
+      +'<div style="font-size:0.64rem;color:'+l.col+'99">'+pct+'%</div></div>';
+  }).join('');
+  return '<div style="display:flex;gap:12px;margin-bottom:12px;flex-wrap:wrap">'
+    +'<div class="tw" style="padding:14px;flex:1;min-width:280px"><div style="font-size:0.85rem;font-weight:700;color:var(--dk);margin-bottom:10px">📋 Estado de la evaluación</div><div style="display:flex;gap:8px;flex-wrap:wrap">'+statusCards+'</div></div>'
+    +'<div class="tw" style="padding:14px;flex:1;min-width:280px"><div style="font-size:0.85rem;font-weight:700;color:var(--dk);margin-bottom:10px">📊 Resultado diagnóstico ('+byStatus.completed+' finalizada'+(byStatus.completed===1?'':'s')+')</div><div style="display:flex;gap:8px">'+levelCards+'</div></div>'
+    +'</div>';
+}
+function diagTableHtml(){
+  var sts=D.students.filter(function(s){return s.curso===diagCur;}).sort(function(a,b){return (a.nombre||'').localeCompare(b.nombre||'');});
+  var rows='';
+  if(!sts.length){
+    rows='<tr><td colspan="4" style="padding:28px;text-align:center;color:var(--tx3)">No hay estudiantes en este curso</td></tr>';
+  }else{
+    sts.forEach(function(s,i){
+      rows+='<tr style="background:'+(i%2?'var(--c4)':'var(--wh)')+'">'
+        +'<td style="font-weight:600">'+s.nombre+'</td>'
+        +'<td>'+diagRowStatusCell(s.id)+'</td>'
+        +'<td>'+diagRowResultCell(s.id)+'</td>'
+        +'<td class="no-print">'+diagRowActionsCell(s.id)+'</td>'
+        +'</tr>';
+    });
+  }
+  return '<div class="tw"><table><thead><tr>'
+    +'<th>Nombre del Estudiante</th><th>Estado</th><th>Resultado</th><th class="no-print">Acciones</th>'
+    +'</tr></thead><tbody>'+rows+'</tbody></table></div>';
+}
+function diagRowStatusCell(studentId){
+  var ev=diagGetEval(studentId,diagSubject);
+  var status=ev?ev.status:'not_started';
+  var legacy=diagLegacyValue(studentId,diagSubject);
+  var badge='<span class="diag-status-badge diag-st-'+status+'">'+DIAG_STATUS_LABELS[status]+'</span>';
+  if(legacy&&status==='not_started'){
+    badge+='<div class="diag-legacy-note">Evaluación manual anterior: <b style="color:'+legacy.col+'">'+legacy.l+'</b></div>';
+  }
+  return badge;
+}
+function diagRowResultCell(studentId){
+  var ev=diagGetEval(studentId,diagSubject);
+  if(!ev||ev.status!=='completed'||!ev.summary.globalLevel){
+    return '<span style="color:var(--tx3);font-size:0.85rem">—</span>';
+  }
+  var lvl=diagLevelInfo(ev.summary.globalLevel);
+  var extra=ev.summary.evidenceLimited?'<div class="diag-legacy-note">Evidencia limitada</div>':'';
+  return '<span class="diag-status-badge" style="background:'+lvl.bg+';color:'+lvl.col+'">'+lvl.l+'</span>'+extra;
+}
+function diagRowActionsCell(studentId){
+  var ev=diagGetEval(studentId,diagSubject);
+  var status=ev?ev.status:'not_started';
+  var btns='';
+  if(status==='not_started'||status==='pending_reapplication'){
+    btns+='<button class="b bp bsm" onclick="diagOpenWizard(\''+studentId+'\',\''+diagSubject+'\',\'start\')">Evaluar</button>';
+  }else if(status==='in_progress'){
+    btns+='<button class="b bp bsm" onclick="diagOpenWizard(\''+studentId+'\',\''+diagSubject+'\',\'continue\')">Continuar evaluación</button>';
+  }else if(status==='completed'){
+    btns+='<button class="b bs bsm" onclick="diagOpenWizard(\''+studentId+'\',\''+diagSubject+'\',\'view\')">Ver evaluación</button>'
+      +'<button class="b bs bsm" onclick="diagOpenWizard(\''+studentId+'\',\''+diagSubject+'\',\'edit\')">Editar</button>'
+      +'<button class="b bs bsm" onclick="diagPrintEvaluation(\''+studentId+'\',\''+diagSubject+'\')">🖨️ Imprimir</button>';
+  }
+  return '<div style="display:flex;gap:5px;flex-wrap:wrap">'+btns+'</div>';
+}
+
+// ── Modal wizard ─────────────────────────────────────────────────────────────
+function _diagWizardHost(){
+  var el=document.getElementById('diagWizardOverlay');
+  if(el)return el;
+  el=document.createElement('div');
+  el.id='diagWizardOverlay';
+  el.className='diag-overlay no-print';
+  el.onclick=function(e){if(e.target===el)diagRequestClose();};
+  document.body.appendChild(el);
+  return el;
+}
+function diagWizardKeydown(e){
+  if(!diagWizard)return;
+  if(e.key==='Escape'){e.stopPropagation();diagRequestClose();return;}
+  if(e.key==='Tab'){
+    var box=document.getElementById('diagModalBox');if(!box)return;
+    var focusables=box.querySelectorAll('button,input,select,textarea,[tabindex]:not([tabindex="-1"])');
+    if(!focusables.length)return;
+    var first=focusables[0],last=focusables[focusables.length-1];
+    if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus();}
+    else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}
+  }
+}
+function diagOpenWizard(studentId,subjectId,mode){
+  if(diagWizard)diagCloseWizard(true);
+  var existing=diagGetEval(studentId,subjectId);
+  var teacherId=(window.userData&&window.userData.email)||(currentUser&&currentUser.email)||'';
+  var draft=existing?JSON.parse(JSON.stringify(existing)):diagNewEvaluation(studentId,diagCur,subjectId,teacherId);
+  var steps=diagSteps(subjectId);
+  var readOnlyMode=(mode==='view');
+  var initialStep=(mode==='view'||mode==='edit')?0:Math.min(draft.currentStep||0,steps.length-1);
+  var maxStepVisited=draft.status==='completed'?steps.length-1:(draft.currentStep||0);
+  diagWizard={studentId:studentId,subjectId:subjectId,courseId:diagCur,mode:mode,draft:draft,dirty:false,
+    stepIndex:initialStep,readOnly:readOnlyMode,maxStepVisited:maxStepVisited};
+  diagRenderWizard();
+  document.addEventListener('keydown',diagWizardKeydown,true);
+  setTimeout(function(){var m=document.getElementById('diagModalBox');if(m){var f=m.querySelector('button,input,select,textarea,[tabindex]');if(f)f.focus();}},30);
+}
+function diagRequestClose(){
+  if(diagWizard&&diagWizard.dirty&&!diagWizard.readOnly){
+    if(!confirm('Hay cambios sin guardar. ¿Deseas cerrar de todas formas? El progreso del último autoguardado se conservará.'))return;
+  }
+  diagCloseWizard(false);
+}
+function diagSaveAndClose(){
+  if(diagWizard&&diagWizard.dirty&&!diagWizard.readOnly){
+    clearTimeout(_diagSaveLocalTimer);
+    onNextSave(function(ok){diagSetSaveIndicator(ok?'saved':'error');});
+    save();
+  }
+  diagCloseWizard(false);
+}
+function diagCloseWizard(force){
+  if(!diagWizard)return;
+  document.removeEventListener('keydown',diagWizardKeydown,true);
+  var el=document.getElementById('diagWizardOverlay');
+  if(el)el.remove();
+  diagWizard=null;
+  render();
+}
+function diagGoToStep(i){
+  var w=diagWizard;if(!w)return;
+  var steps=diagSteps(w.subjectId);
+  if(i<0||i>=steps.length)return;
+  if(w.draft.status!=='completed'&&i>w.maxStepVisited)return;
+  w.stepIndex=i;
+  diagRenderWizard();
+}
+function diagWizardNext(){
+  var w=diagWizard;if(!w)return;
+  var steps=diagSteps(w.subjectId);
+  var curStepId=steps[w.stepIndex].id;
+  if(!w.readOnly){
+    var val=diagValidateStep(curStepId,w.draft);
+    if(!val.valid){diagRenderWizard();diagShowStepError(val.message);return;}
+  }
+  if(w.stepIndex<steps.length-1){
+    w.stepIndex++;
+    w.maxStepVisited=Math.max(w.maxStepVisited,w.stepIndex);
+    w.draft.currentStep=w.stepIndex;
+    diagRenderWizard();
+    if(!w.readOnly)diagSaveDraft();
+  }
+}
+function diagWizardPrev(){
+  var w=diagWizard;if(!w)return;
+  if(w.stepIndex>0){
+    w.stepIndex--;
+    w.draft.currentStep=w.stepIndex;
+    diagRenderWizard();
+    if(!w.readOnly)diagSaveDraft();
+  }
+}
+function diagShowStepError(msg,focusId){
+  var body=document.getElementById('diagModalBody');
+  if(!body)return;
+  var existing=document.getElementById('diagStepError');
+  if(existing)existing.remove();
+  var el=document.createElement('div');
+  el.id='diagStepError';
+  el.setAttribute('role','alert');
+  el.style.cssText='background:var(--lr);color:var(--rd);border:1px solid var(--rd);border-radius:8px;padding:10px 14px;margin-bottom:14px;font-size:0.85rem;font-weight:600';
+  el.textContent=msg;
+  body.insertBefore(el,body.firstChild);
+  var f=focusId&&document.getElementById(focusId);
+  if(f)f.focus();else body.scrollTop=0;
+}
+function diagValidateStep(stepId,draft){
+  if(stepId==='application'){
+    if(!draft.application.completion)return {valid:false,message:'Debes indicar si la actividad pudo realizarse completa.'};
+    if(!draft.application.pauses)return {valid:false,message:'Debes indicar si la actividad necesitó pausas.'};
+    if(draft.application.completion==='partial'||draft.application.completion==='not_possible'){
+      if(!draft.application.influencingFactors||!draft.application.influencingFactors.length)
+        return {valid:false,message:'Selecciona qué influyó en el desarrollo de la actividad.'};
+      if(draft.application.influencingFactors.indexOf('otro')>=0&&!draft.application.otherFactor)
+        return {valid:false,message:'Describe el otro factor que influyó en la actividad.'};
+    }
+    return {valid:true};
+  }
+  if(stepId==='support'){
+    if(!draft.responseAndSupport.responseModes||!draft.responseAndSupport.responseModes.length)
+      return {valid:false,message:'Selecciona cómo respondió el estudiante.'};
+    if(!draft.responseAndSupport.supports||!draft.responseAndSupport.supports.length)
+      return {valid:false,message:'Selecciona los apoyos utilizados (o "No necesitó apoyos adicionales").'};
+    if(draft.responseAndSupport.supports.indexOf('otro')>=0&&!draft.responseAndSupport.otherSupport)
+      return {valid:false,message:'Describe el otro apoyo utilizado.'};
+    return {valid:true};
+  }
+  if(DIAG_OBSERVABLE_DIMS.indexOf(stepId)>=0){
+    var dim=draft.dimensions[stepId];
+    if(!dim.observableAnswer)return {valid:false,message:'Indica si fue posible observar esta dimensión.'};
+    return {valid:true};
+  }
+  return {valid:true};
+}
+
+// ── Contenido de cada paso ───────────────────────────────────────────────────
+function diagRenderStepContent(stepId){
+  var w=diagWizard;var d=w.draft;var ro=w.readOnly;
+  if(stepId==='application')return diagStepApplicationHtml(d,ro);
+  if(stepId==='support')return diagStepSupportHtml(d,ro);
+  if(stepId==='synthesis')return diagStepSynthesisHtml(d,ro);
+  return diagStepDimensionHtml(stepId,d,ro);
+}
+function diagStepApplicationHtml(d,ro){
+  var completionCards=DIAG_COMPLETION_OPTS.map(function(o){
+    var sel=d.application.completion===o.v?' sel':'';
+    return '<button type="button" class="diag-choice-card '+o.cls+sel+'" '+(ro?'disabled':'')+' onclick="diagSetCompletion(\''+o.v+'\')" aria-pressed="'+(d.application.completion===o.v)+'"><b>'+o.l+'</b><span>'+o.d+'</span></button>';
+  }).join('');
+  var pausesRadios=DIAG_PAUSES_OPTS.map(function(o){
+    var checked=d.application.pauses===o.v;
+    return '<label class="diag-radio-opt"><input type="radio" name="diagPauses" '+(checked?'checked':'')+' '+(ro?'disabled':'')+' onchange="diagSetPauses(\''+o.v+'\')"> '+o.l+'</label>';
+  }).join('');
+  var showFactors=(d.application.completion==='partial'||d.application.completion==='not_possible');
+  var factorsHtml='';
+  if(showFactors){
+    var chips=DIAG_INFLUENCING_FACTORS.map(function(o){
+      var sel=(d.application.influencingFactors||[]).indexOf(o.v)>=0;
+      return '<button type="button" class="diag-chip'+(sel?' sel':'')+'" '+(ro?'disabled':'')+' onclick="diagToggleFactor(\''+o.v+'\')" aria-pressed="'+sel+'">'+o.l+'</button>';
+    }).join('');
+    var otherField=(d.application.influencingFactors||[]).indexOf('otro')>=0
+      ?'<input type="text" id="diagOtherFactor" value="'+diagEsc(d.application.otherFactor||'')+'" '+(ro?'disabled':'')+' placeholder="Describe el otro factor" style="margin-top:8px;width:100%" onchange="diagSetOtherFactor(this.value)">'
+      :'';
+    factorsHtml='<div class="diag-q diag-req">¿Qué influyó en el desarrollo de la actividad?</div><div class="diag-chip-grid">'+chips+'</div>'+otherField;
+  }
+  return '<div class="diag-step-title">1. Aplicación de la actividad</div>'
+    +'<div class="diag-q diag-req">¿La actividad pudo realizarse completa?</div>'
+    +'<div class="diag-choice-cards">'+completionCards+'</div>'
+    +'<div class="diag-q diag-req">¿Necesitó pausas?</div>'
+    +'<div class="diag-radio-list">'+pausesRadios+'</div>'
+    +factorsHtml
+    +'<div class="diag-q">Observación sobre la aplicación</div>'
+    +'<textarea class="diag-obs" maxlength="500" '+(ro?'disabled':'')+' placeholder="Máx. 500 caracteres" onchange="diagSetObs(\'application\',this.value)">'+diagEsc(d.application.observation||'')+'</textarea>';
+}
+function diagSetCompletion(v){diagWizard.draft.application.completion=v;diagWizard.dirty=true;diagRenderWizard();diagSaveDraft();}
+function diagSetPauses(v){diagWizard.draft.application.pauses=v;diagWizard.dirty=true;diagRenderWizard();diagSaveDraft();}
+function diagToggleFactor(v){
+  var arr=diagWizard.draft.application.influencingFactors||[];
+  var idx=arr.indexOf(v);
+  if(idx>=0)arr.splice(idx,1);else arr.push(v);
+  diagWizard.draft.application.influencingFactors=arr;
+  diagWizard.dirty=true;diagRenderWizard();diagSaveDraft();
+}
+function diagSetOtherFactor(v){diagWizard.draft.application.otherFactor=v;diagWizard.dirty=true;diagSaveDraft();}
+function diagSetObs(field,v){
+  if(field==='application')diagWizard.draft.application.observation=v;
+  else if(field==='support')diagWizard.draft.responseAndSupport.observation=v;
+  else diagWizard.draft.dimensions[field].observation=v;
+  diagWizard.dirty=true;diagSaveDraft();
+}
+function diagStepSupportHtml(d,ro){
+  var modeChips=DIAG_RESPONSE_MODES.map(function(o){
+    var sel=(d.responseAndSupport.responseModes||[]).indexOf(o.v)>=0;
+    return '<button type="button" class="diag-chip'+(sel?' sel':'')+'" '+(ro?'disabled':'')+' onclick="diagToggleMode(\''+o.v+'\')" aria-pressed="'+sel+'">'+o.l+'</button>';
+  }).join('');
+  var supportChips=DIAG_SUPPORTS.map(function(o){
+    var sel=(d.responseAndSupport.supports||[]).indexOf(o.v)>=0;
+    return '<button type="button" class="diag-chip'+(sel?' sel':'')+'" '+(ro?'disabled':'')+' onclick="diagToggleSupport(\''+o.v+'\')" aria-pressed="'+sel+'">'+o.l+'</button>';
+  }).join('');
+  var otherField=(d.responseAndSupport.supports||[]).indexOf('otro')>=0
+    ?'<input type="text" value="'+diagEsc(d.responseAndSupport.otherSupport||'')+'" '+(ro?'disabled':'')+' placeholder="Describe el otro apoyo" style="margin-top:8px;width:100%" onchange="diagSetOtherSupport(this.value)">'
+    :'';
+  return '<div class="diag-step-title">2. Modalidad de respuesta y apoyos</div>'
+    +'<div class="diag-q diag-req">¿Cómo respondió el estudiante?</div>'
+    +'<div class="diag-chip-grid">'+modeChips+'</div>'
+    +'<div class="diag-q diag-req">¿Qué apoyos fueron utilizados?</div>'
+    +'<div class="diag-chip-grid">'+supportChips+'</div>'
+    +otherField
+    +'<div class="diag-q">Observación sobre los apoyos</div>'
+    +'<textarea class="diag-obs" '+(ro?'disabled':'')+' onchange="diagSetObs(\'support\',this.value)">'+diagEsc(d.responseAndSupport.observation||'')+'</textarea>';
+}
+function diagToggleMode(v){
+  var arr=diagWizard.draft.responseAndSupport.responseModes||[];
+  var idx=arr.indexOf(v);if(idx>=0)arr.splice(idx,1);else arr.push(v);
+  diagWizard.draft.responseAndSupport.responseModes=arr;
+  diagWizard.dirty=true;diagRenderWizard();diagSaveDraft();
+}
+function diagToggleSupport(v){
+  var arr=diagWizard.draft.responseAndSupport.supports||[];
+  if(v==='ninguno'){arr=arr.indexOf('ninguno')>=0?[]:['ninguno'];}
+  else{
+    var idx=arr.indexOf('ninguno');if(idx>=0)arr.splice(idx,1);
+    var idx2=arr.indexOf(v);if(idx2>=0)arr.splice(idx2,1);else arr.push(v);
+  }
+  diagWizard.draft.responseAndSupport.supports=arr;
+  diagWizard.dirty=true;diagRenderWizard();diagSaveDraft();
+}
+function diagSetOtherSupport(v){diagWizard.draft.responseAndSupport.otherSupport=v;diagWizard.dirty=true;diagSaveDraft();}
+
+function diagStepDimensionHtml(stepId,d,ro){
+  var dimState=d.dimensions[stepId];
+  var isObservable=DIAG_OBSERVABLE_DIMS.indexOf(stepId)>=0;
+  var html='<div class="diag-step-title">'+DIAG_DIM_TITLES[stepId]+'</div>';
+  if(isObservable){
+    var qLabel=stepId==='reading'?'¿Fue posible observar lectura durante la actividad?':'¿Fue posible observar producción escrita?';
+    var opts=DIAG_OBSERVED_OPTS.map(function(o){
+      var checked=dimState.observableAnswer===o.v;
+      return '<label class="diag-radio-opt"><input type="radio" name="diagObs'+stepId+'" '+(checked?'checked':'')+' '+(ro?'disabled':'')+' onchange="diagSetObservable(\''+stepId+'\',\''+o.v+'\')"> '+o.l+'</label>';
+    }).join('');
+    html+='<div class="diag-q diag-req">'+qLabel+'</div><div class="diag-radio-list">'+opts+'</div>';
+    if(dimState.observableAnswer==='not_possible'){
+      html+='<div class="diag-dim-notobs">Esta dimensión se marcará como <b>no evaluada</b> y no se incluirá en el cálculo del resultado. Puedes continuar al siguiente paso.</div>';
+      return html;
+    }
+    if(!dimState.observableAnswer){
+      html+='<div class="diag-dim-notobs">Selecciona una opción para continuar.</div>';
+      return html;
+    }
+  }
+  var indicators=getDiagIndicators(d.subjectId,stepId,diagCourseGroup(d.courseId));
+  var rows=indicators.map(function(ind){
+    var r=dimState.indicators[ind.id]||{};
+    var levelBtns=DIAG_LEVELS.map(function(l){
+      var sel=r.level===l.v&&r.evidenceStatus==='observed';
+      return '<button type="button" class="diag-level-btn'+(sel?' sel':'')+'" style="'+(sel?'background:'+l.col+';':'')+'" '+(ro?'disabled':'')+' aria-pressed="'+sel+'" aria-label="'+l.l+' — '+diagEsc(DIAG_LEVEL_DESCRIPTORS[l.v])+'" title="'+diagEsc(DIAG_LEVEL_DESCRIPTORS[l.v])+'" onclick="diagSetIndicatorLevel(\''+stepId+'\',\''+ind.id+'\',\''+l.v+'\')">'+l.l+'</button>';
+    }).join('');
+    var noObsSel=r.evidenceStatus==='not_observed'||!r.evidenceStatus;
+    var noObsBtn='<button type="button" class="diag-level-btn no-obs'+(noObsSel?' sel':'')+'" '+(ro?'disabled':'')+' aria-pressed="'+noObsSel+'" onclick="diagSetIndicatorLevel(\''+stepId+'\',\''+ind.id+'\',null)">No observado</button>';
+    return '<div class="diag-indicator-row">'
+      +'<div class="diag-indicator-title">'+diagEsc(ind.title)+'</div>'
+      +'<div class="diag-level-group">'+levelBtns+noObsBtn+'</div>'
+      +'</div>';
+  }).join('');
+  var obsLabel=stepId==='oralCommunication'?'comunicación oral':stepId==='reading'?'lectura':stepId==='writing'?'escritura':'matemática';
+  html+='<div style="margin-top:6px">'+rows+'</div>'
+    +'<div class="diag-q">Observación sobre '+obsLabel+'</div>'
+    +'<textarea class="diag-obs" '+(ro?'disabled':'')+' onchange="diagSetObs(\''+stepId+'\',this.value)">'+diagEsc(dimState.observation||'')+'</textarea>';
+  return html;
+}
+function diagSetObservable(stepId,v){
+  var dim=diagWizard.draft.dimensions[stepId];
+  dim.observableAnswer=v;
+  dim.notObservable=(v==='not_possible');
+  diagWizard.dirty=true;diagRenderWizard();diagSaveDraft();
+}
+function diagSetIndicatorLevel(stepId,indId,level){
+  var dim=diagWizard.draft.dimensions[stepId];
+  if(!dim.indicators)dim.indicators={};
+  dim.indicators[indId]=level?{level:level,evidenceStatus:'observed'}:{evidenceStatus:'not_observed'};
+  diagWizard.dirty=true;diagRenderWizard();diagSaveDraft();
+}
+
+function diagStepSynthesisHtml(d,ro){
+  if(d.application.completion==='not_possible'){
+    return '<div class="diag-step-title">6. Síntesis diagnóstica</div>'
+      +'<div class="diag-dim-notobs">La actividad no pudo realizarse, por lo que no se generará un nivel diagnóstico. Al finalizar, el registro quedará marcado como <b>"Evaluación pendiente de nueva aplicación"</b>.</div>';
+  }
+  var synth=diagGenerateSynthesis(d);
+  if(!ro){
+    if(!d.summary.finalStrengths||d.summary.finalStrengths===d.summary.automaticStrengths)d.summary.finalStrengths=synth.automaticStrengths;
+    if(!d.summary.finalAreasToImprove||d.summary.finalAreasToImprove===d.summary.automaticAreasToImprove)d.summary.finalAreasToImprove=synth.automaticAreasToImprove;
+    d.summary.automaticStrengths=synth.automaticStrengths;
+    d.summary.automaticAreasToImprove=synth.automaticAreasToImprove;
+    d.summary.globalLevel=synth.globalLevel;
+    d.summary.evidenceLimited=synth.evidenceLimited;
+  }
+  var globalLevel=ro?d.summary.globalLevel:synth.globalLevel;
+  var evidenceLimited=ro?d.summary.evidenceLimited:synth.evidenceLimited;
+  var dimCards=Object.keys(synth.dimResults).map(function(dimId){
+    var r=synth.dimResults[dimId];
+    var lvl=r.calculatedLevel?diagLevelInfo(r.calculatedLevel):null;
+    var strongTop=(r.indicatorResults||[]).filter(function(x){return x.level==='competente'||x.level==='destacado';}).slice(0,2).map(function(x){return x.title;});
+    var weakTop=(r.indicatorResults||[]).filter(function(x){return x.level==='insuficiente'||x.level==='adecuado';}).slice(0,2).map(function(x){return x.title;});
+    return '<div class="diag-synth-card" style="'+(lvl?'background:'+lvl.bg+';border-color:'+lvl.col+'40':'')+'">'
+      +'<div style="font-size:0.82rem;font-weight:700;color:var(--dk)">'+diagDimLabel(dimId)+'</div>'
+      +'<div class="lvl" style="color:'+(lvl?lvl.col:'var(--tx3)')+'">'+(lvl?lvl.l:(r.status==='not_evaluated'?'No evaluada':'—'))+'</div>'
+      +'<div style="font-size:0.74rem;color:var(--tx2);margin-top:4px">'+r.evaluatedCount+' indicador(es) evaluado(s) · '+r.notObservedCount+' no observado(s)</div>'
+      +(strongTop.length?'<div style="font-size:0.72rem;color:var(--gn);margin-top:4px">▲ '+diagEsc(strongTop.join('; '))+'</div>':'')
+      +(weakTop.length?'<div style="font-size:0.72rem;color:var(--rd);margin-top:2px">▼ '+diagEsc(weakTop.join('; '))+'</div>':'')
+      +'</div>';
+  }).join('');
+  var globalInfo=globalLevel?diagLevelInfo(globalLevel):null;
+  var globalHtml='<div class="diag-global-result" style="'+(globalInfo?'background:'+globalInfo.bg:'background:var(--c5)')+'">'
+    +'<div style="font-size:0.82rem;font-weight:700;color:var(--tx2)">RESULTADO DIAGNÓSTICO GLOBAL</div>'
+    +'<div class="lvl" style="color:'+(globalInfo?globalInfo.col:'var(--tx3)')+'">'+(globalInfo?globalInfo.l:'Sin evidencia suficiente')+'</div>'
+    +(evidenceLimited?'<div style="font-size:0.82rem;color:var(--tx2);margin-top:4px">Resultado inicial con evidencia limitada.</div>':'')
+    +(d.application.completion==='partial'?'<div style="font-size:0.82rem;color:var(--tx2);margin-top:2px">Los resultados deben complementarse en próximas instancias de evaluación.</div>':'')
+    +'</div>';
+  return '<div class="diag-step-title">6. Síntesis diagnóstica</div>'
+    +'<div class="diag-synth-cards">'+dimCards+'</div>'
+    +globalHtml
+    +'<div class="diag-q">Fortalezas</div>'
+    +'<textarea class="diag-obs" style="min-height:90px" '+(ro?'disabled':'')+' onchange="diagSetSynthesisText(\'finalStrengths\',this.value)">'+diagEsc(d.summary.finalStrengths)+'</textarea>'
+    +'<div class="diag-q">Aspectos a mejorar</div>'
+    +'<textarea class="diag-obs" style="min-height:90px" '+(ro?'disabled':'')+' onchange="diagSetSynthesisText(\'finalAreasToImprove\',this.value)">'+diagEsc(d.summary.finalAreasToImprove)+'</textarea>'
+    +(ro?'':'<div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap">'
+      +'<button class="b bs bsm" onclick="diagRecalculateSynthesis()">↻ Recalcular síntesis</button>'
+      +'<button class="b bs bsm" onclick="diagRestoreSynthesis()">Restaurar versión automática</button>'
+      +'</div>');
+}
+function diagSetSynthesisText(field,v){diagWizard.draft.summary[field]=v;diagWizard.dirty=true;diagSaveDraft();}
+function diagRecalculateSynthesis(){
+  var d=diagWizard.draft;var synth=diagGenerateSynthesis(d);
+  d.summary.automaticStrengths=synth.automaticStrengths;
+  d.summary.automaticAreasToImprove=synth.automaticAreasToImprove;
+  d.summary.finalStrengths=synth.automaticStrengths;
+  d.summary.finalAreasToImprove=synth.automaticAreasToImprove;
+  d.summary.globalLevel=synth.globalLevel;
+  d.summary.evidenceLimited=synth.evidenceLimited;
+  diagWizard.dirty=true;diagRenderWizard();diagSaveDraft();
+}
+function diagRestoreSynthesis(){
+  var d=diagWizard.draft;
+  d.summary.finalStrengths=d.summary.automaticStrengths;
+  d.summary.finalAreasToImprove=d.summary.automaticAreasToImprove;
+  diagWizard.dirty=true;diagRenderWizard();diagSaveDraft();
+}
+
+// ── Render del shell del modal ────────────────────────────────────────────
+function diagRenderWizard(){
+  var w=diagWizard;if(!w)return;
+  var steps=diagSteps(w.subjectId);
+  var student=D.students.find(function(s){return s.id===w.studentId;});
+  var subjectLabel=diagSubjectLabel(w.subjectId,w.courseId);
+  var title=w.subjectId==='mathematics'?'DIAGNÓSTICO DE MATEMÁTICA':'TODO SOBRE MÍ';
+  var statusLabel=DIAG_STATUS_LABELS[w.draft.status]||'Sin iniciar';
+  var host=_diagWizardHost();
+  var prevBody=document.getElementById('diagModalBody');
+  var prevScroll=prevBody?prevBody.scrollTop:0;
+  var stepsHtml=steps.map(function(st,i){
+    var cls='diag-step'+(i===w.stepIndex?' current':'')+((i<w.stepIndex||w.draft.status==='completed')&&i!==w.stepIndex?' done':'');
+    return '<button type="button" class="'+cls+'" onclick="diagGoToStep('+i+')" role="tab" aria-selected="'+(i===w.stepIndex)+'"><span class="n">'+(i+1)+'</span>'+st.n+'</button>';
+  }).join('');
+  var bodyHtml=diagRenderStepContent(steps[w.stepIndex].id);
+  var isFirst=w.stepIndex===0,isLast=w.stepIndex===steps.length-1;
+  var footHtml;
+  if(!w.readOnly){
+    footHtml='<div class="diag-save-indicator" id="diagSaveIndicator" aria-live="polite"></div>'
+      +'<div style="display:flex;gap:8px;flex-wrap:wrap">'
+      +(isFirst?'':'<button class="b bs" onclick="diagWizardPrev()">← Anterior</button>')
+      +'<button class="b bs" onclick="diagSaveAndClose()">Guardar y continuar después</button>'
+      +(isLast?'<button class="b bp" onclick="diagFinalizeEvaluation()">✓ Finalizar evaluación</button>'
+              :'<button class="b bp" onclick="diagWizardNext()">Siguiente →</button>')
+      +'</div>';
+  }else{
+    footHtml='<div></div><div style="display:flex;gap:8px;flex-wrap:wrap">'
+      +(isFirst?'':'<button class="b bs" onclick="diagWizardPrev()">← Anterior</button>')
+      +(isLast?'':'<button class="b bs" onclick="diagWizardNext()">Siguiente →</button>')
+      +'<button class="b bs" onclick="diagPrintEvaluation(\''+w.studentId+'\',\''+w.subjectId+'\')">🖨️ Imprimir</button>'
+      +'<button class="b bp" onclick="diagRequestClose()">Cerrar</button>'
+      +'</div>';
+  }
+  host.innerHTML='<div class="diag-modal" id="diagModalBox" role="dialog" aria-modal="true" aria-label="'+title+'">'
+    +'<div class="diag-modal-head">'
+    +'<div><h2>'+title+'</h2><div class="sub">Evaluación diagnóstica de '+subjectLabel+'</div></div>'
+    +'<div class="diag-modal-meta"><div><b>'+diagEsc(student?student.nombre:'')+'</b></div>'
+    +'<div>'+cursoDisp({curso:w.courseId})+'</div>'
+    +'<div>Estado: '+statusLabel+'</div></div>'
+    +'<button type="button" class="diag-modal-close" aria-label="Cerrar evaluación" onclick="diagRequestClose()">✕</button>'
+    +'</div>'
+    +'<div class="diag-steps" role="tablist" aria-label="Pasos de la evaluación">'+stepsHtml+'</div>'
+    +'<div class="diag-modal-body" id="diagModalBody">'+bodyHtml+'</div>'
+    +'<div class="diag-modal-foot">'+footHtml+'</div>'
+    +'</div>';
+  var newBody=document.getElementById('diagModalBody');
+  if(newBody)newBody.scrollTop=prevScroll;
+}
+
+// ── Autoguardado ─────────────────────────────────────────────────────────────
+function diagSaveDraft(){
+  var w=diagWizard;if(!w||w.readOnly)return;
+  w.draft.updatedAt=new Date().toISOString();
+  if(w.draft.status==='not_started')w.draft.status='in_progress';
+  if(!D.diagnosticoEval)D.diagnosticoEval={};
+  if(!D.diagnosticoEval[w.studentId])D.diagnosticoEval[w.studentId]={};
+  D.diagnosticoEval[w.studentId][w.subjectId]=w.draft;
+  _diagEvalDirty=true;
+  diagSetSaveIndicator('saving');
+  clearTimeout(_diagSaveLocalTimer);
+  _diagSaveLocalTimer=setTimeout(function(){
+    onNextSave(function(ok){diagSetSaveIndicator(ok?'saved':'error');if(diagWizard)diagWizard.dirty=false;});
+    save();
+  },800);
+}
+function diagSetSaveIndicator(state){
+  var el=document.getElementById('diagSaveIndicator');
+  if(!el)return;
+  if(state==='saving')el.textContent='Guardando…';
+  else if(state==='saved')el.textContent='✓ Guardado';
+  else if(state==='error')el.textContent='⚠ Error al guardar — se reintentará';
+}
+
+// ── Finalizar evaluación ──────────────────────────────────────────────────
+function diagFinalizeEvaluation(){
+  var w=diagWizard;if(!w)return;
+  var steps=diagSteps(w.subjectId);
+  for(var i=0;i<steps.length;i++){
+    var val=diagValidateStep(steps[i].id,w.draft);
+    if(!val.valid){w.stepIndex=i;w.maxStepVisited=Math.max(w.maxStepVisited,i);diagRenderWizard();diagShowStepError(val.message);return;}
+  }
+  var d=w.draft;
+  var teacherId=(window.userData&&window.userData.email)||(currentUser&&currentUser.email)||d.teacherId||'';
+  d.teacherId=teacherId;
+  if(d.application.completion==='not_possible'){
+    d.status='pending_reapplication';
+    d.summary.globalLevel=null;
+  }else{
+    var synth=diagGenerateSynthesis(d);
+    d.summary.automaticStrengths=synth.automaticStrengths;
+    d.summary.automaticAreasToImprove=synth.automaticAreasToImprove;
+    if(!d.summary.finalStrengths)d.summary.finalStrengths=synth.automaticStrengths;
+    if(!d.summary.finalAreasToImprove)d.summary.finalAreasToImprove=synth.automaticAreasToImprove;
+    d.summary.globalLevel=synth.globalLevel;
+    d.summary.evidenceLimited=synth.evidenceLimited;
+    d.status='completed';
+  }
+  d.completedAt=new Date().toISOString();
+  w.dirty=true;
+  diagSaveDraft();
+  showToast('✓ Evaluación diagnóstica finalizada');
+  diagCloseWizard(true);
+}
+
+// ── Impresión de una evaluación individual ─────────────────────────────────
+function diagPrintEvaluation(studentId,subjectId){
+  var ev=diagGetEval(studentId,subjectId);
+  if(!ev){alert('No hay una evaluación registrada para imprimir.');return;}
+  var student=D.students.find(function(s){return s.id===studentId;});
+  var subjectLabel=diagSubjectLabel(subjectId,ev.courseId);
+  var globalInfo=ev.summary.globalLevel?diagLevelInfo(ev.summary.globalLevel):null;
+  var dimResults=diagComputeDimensionResults(ev);
+  var dimRows=Object.keys(dimResults).map(function(dimId){
+    var r=dimResults[dimId];var lvl=r.calculatedLevel?diagLevelInfo(r.calculatedLevel):null;
+    return '<tr><td>'+diagDimLabel(dimId)+'</td><td>'+(lvl?lvl.l:(r.status==='not_evaluated'?'No evaluada':'—'))+'</td>'
+      +'<td>'+r.evaluatedCount+'</td><td>'+r.notObservedCount+'</td></tr>';
+  }).join('');
+  var modesLbl=(ev.responseAndSupport.responseModes||[]).map(function(v){var o=DIAG_RESPONSE_MODES.find(function(x){return x.v===v;});return o?o.l:v;}).join(', ')||'—';
+  var supportsLbl=(ev.responseAndSupport.supports||[]).map(function(v){var o=DIAG_SUPPORTS.find(function(x){return x.v===v;});return o?o.l:v;}).join(', ')||'—';
+  var completionLbl=(DIAG_COMPLETION_OPTS.find(function(o){return o.v===ev.application.completion;})||{}).l||'—';
+  var html='<div style="font-family:DM Sans,Arial,sans-serif;padding:6px">'
+    +'<h2 style="margin-bottom:2px">'+(subjectId==='mathematics'?'Diagnóstico de Matemática':'Todo sobre mí — Evaluación diagnóstica de '+diagEsc(subjectLabel))+'</h2>'
+    +'<p style="color:#666;margin-bottom:14px">'+diagEsc(student?student.nombre:'')+' · '+cursoDisp({curso:ev.courseId})+' · Docente: '+diagEsc(ev.teacherId||'—')+' · Fecha: '+(ev.completedAt?new Date(ev.completedAt).toLocaleDateString('es-CL'):'—')+'</p>'
+    +'<table style="width:100%;border-collapse:collapse;margin-bottom:14px">'
+    +'<tr><td style="border:1px solid #ccc;padding:4px 8px"><b>Aplicación</b></td><td style="border:1px solid #ccc;padding:4px 8px">'+completionLbl+'</td></tr>'
+    +'<tr><td style="border:1px solid #ccc;padding:4px 8px"><b>Modalidades de respuesta</b></td><td style="border:1px solid #ccc;padding:4px 8px">'+diagEsc(modesLbl)+'</td></tr>'
+    +'<tr><td style="border:1px solid #ccc;padding:4px 8px"><b>Apoyos utilizados</b></td><td style="border:1px solid #ccc;padding:4px 8px">'+diagEsc(supportsLbl)+'</td></tr>'
+    +'</table>'
+    +'<table style="width:100%;border-collapse:collapse;margin-bottom:14px"><thead><tr>'
+    +'<th style="border:1px solid #ccc;padding:4px 8px;background:#eee">Dimensión</th><th style="border:1px solid #ccc;padding:4px 8px;background:#eee">Nivel</th>'
+    +'<th style="border:1px solid #ccc;padding:4px 8px;background:#eee">Evaluados</th><th style="border:1px solid #ccc;padding:4px 8px;background:#eee">No observados</th>'
+    +'</tr></thead><tbody>'+dimRows+'</tbody></table>'
+    +'<h3>Resultado global: '+(globalInfo?globalInfo.l:(ev.status==='pending_reapplication'?'Evaluación pendiente de nueva aplicación':'Sin evidencia suficiente'))+'</h3>'
+    +'<h4 style="margin-top:12px">Fortalezas</h4><p>'+diagEsc(ev.summary.finalStrengths||'—')+'</p>'
+    +'<h4 style="margin-top:12px">Aspectos a mejorar</h4><p>'+diagEsc(ev.summary.finalAreasToImprove||'—')+'</p>'
+    +'</div>';
+  var w=window.open('','_blank','width=900,height=700');
+  w.document.write('<html><head><title>Evaluación diagnóstica</title><style>@page{size:letter;margin:12mm}body{margin:0;padding:16px;font-family:DM Sans,Arial,sans-serif;color:#222}table{font-size:12px}</style></head><body>'+html+'</body></html>');
+  w.document.close();
+  setTimeout(function(){w.print();},400);
 }
 
 function saveDiagCat(studentId,asig,value,selectEl){
