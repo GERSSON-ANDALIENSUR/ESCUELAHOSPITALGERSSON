@@ -97,6 +97,35 @@ h2.pt{font-size:17px}
 .sc-chip.sc-sel.sc-n3{border-color:#0d652d;box-shadow:0 0 0 2px rgba(13,101,45,.2)}
 .sc-chip:hover{opacity:.85;transform:translateY(-1px)}
 
+/* ── Sistema visual transversal: modalidad / estado / filas / meses ── */
+.st-chip{display:inline-flex;align-items:center;gap:5px;padding:2px 9px;border-radius:12px;font-size:0.78rem;font-weight:600;white-space:nowrap}
+.st-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;display:inline-block}
+.st-row-bar{box-shadow:inset 3px 0 0 0 var(--st-bar-c,transparent)}
+.tw table tbody tr:hover td{background:var(--c4)!important}
+.st-group-row td{background:var(--c4);font-weight:700;font-size:0.83rem;color:var(--dk);padding:10px 12px;border-bottom:1px solid var(--c6)}
+.st-group-row .cnt{font-weight:400;color:var(--tx3);font-size:0.78rem;margin-left:6px}
+.st-group-row .sub{font-weight:400;color:var(--tx3);font-size:0.76rem;float:right}
+.mes-blk-0{background:#eef4ff}
+.mes-blk-1{background:#f1f8f1}
+.mes-blk-2{background:#f6f2fc}
+.mes-blk-end{border-right:2px solid var(--c6)!important}
+.st-sticky-col{position:sticky;left:0;z-index:1}
+@media(max-width:640px){.st-chip{font-size:11px}}
+
+/* ── Guía de evaluación (popover de indicador) ── */
+.diag-help-btn{background:none;border:1px solid var(--c6);color:var(--tx3);border-radius:50%;width:18px;height:18px;min-width:18px;font-size:0.7rem;line-height:1;cursor:pointer;flex-shrink:0;display:inline-flex;align-items:center;justify-content:center;font-weight:700}
+.diag-help-btn:hover{background:var(--lb);color:var(--bl);border-color:var(--lb)}
+.diag-help-btn:focus-visible{outline:2px solid var(--bl)}
+.diag-help-modal{max-width:480px}
+.diag-help-levels{display:flex;flex-direction:column;gap:10px;margin-top:14px}
+.diag-help-level{border:1.5px solid var(--c6);border-radius:10px;padding:10px 12px;display:flex;gap:10px;align-items:flex-start}
+.diag-help-level .dot{width:11px;height:11px;border-radius:50%;flex-shrink:0;margin-top:3px}
+.diag-help-level b{display:block;font-size:0.85rem;margin-bottom:2px}
+.diag-help-level p{font-size:0.83rem;color:var(--tx2);line-height:1.45}
+.diag-help-level.sel{border-color:currentColor;background:var(--c4)}
+.diag-help-level.sel b::after{content:' ✓ seleccionado';font-size:0.72rem;font-weight:700;color:inherit}
+.diag-help-level.noobs{border-style:dashed;color:var(--tx3)}
+
 /* ══════════════════════════════════════════════════
    TEMA P1 — INSTITUCIONAL MODERNA
    Navy · Azul real · Gris frío
@@ -1017,7 +1046,62 @@ const cals=pctNums.map(p=>calcCal(p));
 const nota=calcNF(cals);return{...a,nota,pal:NP(nota),pcts:pctNums,cals:cals};
 });
 }
-function sortSt(a,b){const i=c=>ALL_N.indexOf(c)===-1?99:ALL_N.indexOf(c);return i(a.curso)-i(b.curso)||(a.nombre||"").localeCompare(b.nombre||"");}
+// ── Sistema transversal de vigencia / modalidad ─────────────────────────────
+// Derivado SIEMPRE desde las fechas reales de matrícula/retiro/reingreso
+// (importadas desde la nómina). No existe un campo "estado" paralelo: si no
+// hay fechaRetiro, el estudiante está Vigente; si hubo retiro y reingreso
+// posterior, Rematriculado; si el último movimiento es un retiro, Inactivo.
+function stEstado(s){
+  if(!s||!s.fechaRetiro)return'Vigente';
+  return s.fechaReingreso?'Rematriculado':'Inactivo';
+}
+const ST_ORDER={Vigente:0,Rematriculado:1,Inactivo:2};
+function stRelevantDate(s){
+  const est=stEstado(s);
+  const d=est==='Inactivo'?(s.fechaRetiro||s.fechaMatricula):(s.fechaReingreso||s.fechaMatricula);
+  if(!d)return 0;
+  const t=Date.parse(d);return isNaN(t)?0:t;
+}
+function sortSt(a,b){
+  const ea=stEstado(a),eb=stEstado(b);
+  if(ST_ORDER[ea]!==ST_ORDER[eb])return ST_ORDER[ea]-ST_ORDER[eb];
+  const da=stRelevantDate(a),db=stRelevantDate(b);
+  if(da!==db)return db-da;
+  const i=c=>ALL_N.indexOf(c)===-1?99:ALL_N.indexOf(c);
+  return i(a.curso)-i(b.curso)||(a.nombre||"").localeCompare(b.nombre||"");
+}
+const ST_ESTADO_STYLE={
+  Vigente:{bg:'var(--lg)',fg:'var(--gn)',label:'Vigente'},
+  Rematriculado:{bg:'var(--lb)',fg:'var(--bl)',label:'Rematriculado'},
+  Inactivo:{bg:'var(--c5)',fg:'var(--tx3)',label:'Inactivo'}
+};
+function stEstadoChip(s){
+  const e=stEstado(s),st=ST_ESTADO_STYLE[e];
+  return '<span class="st-chip" style="background:'+st.bg+';color:'+st.fg+'"><span class="st-dot" style="background:'+st.fg+'"></span>'+st.label+'</span>';
+}
+const MOD_STYLE={
+  Aula:{bg:'var(--lb)',fg:'var(--bl)',label:'Aula Hospitalaria'},
+  Sala:{bg:'var(--lg)',fg:'var(--gn)',label:'Sala'}
+};
+function stModChip(s){
+  const m=MOD_STYLE[s.modalidad];
+  if(!m)return '<span class="st-chip" style="background:var(--c5);color:var(--tx3)">Sin especificar</span>';
+  return '<span class="st-chip" style="background:'+m.bg+';color:'+m.fg+'"><span class="st-dot" style="background:'+m.fg+'"></span>'+m.label+'</span>';
+}
+function stRowBarStyle(s){
+  const m=MOD_STYLE[s.modalidad];
+  return m?('--st-bar-c:'+m.fg+';'):'';
+}
+// Fecha ISO (yyyy-mm-dd) a partir de Date, string dd/mm/aaaa o texto no parseable (retorna null en ese caso).
+function parseFechaISO(v){
+  if(v===null||v===undefined||v==='')return null;
+  if(v instanceof Date)return isNaN(v.getTime())?null:v.toISOString().slice(0,10);
+  const s=v.toString().trim();
+  let m=s.match(/^(\d{4})-(\d{2})-(\d{2})/);if(m)return m[0];
+  m=s.match(/^(\d{1,2})[\/\-.](\d{1,2})[\/\-.](\d{2,4})$/);
+  if(m){let d=+m[1],mo=+m[2],y=+m[3];if(y<100)y+=2000;const dt=new Date(y,mo-1,d);if(!isNaN(dt.getTime()))return dt.toISOString().slice(0,10);}
+  return null;
+}
 
 var CURSO_NORM_MAP={'I NIVEL TRANSICIÓN':'NT1','I NIVEL DE TRANSICIÓN':'NT1','I NIVEL DE TRANSICION':'NT1','I NIVEL TRANSICION':'NT1','PRIMER NIVEL TRANSICIÓN':'NT1','PRE-KINDER':'NT1','PRE KINDER':'NT1','II NIVEL TRANSICIÓN':'NT2','II NIVEL DE TRANSICIÓN':'NT2','II NIVEL DE TRANSICION':'NT2','II NIVEL DE TRANSICIÒN':'NT2','II NIVEL TRANSICION':'NT2','SEGUNDO NIVEL TRANSICIÓN':'NT2','KINDER':'NT2','1° BÁSICO':'1°','1° BASICO':'1°','PRIMERO BÁSICO':'1°','2° BÁSICO':'2°','2° BASICO':'2°','SEGUNDO BÁSICO':'2°','3° BÁSICO':'3°','3° BASICO':'3°','TERCERO BÁSICO':'3°','4° BÁSICO':'4°','4° BASICO':'4°','CUARTO BÁSICO':'4°','5° BÁSICO':'5°','5° BASICO':'5°','QUINTO BÁSICO':'5°','6° BÁSICO':'6°','6° BASICO':'6°','SEXTO BÁSICO':'6°','7° BÁSICO':'7°','7° BASICO':'7°','SÉPTIMO BÁSICO':'7°','SEPTIMO BASICO':'7°','8° BÁSICO':'8°','8° BASICO':'8°','OCTAVO BÁSICO':'8°','1°MEDIO':'1°M','1° MEDIO':'1°M','PRIMERO MEDIO':'1°M','2°MEDIO':'2°M','2° MEDIO':'2°M','SEGUNDO MEDIO':'2°M','3°MEDIO':'3°M','3° MEDIO':'3°M','TERCERO MEDIO':'3°M','4°MEDIO':'4°M','4° MEDIO':'4°M','CUARTO MEDIO':'4°M'};
 var CURSO_DISPLAY_MAP={'NT1':'I Nivel Transición','NT2':'II Nivel Transición','1°':'1° Básico','2°':'2° Básico','3°':'3° Básico','4°':'4° Básico','5°':'5° Básico','6°':'6° Básico','7°':'7° Básico','8°':'8° Básico','1°M':'1° Medio','2°M':'2° Medio','3°M':'3° Medio','4°M':'4° Medio'};
@@ -1156,22 +1240,51 @@ ${Object.keys(cr).length?`<div class="tw" style="padding:18px"><h3 style="font-s
 // ═══════════════════════════════════════════════════════════
 let stuFilter='';
 let stuModFiltro='';
+let stuCursoFiltro='';
+let stuEstadoFiltro='';
+let stuOrden='recientes';
+function stuFechaRelevante(s){
+  const e=stEstado(s);
+  const d=e==='Inactivo'?(s.fechaRetiro||s.fechaMatricula):(s.fechaReingreso||s.fechaMatricula);
+  if(!d)return'—';
+  const t=Date.parse(d);if(isNaN(t))return(typeof d==='string'?d:'—');
+  return new Date(t).toLocaleDateString('es-CL',{day:'2-digit',month:'2-digit',year:'numeric'});
+}
 function rStu(){
-const modBadge={Aula:'background:#bdd7ee;color:#1f4e79',Sala:'background:#e2efda;color:#375623'};
+const cursos=[...new Set(D.students.map(s=>s.curso))].sort((a,b)=>ALL_N.indexOf(a)-ALL_N.indexOf(b));
 const fl=D.students.filter(s=>{
   const txt=(s.nombre||'').toLowerCase().includes(stuFilter.toLowerCase())||(s.rut||'').includes(stuFilter)||(s.curso||'').toLowerCase().includes(stuFilter.toLowerCase());
   const mod=!stuModFiltro||s.modalidad===stuModFiltro;
-  return txt&&mod;
-}).sort(sortSt);
+  const cur=!stuCursoFiltro||s.curso===stuCursoFiltro;
+  const est=!stuEstadoFiltro||stEstado(s)===stuEstadoFiltro;
+  return txt&&mod&&cur&&est;
+});
 const totAula=D.students.filter(s=>s.modalidad==='Aula').length;
 const totSala=D.students.filter(s=>s.modalidad==='Sala').length;
 const totSin=D.students.filter(s=>!s.modalidad).length;
-let rows='';if(!fl.length)rows=`<tr><td colspan="6" style="padding:30px;text-align:center;color:var(--tx3)">Sin estudiantes</td></tr>`;
-else fl.forEach((s,i)=>{
-  const mSty=modBadge[s.modalidad]||'background:#f2f2f2;color:#888';
-  rows+=`<tr style="background:${i%2?'var(--c4)':'var(--wh)'}"><td>${s.matricula||'—'}</td><td>${s.rut||'—'}</td><td style="font-weight:600">${s.nombre}</td><td><span class="badge ${NMD.includes(s.curso)?'bb':'bg'}">${cursoDisp(s)}</span></td><td><span style="${mSty};font-weight:600;padding:2px 8px;border-radius:4px;font-size:11px;white-space:nowrap">${s.modalidad||'Sin especificar'}</span></td><td><button class="b bs bsm" onclick="editStu('${s.id}')">✏️</button> <button class="b bsm" style="color:var(--rd)" onclick="delStu('${s.id}')">🗑️</button></td></tr>`;
-});
+const grupos=[
+  {estado:'Vigente',titulo:'Matriculados vigentes',sub:'Estudiantes activos del periodo actual'},
+  {estado:'Rematriculado',titulo:'Rematriculados',sub:'Estudiantes con continuidad confirmada tras un reingreso'},
+  {estado:'Inactivo',titulo:'No vigentes / inactivos',sub:'Estudiantes sin continuidad en el periodo actual'}
+];
+function rowHtml(s,i){
+  return `<tr class="st-row-bar" style="background:${i%2?'var(--c4)':'var(--wh)'};${stRowBarStyle(s)}"><td>${s.matricula||'—'}</td><td>${s.rut||'—'}</td><td style="font-weight:600">${s.nombre}</td><td><span class="badge ${NMD.includes(s.curso)?'bb':'bg'}">${cursoDisp(s)}</span></td><td>${stModChip(s)}</td><td>${stEstadoChip(s)}</td><td style="font-size:11px;color:var(--tx2);white-space:nowrap">${stuFechaRelevante(s)}</td><td><button class="b bs bsm" onclick="editStu('${s.id}')">✏️</button> <button class="b bsm" style="color:var(--rd)" onclick="delStu('${s.id}')">🗑️</button></td></tr>`;
+}
+let rows='';
+if(!fl.length){
+  rows=`<tr><td colspan="8" style="padding:30px;text-align:center;color:var(--tx3)">Sin estudiantes</td></tr>`;
+}else if(stuOrden==='nombre'){
+  rows=fl.slice().sort((a,b)=>(a.nombre||'').localeCompare(b.nombre||'')).map(rowHtml).join('');
+}else{
+  grupos.forEach(g=>{
+    const gl=fl.filter(s=>stEstado(s)===g.estado).sort(sortSt);
+    if(!gl.length)return;
+    rows+=`<tr class="st-group-row"><td colspan="8"><span class="st-dot" style="background:${ST_ESTADO_STYLE[g.estado].fg}"></span> ${g.titulo.toUpperCase()}<span class="cnt">(${gl.length})</span><span class="sub">${g.sub}</span></td></tr>`;
+    rows+=gl.map(rowHtml).join('');
+  });
+}
 const chipSty=(v)=>`padding:5px 14px;border-radius:20px;font-size:11.5px;font-weight:600;cursor:pointer;border:2px solid ${stuModFiltro===v?'var(--bl)':'transparent'};background:${stuModFiltro===v?'var(--lb)':'var(--gr)'};color:${stuModFiltro===v?'var(--bl)':'var(--tx2)'};transition:.12s`;
+const cursoOpts='<option value="">Todos</option>'+cursos.map(c=>`<option value="${c}" ${stuCursoFiltro===c?'selected':''}>${cursoDisp({curso:c})}</option>`).join('');
 return`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px"><div><h2 class="pt">Estudiantes</h2><p class="ps">${D.students.length} registrados</p></div><div style="display:flex;gap:6px;flex-wrap:wrap"><button class="b bp" onclick="newStu()">＋ Nuevo</button><button class="b bs" onclick="printSection('Estudiantes')" style="font-size:10px">🖨️</button><button class="b bs" onclick="document.getElementById('xlsxInput').click()">📥 Importar Excel</button><button class="b bs" onclick="exportXlsx()">📤 Exportar Excel</button></div></div>
 <input type="file" id="xlsxInput" accept=".xlsx,.xls,.csv" style="display:none" onchange="importXlsx(this)">
 <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:10px">
@@ -1181,8 +1294,21 @@ return`<div style="display:flex;justify-content:space-between;align-items:center
   <button onclick="stuModFiltro='Sala';render()" style="${chipSty('Sala')}">🛏️ Sala (${totSala})</button>
   ${totSin>0?`<button onclick="stuModFiltro='';render()" style="padding:5px 14px;border-radius:20px;font-size:11px;cursor:pointer;border:1px dashed var(--brd);background:0;color:var(--tx3)">Sin modalidad (${totSin})</button>`:''}
 </div>
-<input value="${stuFilter}" oninput="stuFilter=this.value;render()" placeholder="Buscar por nombre, RUT o curso..." style="width:100%;max-width:360px;margin-bottom:12px">
-<div class="tw"><table><thead><tr><th>N°</th><th>RUT</th><th>Nombre</th><th>Curso</th><th>Modalidad</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>`;
+<div class="tb" style="margin-bottom:12px">
+  <input value="${stuFilter}" oninput="stuFilter=this.value;render()" placeholder="Buscar estudiante..." style="min-width:200px;flex:1">
+  <select onchange="stuCursoFiltro=this.value;render()" style="width:150px">${cursoOpts}</select>
+  <select onchange="stuEstadoFiltro=this.value;render()" style="width:150px">
+    <option value="">Estado: Todos</option>
+    <option value="Vigente" ${stuEstadoFiltro==='Vigente'?'selected':''}>Vigente</option>
+    <option value="Rematriculado" ${stuEstadoFiltro==='Rematriculado'?'selected':''}>Rematriculado</option>
+    <option value="Inactivo" ${stuEstadoFiltro==='Inactivo'?'selected':''}>Inactivo</option>
+  </select>
+  <select onchange="stuOrden=this.value;render()" style="width:170px">
+    <option value="recientes" ${stuOrden==='recientes'?'selected':''}>Ordenar: Más recientes</option>
+    <option value="nombre" ${stuOrden==='nombre'?'selected':''}>Ordenar: Nombre (A-Z)</option>
+  </select>
+</div>
+<div class="tw"><table><thead><tr><th>N°</th><th>RUT</th><th>Nombre completo</th><th>Curso</th><th>Modalidad</th><th>Estado</th><th>Última actualización</th><th>Acciones</th></tr></thead><tbody>${rows}</tbody></table></div>`;
 }
 function newStu(){closeStuMod();showStuModal({id:'',matricula:'',rut:'',nombre:'',curso:'',cursoDisplay:'',modalidad:''});}
 function editStu(id){closeStuMod();var s=D.students.find(x=>x.id===id);if(s)showStuModal({id:s.id,matricula:s.matricula,rut:s.rut,nombre:s.nombre,curso:s.curso,cursoDisplay:s.cursoDisplay||'',modalidad:s.modalidad||''});}
@@ -1228,7 +1354,7 @@ const reader=new FileReader();
 reader.onload=function(e){
 try{
 const data=new Uint8Array(e.target.result);
-const wb=XLSX.read(data,{type:'array'});
+const wb=XLSX.read(data,{type:'array',cellDates:true});
 
 // Show sheet selector if multiple sheets
 if(wb.SheetNames.length>1){
@@ -1265,14 +1391,38 @@ if(rows.length<2){alert('La hoja está vacía');return;}
 
 // Detect columns by header names
 const hdr=rows[0].map(function(h){return(h||'').toString().toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').trim();});
-let cMat=-1,cRut=-1,cNom=-1,cCur=-1,cMod=-1;
+let cMat=-1,cRut=-1,cNom=-1,cCur=-1,cMod=-1,cFechaMat=-1;
+const idxFechaRetiro=[],idxMotivoRetiro=[],idxFechaReingreso=[];
 hdr.forEach(function(h,i){
 if(cMat<0&&(h.includes('matric')||h.includes('n°')||h==='n'||h==='n° de matric'||h===''))cMat=i;
 if(cRut<0&&(h.includes('rut')||h.includes('run')))cRut=i;
 if(cNom<0&&(h.includes('nombre')||h.includes('Estudiante')||h.includes('estudiante')))cNom=i;
 if(cCur<0&&(h.includes('curso')||h.includes('nivel')))cCur=i;
 if(cMod<0&&(h.includes('modalidad')||h==='mod'||h==='tipo'||h==='tipo atencion'||h==='modalidad de atencion'))cMod=i;
+if(cFechaMat<0&&h.includes('fecha matric'))cFechaMat=i;
+if(h.includes('fecha retiro'))idxFechaRetiro.push(i);
+else if(h.includes('motivo retiro')||h.includes('motivo'))idxMotivoRetiro.push(i);
+else if(h.includes('fecha reingreso')||h.includes('reingreso'))idxFechaReingreso.push(i);
 });
+// Nota: cFechaMat NO se confunde con cMat porque busca específicamente "fecha matríc..."
+// (cMat detecta la columna de N° correlativo/matrícula numérica, que en esta nómina es la col. A).
+// Las columnas "Fecha Retiro"/"Motivo Retiro"/"Fecha Reingreso" se repiten en bloques (uno por
+// episodio de retiro-reingreso); se agrupan por posición relativa, en el mismo orden en que
+// aparecen en la planilla, que es cronológico.
+function stExtractEstadoFromRow(row){
+var fechaMatricula=cFechaMat>=0?parseFechaISO(row[cFechaMat]):null;
+var fechaRetiro=null,fechaReingreso=null,motivoRetiro=null,huboRematricula=false;
+for(var k=0;k<idxFechaRetiro.length;k++){
+var rv=row[idxFechaRetiro[k]];
+var gv=idxFechaReingreso[k]!==undefined?row[idxFechaReingreso[k]]:null;
+var mv=idxMotivoRetiro[k]!==undefined?row[idxMotivoRetiro[k]]:null;
+var rHas=rv!==null&&rv!==undefined&&rv!=='';
+var gHas=gv!==null&&gv!==undefined&&gv!=='';
+if(rHas){fechaRetiro=parseFechaISO(rv)||rv.toString().trim();motivoRetiro=(mv||'').toString().trim()||null;fechaReingreso=null;}
+if(gHas){fechaReingreso=parseFechaISO(gv)||gv.toString().trim();huboRematricula=true;}
+}
+return{fechaMatricula:fechaMatricula,fechaRetiro:fechaRetiro,fechaReingreso:fechaReingreso,motivoRetiro:motivoRetiro,huboRematricula:huboRematricula};
+}
 
 // Detect matrícula: find first column that has numeric values in data rows
 if(cMat<0){
@@ -1303,6 +1453,8 @@ colInfo+='  RUT: '+(cRut>=0?'Columna '+(cRut+1)+' ("'+rows[0][cRut]+'")':'NO DET
 colInfo+='  Nombre: Columna '+(cNom+1)+' ("'+rows[0][cNom]+'")\n';
 colInfo+='  Curso: '+(cCur>=0?'Columna '+(cCur+1)+' ("'+rows[0][cCur]+'")':'NO DETECTADA')+'\n';
 colInfo+='  Modalidad: '+(cMod>=0?'Columna '+(cMod+1)+' ("'+rows[0][cMod]+'")':'NO DETECTADA — se conservará la modalidad ya asignada a cada estudiante')+'\n';
+colInfo+='  Fecha Matrícula: '+(cFechaMat>=0?'Columna '+(cFechaMat+1):'NO DETECTADA')+'\n';
+colInfo+='  Retiro/Reingreso: '+(idxFechaRetiro.length?idxFechaRetiro.length+' episodio(s) por estudiante — determina Vigente/Rematriculado/Inactivo':'NO DETECTADO — se conservará la vigencia ya registrada')+'\n';
 colInfo+='\nTotal filas con datos: '+(rows.length-1)+'\n';
 colInfo+='\nPrimeros 3 registros:\n';
 for(var p=1;p<=Math.min(3,rows.length-1);p++){
@@ -1347,6 +1499,7 @@ if(typeof matRaw==='number'){mat=Math.round(matRaw);}
 else{var parsed=parseInt(matRaw.toString().trim());if(!isNaN(parsed))mat=parsed;}
 }
 if(!mat){maxMat++;mat=maxMat;}else if(mat>maxMat){maxMat=mat;}
+var estadoInfo=stExtractEstadoFromRow(row);
 
 // Buscar estudiante existente: RUT > matrícula > nombre+curso > nombre
 var exists=null;
@@ -1356,10 +1509,16 @@ if(!exists)exists=D.students.find(function(s){return s.nombre===nombre&&s.curso=
 if(!exists&&_preByNom[nombre])exists=D.students.find(function(s){return s.id===_preByNom[nombre];});
 if(mode==='add'&&exists)continue;
 
+var fechaMatricula=cFechaMat>=0?(estadoInfo.fechaMatricula||(exists&&exists.fechaMatricula)||null):((exists&&exists.fechaMatricula)||null);
+var fechaRetiro=idxFechaRetiro.length?estadoInfo.fechaRetiro:((exists&&exists.fechaRetiro)||null);
+var fechaReingreso=idxFechaRetiro.length?estadoInfo.fechaReingreso:((exists&&exists.fechaReingreso)||null);
+var motivoRetiro=idxFechaRetiro.length?estadoInfo.motivoRetiro:((exists&&exists.motivoRetiro)||null);
+var huboRematricula=idxFechaRetiro.length?estadoInfo.huboRematricula:!!(exists&&exists.huboRematricula);
+
 if(mode==='replace'&&exists){
-imported.push({id:exists.id,matricula:mat,rut:rut,nombre:nombre,curso:curso,cursoDisplay:cursoDisplay,modalidad:exists.modalidad||modal||''});
+imported.push({id:exists.id,matricula:mat,rut:rut,nombre:nombre,curso:curso,cursoDisplay:cursoDisplay,modalidad:exists.modalidad||modal||'',fechaMatricula:fechaMatricula,fechaRetiro:fechaRetiro,fechaReingreso:fechaReingreso,motivoRetiro:motivoRetiro,huboRematricula:huboRematricula});
 }else{
-imported.push({id:Date.now().toString()+r,matricula:mat,rut:rut,nombre:nombre,curso:curso,cursoDisplay:cursoDisplay,modalidad:modal});
+imported.push({id:Date.now().toString()+r,matricula:mat,rut:rut,nombre:nombre,curso:curso,cursoDisplay:cursoDisplay,modalidad:modal,fechaMatricula:fechaMatricula,fechaRetiro:fechaRetiro,fechaReingreso:fechaReingreso,motivoRetiro:motivoRetiro,huboRematricula:huboRematricula});
 }
 }
 
@@ -1626,23 +1785,27 @@ descPanel+='<div><label style="display:block;font-size:8.5px;font-weight:600;col
 descPanel+='</div></div>';});
 if(!isReadOnly){descPanel+='<div style="text-align:right;margin-top:6px"><button class="b bp" onclick="save();showToast(\'Descripciones guardadas\')" style="font-size:10px;padding:4px 12px">\ud83d\udcbe Guardar descripciones</button></div>';}
 descPanel+='</div>';
-var thTop='<th rowspan="2" style="min-width:150px;position:sticky;left:0;background:var(--md);color:var(--wh);z-index:2;font-size:9px">Estudiante</th>';
+var thTop='<th rowspan="2" class="st-sticky-col" style="min-width:165px;background:var(--md);color:var(--wh);z-index:2;font-size:9px">Estudiante</th>';
 var thSub='';
-pMeses.forEach(function(mes){
-thTop+='<th colspan="'+ao.ind+'" style="text-align:center;background:var(--c1);color:var(--wh);font-size:9.5px;border-left:2px solid var(--md)">'+mes+'</th>';
-for(var j=0;j<ao.ind;j++){thSub+='<th style="min-width:50px;font-size:8.5px;background:var(--c2);color:rgba(255,255,255,.8)">I'+(j+1)+'</th>';}
+pMeses.forEach(function(mes,mi){
+var blkCls='mes-blk-'+(mi%3);
+thTop+='<th colspan="'+ao.ind+'" class="'+blkCls+' mes-blk-end" style="text-align:center;background:var(--c1);color:var(--wh);font-size:9.5px;border-left:2px solid var(--md)">'+mes+'</th>';
+for(var j=0;j<ao.ind;j++){var isLast=j===ao.ind-1;thSub+='<th class="'+blkCls+(isLast?' mes-blk-end':'')+'" style="min-width:50px;font-size:8.5px;background:var(--c2);color:rgba(255,255,255,.8)">I'+(j+1)+'</th>';}
 });
 thTop+='<th rowspan="2" style="text-align:center;background:var(--bl);color:var(--wh);font-size:8.5px;min-width:55px">%Logro</th>';
 if(!isNT(eCur))thTop+='<th rowspan="2" style="text-align:center;background:var(--c3);color:var(--wh);font-size:8.5px;min-width:50px">Nota</th>';
 var rows='';sts.forEach(function(s,i){
 var cells='';var allInds=[];
-pMeses.forEach(function(mes){
+pMeses.forEach(function(mes,mi){
+var blkCls='mes-blk-'+(mi%3);
 for(var j=0;j<ao.ind;j++){
 var k=s.id+'-'+mes+'-'+j;
 var cv=ePending[k]!==undefined?ePending[k]:(D.evaluations?.[s.id]?.[eAsig]?.[mes]?.[j]||'');
 if(cv)allInds.push(cv);
 var selO='';opts.forEach(function(o){selO+='<option value="'+o+'" '+(cv===o?'selected':'')+'>'+(!o?'\u2014':o)+'</option>';});
-cells+='<td><select '+(isReadOnly?'disabled':'')+' onchange="eSet(\''+s.id+'\',\''+mes+'\',\''+j+'\',this.value)" style="width:100%;padding:2px;font-size:10px;border-radius:4px;border:1px solid var(--brd);background:'+(cv?'var(--lb)':(isReadOnly?'var(--gr)':'var(--wh)'))+'">'+selO+'</select></td>';}});
+var isLast=j===ao.ind-1;
+var mesBg=['#eef4ff','#f1f8f1','#f6f2fc'][mi%3];
+cells+='<td class="'+blkCls+(isLast?' mes-blk-end':'')+'"><select '+(isReadOnly?'disabled':'')+' onchange="eSet(\''+s.id+'\',\''+mes+'\',\''+j+'\',this.value)" style="width:100%;padding:2px;font-size:10px;border-radius:4px;border:1px solid var(--brd);background:'+(cv?'var(--lb)':(isReadOnly?'var(--gr)':mesBg))+'">'+selO+'</select></td>';}});
 if(ao.t==='num'||ao.t==='nt'){var pct=pctL(allInds,eCur);var cal=calcCal(pct);
 var pctD=pct!=null?pct+'%':'\u2014';if(ao.t==='nt'&&pct!=null)pctD=pct+'% ('+ntScaleLabelNT(pct)+')';
 cells+='<td style="text-align:center;font-weight:700;font-size:10px;color:var(--bl)">'+pctD+'</td>';
@@ -1650,7 +1813,8 @@ if(!isNT(eCur)){var nc=cal!=null?(cal>=4?'color:var(--gn)':'color:var(--rd)'):'c
 cells+='<td style="text-align:center;font-weight:800;font-size:11px;'+nc+'">'+(cal!=null?cal.toFixed(1):'\u2014')+'</td>';}
 }else{var oc=oCalc(allInds.length?allInds:[]);
 cells+='<td style="text-align:center">\u2014</td><td style="text-align:center;font-weight:700">'+(oc||'\u2014')+'</td>';}
-rows+='<tr style="background:'+(i%2?'var(--c4)':'var(--wh)')+'"><td style="font-weight:600;font-size:10px;position:sticky;left:0;background:'+(i%2?'var(--c4)':'var(--wh)')+';z-index:1">'+s.nombre+'</td>'+cells+'</tr>';});
+var rowBg=i%2?'var(--c4)':'var(--wh)';
+rows+='<tr style="background:'+rowBg+';'+stRowBarStyle(s)+'" class="st-row-bar"><td class="st-sticky-col" style="background:'+rowBg+';z-index:1"><div style="font-weight:600;font-size:10px">'+s.nombre+'</div><div style="display:flex;gap:4px;margin-top:2px;transform:scale(.86);transform-origin:left center">'+stModChip(s)+stEstadoChip(s)+'</div></td>'+cells+'</tr>';});
 var hasPending=Object.keys(ePending).length>0;
 body=descPanel+'<div class="tw"><table><thead><tr style="background:var(--md)">'+thTop+'</tr><tr>'+thSub+'</tr></thead><tbody>'+rows+'</tbody></table>'
 +((hasPending && !isReadOnly)?'<div class="no-print" style="padding:8px 12px;background:var(--lb);border-top:1px solid #d2e3fc;display:flex;justify-content:flex-end;gap:8px"><button class="b bs" onclick="ePending={};render()">Descartar</button><button class="b bp" onclick="eSaveAll()">💾 Guardar</button></div>':'')+'</div>';
@@ -1991,6 +2155,98 @@ function getDiagIndicators(subjectId,dimension,courseGroup){
   return list.filter(function(i){return i.active;});
 }
 
+// ── Guía de evaluación — rúbricas específicas por indicador (solo Lenguaje) ──
+// Estructura centralizada: rubricasLenguaje[indicadorId] = {insuficiente,adecuado,competente,destacado}.
+// El indicadorId es el mismo id estable generado por diagMkIndicators (dimension_grupo_orden),
+// por lo que la guía se vincula por id y no por comparación de texto. "No observado" no es un
+// nivel de desempeño: su explicación es única y se maneja aparte (DIAG_NO_OBSERVADO_TXT).
+const DIAG_NO_OBSERVADO_TXT='No existe evidencia suficiente o una situación adecuada que permita determinar el desempeño del estudiante en este indicador.';
+const RUBRICAS_LENGUAJE={
+  // ── Comunicación oral · 1° a 3° básico ──
+  oralCommunication_grades_1_3_1:{insuficiente:'No responde o su respuesta no se relaciona con lo preguntado, incluso repitiendo la pregunta de forma simple.',adecuado:'Comprende la pregunta solo cuando se repite, se simplifica o se acompaña de gestos o apoyo visual.',competente:'Comprende preguntas orales simples formuladas una sola vez y responde de forma pertinente.',destacado:'Comprende preguntas simples de inmediato y sin apoyo, incluso cuando se formulan de distintas maneras.'},
+  oralCommunication_grades_1_3_2:{insuficiente:'No logra dar información personal (nombre, edad, gustos) ni con preguntas dirigidas.',adecuado:'Entrega información personal solo ante preguntas directas y con apoyo del adulto.',competente:'Entrega información personal básica de forma espontánea y comprensible.',destacado:'Entrega información personal variada y la amplía con detalles propios sin que se le solicite.'},
+  oralCommunication_grades_1_3_3:{insuficiente:'No manifiesta gustos o intereses, incluso con apoyo o alternativas concretas.',adecuado:'Comunica un gusto o interés al elegir entre alternativas ofrecidas por el adulto.',competente:'Comunica sus propios gustos o intereses de manera espontánea y clara.',destacado:'Comunica y justifica sus gustos o intereses con razones propias.'},
+  oralCommunication_grades_1_3_4:{insuficiente:'Sus respuestas no se relacionan con lo que se le pregunta.',adecuado:'Responde de forma relacionada solo en preguntas muy simples o con apoyo del adulto.',competente:'Responde de manera pertinente a la mayoría de las preguntas formuladas.',destacado:'Responde de manera pertinente y precisa a preguntas de distinta complejidad.'},
+  oralCommunication_grades_1_3_5:{insuficiente:'No sostiene intercambio verbal, aun cuando el docente insiste con preguntas simples.',adecuado:'Sostiene el intercambio solo con apoyo constante del docente (repreguntas, ejemplos).',competente:'Mantiene una interacción breve de 2 a 3 turnos con el docente sin apoyo adicional.',destacado:'Mantiene una interacción de varios turnos, iniciando o retomando el intercambio por sí mismo.'},
+  // ── Comunicación oral · 4° a 6° básico ──
+  oralCommunication_grades_4_6_1:{insuficiente:'No comprende preguntas ni instrucciones orales, incluso simplificadas o repetidas.',adecuado:'Comprende preguntas e instrucciones orales simples, requiriendo repetición o simplificación.',competente:'Comprende preguntas e instrucciones orales de un paso sin apoyo adicional.',destacado:'Comprende preguntas e instrucciones orales de más de un paso a la primera vez que se formulan.'},
+  oralCommunication_grades_4_6_2:{insuficiente:'No logra relatar experiencias personales ni con preguntas guía.',adecuado:'Relata experiencias personales de forma breve y solo cuando se le guía con preguntas.',competente:'Relata experiencias personales de forma espontánea y comprensible.',destacado:'Relata experiencias personales con detalle, orden temporal y contexto relevante.'},
+  oralCommunication_grades_4_6_3:{insuficiente:'Sus ideas al hablar son desordenadas o inconexas, dificultando la comprensión.',adecuado:'Organiza sus ideas parcialmente, con apoyo o guía para ordenarlas.',competente:'Organiza sus ideas con una secuencia comprensible al hablar.',destacado:'Organiza sus ideas con claridad, orden lógico y conectores adecuados.'},
+  oralCommunication_grades_4_6_4:{insuficiente:'Responde con monosílabos o frases mínimas, sin ampliar aunque se le solicite.',adecuado:'Amplía sus respuestas solo cuando el adulto lo solicita explícitamente ("cuéntame más").',competente:'Amplía sus respuestas de manera espontánea agregando información relevante.',destacado:'Amplía sus respuestas con ejemplos, razones o detalles que enriquecen su comunicación.'},
+  oralCommunication_grades_4_6_5:{insuficiente:'No respeta los turnos de habla, interrumpiendo o desconectándose del intercambio.',adecuado:'Respeta turnos de habla solo con recordatorios frecuentes del adulto.',competente:'Mantiene una conversación respetando los turnos de habla la mayor parte del tiempo.',destacado:'Mantiene una conversación fluida, respetando turnos y retomando lo dicho por su interlocutor.'},
+  // ── Comunicación oral · 7° y 8° básico ──
+  oralCommunication_grades_7_8_1:{insuficiente:'Solo comprende preguntas orales muy simples y directas.',adecuado:'Comprende preguntas de complejidad media cuando se reformulan o ejemplifican.',competente:'Comprende preguntas orales de distinta complejidad formuladas una sola vez.',destacado:'Comprende preguntas orales complejas y responde ajustándose exactamente a lo solicitado.'},
+  oralCommunication_grades_7_8_2:{insuficiente:'Su expresión de información personal es confusa o incompleta.',adecuado:'Expresa información personal con claridad parcial, requiriendo repreguntas para aclarar.',competente:'Expresa información personal con claridad y sin ambigüedades.',destacado:'Expresa información personal con claridad, precisión y vocabulario ajustado al contexto.'},
+  oralCommunication_grades_7_8_3:{insuficiente:'Presenta ideas sueltas, sin relación evidente entre ellas.',adecuado:'Relaciona algunas ideas, aunque con apoyo o de forma poco fluida.',competente:'Organiza y relaciona sus ideas de manera coherente al hablar.',destacado:'Organiza y relaciona sus ideas con fluidez, estableciendo conexiones causales o comparativas.'},
+  oralCommunication_grades_7_8_4:{insuficiente:'No fundamenta ni amplía sus respuestas aunque se le solicite.',adecuado:'Fundamenta o amplía sus respuestas de forma breve y solo ante solicitud explícita.',competente:'Fundamenta o amplía sus respuestas de manera espontánea y pertinente.',destacado:'Fundamenta sus respuestas con argumentos claros y ejemplos que las enriquecen.'},
+  oralCommunication_grades_7_8_5:{insuficiente:'Participa mínimamente o solo cuando se le pregunta directamente.',adecuado:'Participa en la interacción oral de forma intermitente, con estímulo del adulto.',competente:'Participa activamente en la interacción oral, aportando y respondiendo con iniciativa.',destacado:'Participa activamente liderando o enriqueciendo la interacción oral con aportes propios.'},
+  // ── Comunicación oral · Educación Media ──
+  oralCommunication_secondary_1:{insuficiente:'No comprende consignas orales complejas, incluso cuando se reformulan.',adecuado:'Comprende consignas complejas de forma parcial, necesitando aclaraciones adicionales.',competente:'Comprende preguntas y consignas orales complejas sin apoyo adicional.',destacado:'Comprende consignas complejas de múltiples partes y las ejecuta con precisión.'},
+  oralCommunication_secondary_2:{insuficiente:'Comunica ideas de forma confusa o imprecisa, dificultando su comprensión.',adecuado:'Comunica ideas con claridad parcial, con imprecisiones que requieren aclaración.',competente:'Comunica ideas con claridad y precisión adecuadas al contexto.',destacado:'Comunica ideas con claridad, precisión y matices que enriquecen el mensaje.'},
+  oralCommunication_secondary_3:{insuficiente:'Su discurso carece de organización, dificultando seguir el hilo de lo expresado.',adecuado:'Organiza su discurso de forma básica, con algunos quiebres en la coherencia.',competente:'Organiza un discurso coherente, con introducción, desarrollo y cierre reconocibles.',destacado:'Organiza un discurso coherente y bien estructurado, con transiciones fluidas entre ideas.'},
+  oralCommunication_secondary_4:{insuficiente:'No fundamenta sus opiniones o experiencias, aunque se le solicite.',adecuado:'Fundamenta sus opiniones de forma breve o poco desarrollada.',competente:'Fundamenta sus opiniones o experiencias con argumentos pertinentes.',destacado:'Fundamenta sus opiniones con argumentos sólidos, ejemplos y distintas perspectivas.'},
+  oralCommunication_secondary_5:{insuficiente:'No ajusta su forma de hablar según la situación o el propósito comunicativo.',adecuado:'Ajusta parcialmente su expresión al propósito comunicativo, con apoyo o modelamiento.',competente:'Ajusta su expresión (tono, formalidad, vocabulario) al propósito comunicativo.',destacado:'Ajusta con flexibilidad su expresión a distintos propósitos y audiencias comunicativas.'},
+  // ── Lectura · 1° a 3° básico ──
+  reading_grades_1_3_1:{insuficiente:'No reconoce palabras o frases breves presentadas por escrito.',adecuado:'Reconoce algunas palabras o frases breves conocidas o de uso frecuente.',competente:'Reconoce palabras y frases breves variadas de forma autónoma.',destacado:'Reconoce con fluidez palabras y frases breves, incluso poco frecuentes.'},
+  reading_grades_1_3_2:{insuficiente:'No comprende preguntas escritas simples, incluso con apoyo de lectura en voz alta.',adecuado:'Comprende preguntas escritas simples solo cuando se le leen en voz alta.',competente:'Comprende preguntas escritas simples leyéndolas de forma autónoma.',destacado:'Comprende preguntas escritas simples y las relaciona con facilidad con lo solicitado.'},
+  reading_grades_1_3_3:{insuficiente:'No logra seguir instrucciones escritas breves, incluso con apoyo.',adecuado:'Sigue instrucciones escritas breves de un solo paso con apoyo o modelado.',competente:'Sigue instrucciones escritas breves de un paso de manera autónoma.',destacado:'Sigue instrucciones escritas breves de más de un paso sin apoyo.'},
+  reading_grades_1_3_4:{insuficiente:'No identifica información explícita presente en un texto breve.',adecuado:'Identifica información explícita simple con apoyo o guía del adulto.',competente:'Identifica información explícita de manera autónoma en textos breves.',destacado:'Identifica información explícita con precisión, incluso en textos con más de un dato.'},
+  reading_grades_1_3_5:{insuficiente:'No logra relacionar imágenes con información escrita correspondiente.',adecuado:'Relaciona imágenes con información escrita solo con apoyo o pistas adicionales.',competente:'Relaciona imágenes con información escrita de manera autónoma.',destacado:'Relaciona con precisión imágenes e información escrita, incluso ante varias opciones similares.'},
+  reading_grades_1_3_6:{insuficiente:'No logra comprender el sentido general de un mensaje escrito breve.',adecuado:'Comprende el sentido general de un mensaje breve con apoyo de relectura o explicación.',competente:'Comprende el sentido general de un mensaje breve de forma autónoma.',destacado:'Comprende el sentido general de un mensaje breve y lo explica con sus propias palabras.'},
+  // ── Lectura · 4° a 6° básico ──
+  reading_grades_4_6_1:{insuficiente:'No identifica información explícita presente en el texto.',adecuado:'Identifica información explícita simple, requiriendo apoyo para ubicarla en el texto.',competente:'Identifica información explícita de manera autónoma en el texto.',destacado:'Identifica información explícita con precisión, incluso cuando está distribuida en distintas partes del texto.'},
+  reading_grades_4_6_2:{insuficiente:'No reconoce la idea principal del texto leído.',adecuado:'Reconoce la idea principal solo con apoyo o preguntas orientadoras.',competente:'Reconoce la idea principal del texto de manera autónoma.',destacado:'Reconoce la idea principal y la distingue con claridad de las ideas secundarias.'},
+  reading_grades_4_6_3:{insuficiente:'No logra interpretar el significado de palabras según el contexto del texto.',adecuado:'Interpreta vocabulario contextual solo con apoyo o ejemplos del docente.',competente:'Interpreta vocabulario desconocido a partir del contexto de manera autónoma.',destacado:'Interpreta vocabulario complejo o poco frecuente apoyándose con precisión en el contexto.'},
+  reading_grades_4_6_4:{insuficiente:'No logra relacionar distintas partes o secciones del texto entre sí.',adecuado:'Relaciona partes del texto de forma parcial, requiriendo apoyo del docente.',competente:'Relaciona distintas partes del texto de manera autónoma y coherente.',destacado:'Relaciona distintas partes del texto estableciendo conexiones complejas (causa-efecto, comparación).'},
+  reading_grades_4_6_5:{insuficiente:'No logra realizar inferencias simples a partir de lo leído.',adecuado:'Realiza inferencias simples solo con preguntas guía o pistas explícitas.',competente:'Realiza inferencias simples de manera autónoma a partir del texto.',destacado:'Realiza inferencias simples con precisión y las fundamenta con elementos del texto.'},
+  reading_grades_4_6_6:{insuficiente:'No expresa una opinión relacionada con el texto leído.',adecuado:'Expresa una opinión breve sobre el texto, sin relacionarla claramente con lo leído.',competente:'Expresa una opinión basada en lo leído, relacionándola con el contenido del texto.',destacado:'Expresa una opinión fundamentada, apoyándose en evidencias específicas del texto.'},
+  // ── Lectura · 7° y 8° básico ──
+  reading_grades_7_8_1:{insuficiente:'No comprende el sentido global del texto leído.',adecuado:'Comprende el sentido global del texto de forma parcial, con apoyo o relectura.',competente:'Comprende el sentido global del texto de manera autónoma.',destacado:'Comprende el sentido global del texto y lo sintetiza con precisión y claridad.'},
+  reading_grades_7_8_2:{insuficiente:'No distingue información relevante de información secundaria en el texto.',adecuado:'Identifica información relevante de forma parcial, con apoyo del docente.',competente:'Identifica información relevante del texto de manera autónoma.',destacado:'Identifica información relevante con precisión, priorizándola según el propósito de lectura.'},
+  reading_grades_7_8_3:{insuficiente:'No logra realizar inferencias a partir del texto leído.',adecuado:'Realiza inferencias simples solo con apoyo o preguntas orientadoras.',competente:'Realiza inferencias pertinentes a partir del texto de manera autónoma.',destacado:'Realiza inferencias complejas y las fundamenta con evidencia textual precisa.'},
+  reading_grades_7_8_4:{insuficiente:'No interpreta significados o intenciones implícitas en el texto.',adecuado:'Interpreta significados o intenciones básicas con apoyo del docente.',competente:'Interpreta significados o intenciones del texto de manera autónoma.',destacado:'Interpreta significados o intenciones con profundidad, considerando matices del texto.'},
+  reading_grades_7_8_5:{insuficiente:'No relaciona el texto con experiencias o conocimientos previos.',adecuado:'Relaciona el texto con experiencias propias de forma breve o superficial.',competente:'Relaciona el texto con experiencias o conocimientos previos de manera pertinente.',destacado:'Relaciona el texto con experiencias o conocimientos previos, enriqueciendo su comprensión.'},
+  reading_grades_7_8_6:{insuficiente:'No fundamenta sus respuestas con elementos del texto.',adecuado:'Fundamenta sus respuestas de forma parcial, con referencias imprecisas al texto.',competente:'Fundamenta sus respuestas a partir de lo leído de manera clara y pertinente.',destacado:'Fundamenta sus respuestas con evidencia textual precisa y argumentos bien desarrollados.'},
+  // ── Lectura · Educación Media ──
+  reading_secondary_1:{insuficiente:'No comprende información explícita ni implícita del texto.',adecuado:'Comprende información explícita, pero presenta dificultades con la información implícita.',competente:'Comprende información explícita e implícita del texto de manera autónoma.',destacado:'Comprende información explícita e implícita con profundidad y precisión.'},
+  reading_secondary_2:{insuficiente:'No distingue ideas principales de secundarias en el texto.',adecuado:'Identifica ideas principales con apoyo, sin distinguir claramente las secundarias.',competente:'Identifica ideas principales y secundarias de manera autónoma.',destacado:'Identifica y jerarquiza ideas principales y secundarias con precisión.'},
+  reading_secondary_3:{insuficiente:'No interpreta relaciones entre las ideas presentes en el texto.',adecuado:'Interpreta relaciones simples entre ideas, con apoyo del docente.',competente:'Interpreta relaciones entre ideas del texto de manera autónoma.',destacado:'Interpreta relaciones complejas entre ideas (causales, contrastivas, argumentativas).'},
+  reading_secondary_4:{insuficiente:'No logra realizar inferencias complejas a partir del texto.',adecuado:'Realiza inferencias complejas de forma parcial, requiriendo apoyo.',competente:'Realiza inferencias complejas de manera autónoma y pertinente.',destacado:'Realiza inferencias complejas con solidez, integrando distintos elementos del texto.'},
+  reading_secondary_5:{insuficiente:'No evalúa críticamente la información presentada en el texto.',adecuado:'Evalúa información del texto de forma básica, con apoyo del docente.',competente:'Evalúa la información del texto de manera autónoma y fundamentada.',destacado:'Evalúa críticamente la información del texto, contrastando fuentes o perspectivas.'},
+  reading_secondary_6:{insuficiente:'No fundamenta interpretaciones o reflexiones sobre el texto.',adecuado:'Fundamenta su interpretación de forma breve o poco desarrollada.',competente:'Fundamenta una interpretación o reflexión de manera clara y pertinente.',destacado:'Fundamenta una interpretación o reflexión con profundidad, argumentos y evidencia textual.'},
+  // ── Escritura · 1° a 3° básico ──
+  writing_grades_1_3_1:{insuficiente:'No logra representar una idea mediante dibujo, palabra o frase, aun con apoyo.',adecuado:'Representa una idea de forma parcial o con apoyo constante del adulto.',competente:'Representa una idea mediante dibujo, palabra o frase de manera autónoma.',destacado:'Representa una idea con claridad, eligiendo el medio (dibujo, palabra o frase) más pertinente.'},
+  writing_grades_1_3_2:{insuficiente:'Escribe información que no se relaciona con la consigna solicitada.',adecuado:'Escribe información relacionada con la consigna solo de forma parcial.',competente:'Escribe información relacionada con la consigna de manera pertinente.',destacado:'Escribe información relacionada con la consigna, ampliándola con detalles propios.'},
+  writing_grades_1_3_3:{insuficiente:'Sus producciones escritas no son comprensibles.',adecuado:'Construye palabras o frases parcialmente comprensibles, con apoyo para su lectura.',competente:'Construye palabras o frases comprensibles de manera autónoma.',destacado:'Construye palabras o frases comprensibles y variadas, con buena legibilidad.'},
+  writing_grades_1_3_4:{insuficiente:'No organiza la información que produce por escrito.',adecuado:'Organiza información básica de forma parcial, con apoyo del docente.',competente:'Organiza información básica de manera comprensible en su escrito.',destacado:'Organiza información básica con secuencia clara y ordenada.'},
+  writing_grades_1_3_5:{insuficiente:'No utiliza vocabulario relacionado con su experiencia al escribir.',adecuado:'Utiliza vocabulario limitado relacionado con su experiencia, con apoyo del adulto.',competente:'Utiliza vocabulario relacionado con su experiencia de manera pertinente.',destacado:'Utiliza vocabulario variado y pertinente relacionado con su experiencia.'},
+  writing_grades_1_3_6:{insuficiente:'No completa su producción escrita, aun con apoyo y tiempo adicional.',adecuado:'Completa su producción de forma parcial, requiriendo apoyo constante.',competente:'Completa su producción escrita según sus posibilidades de manera autónoma.',destacado:'Completa su producción escrita con esfuerzo adicional, superando lo esperado para sus posibilidades.'},
+  // ── Escritura · 4° a 6° básico ──
+  writing_grades_4_6_1:{insuficiente:'Produce ideas que no se relacionan con la consigna solicitada.',adecuado:'Produce ideas relacionadas con la consigna de forma parcial o limitada.',competente:'Produce ideas relacionadas con la consigna de manera pertinente.',destacado:'Produce ideas variadas y pertinentes, ampliando lo solicitado en la consigna.'},
+  writing_grades_4_6_2:{insuficiente:'Sus ideas escritas carecen de secuencia u orden comprensible.',adecuado:'Organiza sus ideas en una secuencia parcial, con apoyo del docente.',competente:'Organiza sus ideas en una secuencia comprensible de manera autónoma.',destacado:'Organiza sus ideas en una secuencia clara y bien estructurada.'},
+  writing_grades_4_6_3:{insuficiente:'Sus oraciones son inconexas entre sí.',adecuado:'Construye oraciones parcialmente relacionadas entre sí, con apoyo.',competente:'Construye oraciones relacionadas entre sí de manera coherente.',destacado:'Construye oraciones relacionadas entre sí utilizando conectores variados.'},
+  writing_grades_4_6_4:{insuficiente:'Utiliza vocabulario escaso o poco pertinente a la consigna.',adecuado:'Utiliza vocabulario pertinente de forma limitada.',competente:'Utiliza vocabulario pertinente al tema y propósito de la consigna.',destacado:'Utiliza vocabulario variado y preciso, enriqueciendo su producción escrita.'},
+  writing_grades_4_6_5:{insuficiente:'No agrega detalles ni información relevante a su producción.',adecuado:'Agrega algunos detalles, aunque poco relevantes o desarrollados.',competente:'Agrega detalles o información relevante que enriquece su producción.',destacado:'Agrega detalles precisos y relevantes que dan mayor riqueza y profundidad al texto.'},
+  writing_grades_4_6_6:{insuficiente:'No revisa ni completa su producción escrita, aun cuando se le solicita.',adecuado:'Revisa o completa su producción solo con apoyo o indicaciones específicas.',competente:'Revisa o completa su producción escrita de manera autónoma.',destacado:'Revisa su producción de forma autónoma, incorporando mejoras evidentes.'},
+  // ── Escritura · 7° y 8° básico ──
+  writing_grades_7_8_1:{insuficiente:'Sus ideas no son pertinentes al propósito de la escritura.',adecuado:'Desarrolla ideas parcialmente pertinentes, con poco desarrollo.',competente:'Desarrolla ideas pertinentes al propósito de la escritura.',destacado:'Desarrolla ideas pertinentes con profundidad y originalidad.'},
+  writing_grades_7_8_2:{insuficiente:'La información de su escrito carece de coherencia u orden.',adecuado:'Organiza la información de manera parcialmente coherente.',competente:'Organiza la información de manera coherente en su producción escrita.',destacado:'Organiza la información con coherencia y una estructura clara (inicio, desarrollo, cierre).'},
+  writing_grades_7_8_3:{insuficiente:'Utiliza vocabulario poco adecuado al propósito de la escritura.',adecuado:'Utiliza vocabulario parcialmente adecuado al propósito.',competente:'Utiliza vocabulario adecuado al propósito de su producción escrita.',destacado:'Utiliza vocabulario preciso y variado, plenamente adecuado al propósito.'},
+  writing_grades_7_8_4:{insuficiente:'No relaciona ni amplía las ideas presentadas en su escrito.',adecuado:'Relaciona o amplía sus ideas de forma limitada.',competente:'Relaciona y amplía sus ideas de manera pertinente.',destacado:'Relaciona y amplía sus ideas con profundidad, estableciendo conexiones claras.'},
+  writing_grades_7_8_5:{insuficiente:'Su texto no resulta comprensible para el lector.',adecuado:'Construye un texto parcialmente comprensible, con algunas dificultades de lectura.',competente:'Construye un texto comprensible de manera autónoma.',destacado:'Construye un texto comprensible, fluido y bien logrado.'},
+  writing_grades_7_8_6:{insuficiente:'No revisa ni mejora su producción escrita.',adecuado:'Revisa y mejora aspectos de su producción solo con apoyo del docente.',competente:'Revisa y mejora aspectos de su producción de manera autónoma.',destacado:'Revisa y mejora su producción de forma autónoma y crítica, elevando su calidad.'},
+  // ── Escritura · Educación Media ──
+  writing_secondary_1:{insuficiente:'Sus ideas carecen de claridad o profundidad en el desarrollo escrito.',adecuado:'Desarrolla ideas con claridad parcial y escasa profundidad.',competente:'Desarrolla ideas con claridad y profundidad adecuadas.',destacado:'Desarrolla ideas con claridad, profundidad y perspectiva propia.'},
+  writing_secondary_2:{insuficiente:'El texto carece de organización coherente.',adecuado:'Organiza el texto de manera parcialmente coherente.',competente:'Organiza el texto de manera coherente, con estructura reconocible.',destacado:'Organiza el texto con coherencia y cohesión, facilitando su comprensión.'},
+  writing_secondary_3:{insuficiente:'Utiliza vocabulario limitado o poco pertinente.',adecuado:'Utiliza vocabulario pertinente, aunque con poca variedad.',competente:'Utiliza vocabulario pertinente y variado en su producción escrita.',destacado:'Utiliza vocabulario preciso, variado y sofisticado según el propósito.'},
+  writing_secondary_4:{insuficiente:'No fundamenta ni amplía sus planteamientos en el texto.',adecuado:'Fundamenta o amplía sus planteamientos de forma breve o superficial.',competente:'Fundamenta o amplía sus planteamientos de manera pertinente.',destacado:'Fundamenta sus planteamientos con solidez, ejemplos y argumentos bien desarrollados.'},
+  writing_secondary_5:{insuficiente:'No existe relación clara entre propósito, contenido y forma del texto.',adecuado:'Mantiene esta relación de manera parcial o inconsistente.',competente:'Mantiene relación adecuada entre propósito, contenido y forma del texto.',destacado:'Mantiene una relación precisa y consistente entre propósito, contenido y forma.'},
+  writing_secondary_6:{insuficiente:'No revisa ni mejora su producción escrita.',adecuado:'Revisa y mejora su producción solo con apoyo o indicaciones específicas.',competente:'Revisa y mejora su producción de manera autónoma.',destacado:'Revisa y mejora su producción de forma autónoma, crítica y sistemática.'}
+};
+function diagRubricFor(indId){
+  return RUBRICAS_LENGUAJE[indId]||null;
+}
+
 // ── Funciones puras de cálculo ─────────────────────────────────────────────
 function diagCalcDimension(indicatorResults){
   var total=indicatorResults.length;
@@ -2298,6 +2554,8 @@ function _diagWizardHost(){
 }
 function diagWizardKeydown(e){
   if(!diagWizard)return;
+  var helpEl=document.getElementById('diagHelpOverlay');
+  if(helpEl&&helpEl.style.display==='flex')return; // la guía de evaluación maneja Escape/Tab mientras está abierta
   if(e.key==='Escape'){e.stopPropagation();diagRequestClose();return;}
   if(e.key==='Tab'){
     var box=document.getElementById('diagModalBox');if(!box)return;
@@ -2543,8 +2801,9 @@ function diagStepDimensionHtml(stepId,d,ro){
     }).join('');
     var noObsSel=r.evidenceStatus==='not_observed'||!r.evidenceStatus;
     var noObsBtn='<button type="button" class="diag-level-btn no-obs'+(noObsSel?' sel':'')+'" '+(ro?'disabled':'')+' aria-pressed="'+noObsSel+'" onclick="diagSetIndicatorLevel(\''+stepId+'\',\''+ind.id+'\',null)">No observado</button>';
+    var helpBtn=d.subjectId==='language'?(' <button type="button" class="diag-help-btn" aria-label="Ver guía de evaluación de: '+diagEsc(ind.title)+'" onclick="diagOpenHelp(\''+stepId+'\',\''+ind.id+'\')">?</button>'):'';
     return '<div class="diag-indicator-row">'
-      +'<div class="diag-indicator-title">'+diagEsc(ind.title)+'</div>'
+      +'<div class="diag-indicator-title">'+diagEsc(ind.title)+helpBtn+'</div>'
       +'<div class="diag-level-group">'+levelBtns+noObsBtn+'</div>'
       +'</div>';
   }).join('');
@@ -2565,6 +2824,81 @@ function diagSetIndicatorLevel(stepId,indId,level){
   if(!dim.indicators)dim.indicators={};
   dim.indicators[indId]=level?{level:level,evidenceStatus:'observed'}:{evidenceStatus:'not_observed'};
   diagWizard.dirty=true;diagRenderWizard();diagSaveDraft();
+}
+
+// ── Guía de evaluación (popover por indicador) ──────────────────────────────
+var _diagHelpTriggerEl=null;
+function _diagHelpHost(){
+  var el=document.getElementById('diagHelpOverlay');
+  if(el)return el;
+  el=document.createElement('div');
+  el.id='diagHelpOverlay';
+  el.className='diag-overlay no-print';
+  el.style.zIndex=600;
+  el.style.display='none';
+  el.onclick=function(e){if(e.target===el)diagCloseHelp();};
+  document.body.appendChild(el);
+  return el;
+}
+function diagHelpModalHtml(ind,rubric,selLevel,stepId){
+  var areaLabel=(DIAG_DIM_TITLES[stepId]||'').replace(/^\d+\.\s*/,'');
+  var tramoLabel=DIAG_GROUP_LABELS[ind.courseGroup]||'';
+  var levelsHtml='';
+  DIAG_LEVELS.forEach(function(l){
+    var isSel=selLevel===l.v;
+    var texto=rubric?rubric[l.v]:DIAG_LEVEL_DESCRIPTORS[l.v];
+    levelsHtml+='<div class="diag-help-level'+(isSel?' sel':'')+'" style="color:'+l.col+'">'
+      +'<span class="dot" style="background:'+l.col+'"></span>'
+      +'<div><b>'+l.l.toUpperCase()+'</b><p>'+diagEsc(texto)+'</p></div></div>';
+  });
+  var noObsSel=selLevel==='no_observado';
+  levelsHtml+='<div class="diag-help-level noobs'+(noObsSel?' sel':'')+'">'
+    +'<span class="dot" style="background:var(--tx3)"></span>'
+    +'<div><b>NO OBSERVADO</b><p>'+diagEsc(DIAG_NO_OBSERVADO_TXT)+'</p></div></div>';
+  return '<div class="diag-modal diag-help-modal" id="diagHelpBox" role="dialog" aria-modal="true" aria-labelledby="diagHelpTitle">'
+    +'<div class="diag-modal-head">'
+    +'<div><h2 id="diagHelpTitle" style="font-size:1.05rem">Guía de evaluación</h2>'
+    +'<div class="sub">'+diagEsc(areaLabel)+(tramoLabel?' · '+diagEsc(tramoLabel):'')+'</div></div>'
+    +'<button class="diag-modal-close" id="diagHelpClose" aria-label="Cerrar guía de evaluación" onclick="diagCloseHelp()">✕</button>'
+    +'</div>'
+    +'<div class="diag-modal-body">'
+    +'<div style="font-weight:700;font-size:0.95rem;color:var(--dk);margin-bottom:4px">'+diagEsc(ind.title)+'</div>'
+    +(rubric?'':'<div style="font-size:0.78rem;color:var(--tx3);margin-bottom:8px">Este indicador aún no tiene guía específica; se muestra la escala general.</div>')
+    +'<div class="diag-help-levels">'+levelsHtml+'</div>'
+    +'</div></div>';
+}
+function diagOpenHelp(stepId,indId){
+  if(!diagWizard)return;
+  var ind=getDiagIndicators(diagWizard.subjectId,stepId,diagCourseGroup(diagWizard.courseId)).find(function(i){return i.id===indId;});
+  if(!ind)return;
+  var rubric=diagWizard.subjectId==='language'?diagRubricFor(indId):null;
+  var dimState=diagWizard.draft.dimensions[stepId]||{};
+  var r=(dimState.indicators||{})[indId]||{};
+  var selLevel=r.evidenceStatus==='observed'?r.level:(r.evidenceStatus==='not_observed'||!r.evidenceStatus?'no_observado':null);
+  _diagHelpTriggerEl=document.activeElement;
+  var host=_diagHelpHost();
+  host.innerHTML=diagHelpModalHtml(ind,rubric,selLevel,stepId);
+  host.style.display='flex';
+  document.addEventListener('keydown',diagHelpKeydown,true);
+  setTimeout(function(){var b=document.getElementById('diagHelpClose');if(b)b.focus();},20);
+}
+function diagCloseHelp(){
+  var el=document.getElementById('diagHelpOverlay');
+  if(el){el.style.display='none';el.innerHTML='';}
+  document.removeEventListener('keydown',diagHelpKeydown,true);
+  if(_diagHelpTriggerEl&&document.body.contains(_diagHelpTriggerEl))_diagHelpTriggerEl.focus();
+  _diagHelpTriggerEl=null;
+}
+function diagHelpKeydown(e){
+  if(e.key==='Escape'){e.preventDefault();e.stopPropagation();diagCloseHelp();return;}
+  if(e.key==='Tab'){
+    var box=document.getElementById('diagHelpBox');if(!box)return;
+    var focusables=box.querySelectorAll('button,[tabindex]:not([tabindex="-1"])');
+    if(!focusables.length)return;
+    var first=focusables[0],last=focusables[focusables.length-1];
+    if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus();}
+    else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}
+  }
 }
 
 function diagStepSynthesisHtml(d,ro){
@@ -5279,8 +5613,39 @@ let socioFiltro = '';
 let socioData = {};
 let socioVista = 'curso'; // 'curso' = vista individual existente | 'general' = todos los cursos
 let socioCursosSel = []; // cursos seleccionados para comparar en la vista general (vacío = se inicializa con todos)
+let socioModFiltro = ''; // '' = todas | 'Aula' | 'Sala' — combinable con cursosSel
 function chipN(v){ if(v==='III') return 'sc-n3'; if(v==='II') return 'sc-n2'; if(v==='I') return 'sc-n1'; return 'sc-off'; }
 function chipColor(v){ if(v==='III') return '#0d652d'; if(v==='II') return '#e37400'; if(v==='I') return '#1a73e8'; return '#aaa'; }
+// Barra apiladada 100% por eje (reemplaza las 3 barras independientes por nivel)
+function socioStackedBar(cnt){
+  const total=(cnt.I+cnt.II+cnt.III)||1;
+  const segs=[['I','var(--bl)'],['II','var(--or)'],['III','var(--gn)']];
+  let bar='<div style="display:flex;height:24px;border-radius:6px;overflow:hidden;background:#f1f3f4">';
+  segs.forEach(function(seg){
+    const nv=seg[0],col=seg[1],pct=Math.round(cnt[nv]/total*100);
+    if(pct<=0)return;
+    bar+='<div style="width:'+pct+'%;background:'+col+';display:flex;align-items:center;justify-content:center;transition:.2s">'+(pct>=8?'<span style="color:#fff;font-size:10.5px;font-weight:700">'+pct+'%</span>':'')+'</div>';
+  });
+  bar+='</div>';
+  return bar;
+}
+function socioLegendRow(cnt,niveles){
+  const total=(cnt.I+cnt.II+cnt.III)||1;
+  const items=[['I','var(--bl)'],['II','var(--or)'],['III','var(--gn)']];
+  return '<div style="display:flex;flex-wrap:wrap;gap:16px;margin-top:10px">'+items.map(function(it){
+    const nv=it[0],col=it[1],pct=Math.round(cnt[nv]/total*100);
+    return '<div style="display:flex;align-items:flex-start;gap:6px;font-size:11px;max-width:220px"><span class="st-dot" style="background:'+col+';margin-top:3px"></span><span><b>Nivel '+nv+'</b> — '+niveles[nv].tag+'<br>'+cnt[nv]+' estudiante'+(cnt[nv]!==1?'s':'')+' ('+pct+'%)</span></div>';
+  }).join('')+'</div>';
+}
+function socioTituloDinamico(cursosSel,cursosAll,modFiltro){
+  var parts=[];
+  if(!cursosSel.length)parts.push('Sin cursos seleccionados');
+  else if(cursosSel.length===cursosAll.length)parts.push('Todos los cursos');
+  else if(cursosSel.length===1)parts.push(cursosSel[0]);
+  else parts.push(cursosSel.length+' cursos seleccionados');
+  if(modFiltro)parts.push(modFiltro==='Aula'?'Aula Hospitalaria':'Sala');
+  return parts.join(' · ');
+}
 function rSocio() {
   return `<h2 class="pt">Socioemocional</h2>
 <p class="ps">Evaluación por ejes socioemocionales — ${D.config.schoolName}</p>
@@ -5311,7 +5676,7 @@ function renderSocioUI() {
     const sd = socioData[s.id] || {};
     if (sd.exento) {
       filas += `<tr style="opacity:.45">
-        <td style="font-weight:600">${s.nombre}</td>
+        <td style="font-weight:600">${s.nombre} ${stModChip(s)}</td>
         <td style="text-align:center"><span style="color:var(--tx3);font-size:11px">—</span></td>
         <td colspan="3"><span style="font-size:11px;color:var(--tx3);font-style:italic">✗ Eximido — ${sd.razon||'sin razón indicada'}</span></td>
         <td><label style="display:flex;align-items:center;gap:5px;font-size:12px;cursor:pointer;color:var(--rd)">
@@ -5342,8 +5707,8 @@ function renderSocioUI() {
         chips += '</div>';
         celdas += `<td>${chips}</td>`;
       });
-      filas += `<tr>
-        <td style="font-weight:600">${s.nombre}</td>
+      filas += `<tr class="st-row-bar" style="${stRowBarStyle(s)}">
+        <td style="font-weight:600">${s.nombre} ${stModChip(s)}</td>
         <td style="text-align:center">${atendidoBtn}</td>
         ${celdas}
         <td><label style="display:flex;align-items:center;gap:5px;font-size:12px;cursor:pointer;color:var(--rd)">
@@ -5429,20 +5794,11 @@ function renderSocioGraficos() {
   EJES_SOCIO.forEach(eje => {
     const cnt = {I:0,II:0,III:0};
     todos.forEach(s => { const v=(socioData[s.id]||{})[eje.id]; if(v) cnt[v]++; });
-    const total = cnt.I+cnt.II+cnt.III||1;
     html += `<div class="tw" style="padding:16px">
-      <div style="font-weight:700;font-size:13px;margin-bottom:12px;color:var(--dk)">${eje.label} — ${eje.nombre}</div>`;
-    [['I','var(--bl)'],['II','var(--or)'],['III','var(--gn)']].forEach(([nv,col]) => {
-      const pct = Math.round(cnt[nv]/total*100);
-      html += `<div style="margin-bottom:8px">
-        <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px">
-          <span style="font-weight:600">Nivel ${nv} — ${eje.niveles[nv].tag}</span>
-          <span>${cnt[nv]} (${pct}%)</span>
-        </div>
-        <div class="bar"><div class="bar-in" style="width:${pct||2}%;background:${col};min-width:24px"><span>${pct}%</span></div></div>
-      </div>`;
-    });
-    html += '</div>';
+      <div style="font-weight:700;font-size:13px;margin-bottom:10px;color:var(--dk)">${eje.label} — ${eje.nombre}</div>
+      ${socioStackedBar(cnt)}
+      ${socioLegendRow(cnt,eje.niveles)}
+    </div>`;
   });
   const estudActivos = D.students.filter(s => s.curso === socioFiltro && !((socioData[s.id]||{}).exento));
   const pAtSi = estudActivos.filter(s => (socioData[s.id]||{}).atendido === true).length;
@@ -5508,69 +5864,78 @@ function toggleSocioCursoSel(c) {
   if (i >= 0) socioCursosSel.splice(i, 1); else socioCursosSel.push(c);
   renderSocioUI();
 }
+function socioSetMod(v){ socioModFiltro=v; renderSocioUI(); }
+// Estudiantes activos (no exentos) de un curso, aplicando el filtro de modalidad vigente.
+function socioEstudiantesCurso(c){
+  return D.students.filter(s => s.curso===c && !((socioData[s.id]||{}).exento) && (!socioModFiltro || s.modalidad===socioModFiltro));
+}
 function renderSocioGlobalHTML(cursosAll) {
   if (!socioCursosSel.length) socioCursosSel = [...cursosAll];
   const nVal = {I:1,II:2,III:3};
   const chk = cursosAll.map(c => `<label style="display:inline-flex;align-items:center;gap:4px;font-size:11px;margin-right:12px;margin-bottom:4px;cursor:pointer">
       <input type="checkbox" ${socioCursosSel.includes(c)?'checked':''} onchange="toggleSocioCursoSel('${c}')">${c}</label>`).join('');
   const cursosSel = cursosAll.filter(c => socioCursosSel.includes(c));
-  const stsTodos = D.students.filter(s => cursosSel.includes(s.curso) && !((socioData[s.id]||{}).exento));
+  const stsTodos = cursosSel.flatMap(c => socioEstudiantesCurso(c));
+  const titulo = socioTituloDinamico(cursosSel, cursosAll, socioModFiltro);
+  const modBar = `<div class="tw no-print" style="padding:10px 14px;margin-bottom:12px;display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+    <span style="font-size:11px;font-weight:700;color:var(--dk)">Modalidad:</span>
+    <button class="b ${!socioModFiltro?'bp':'bs'}" style="font-size:10.5px;padding:4px 12px" onclick="socioSetMod('')">Todas</button>
+    <button class="b ${socioModFiltro==='Aula'?'bp':'bs'}" style="font-size:10.5px;padding:4px 12px" onclick="socioSetMod('Aula')">🏥 Aula Hospitalaria</button>
+    <button class="b ${socioModFiltro==='Sala'?'bp':'bs'}" style="font-size:10.5px;padding:4px 12px" onclick="socioSetMod('Sala')">🛏️ Sala</button>
+  </div>`;
 
-  // Distribución global por eje (cursos seleccionados)
-  const ejeAvg = {};
-  let ejesHtml = '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px;margin-bottom:16px">';
+  // Distribución global por eje (cursos + modalidad seleccionados) — barra apilada 100%
+  const ejeAvg = {}, ejeCnt = {};
+  let ejesHtml = '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px;margin-bottom:16px">';
   EJES_SOCIO.forEach(eje => {
     const cnt = {I:0,II:0,III:0};
     stsTodos.forEach(s => { const v=(socioData[s.id]||{})[eje.id]; if(v) cnt[v]++; });
-    const total = cnt.I+cnt.II+cnt.III || 1;
+    ejeCnt[eje.id]=cnt;
     const vals = stsTodos.map(s=>(socioData[s.id]||{})[eje.id]).filter(Boolean);
     ejeAvg[eje.id] = vals.length ? (vals.reduce((a,v)=>a+nVal[v],0)/vals.length) : 0;
     ejesHtml += `<div class="tw" style="padding:16px">
-      <div style="font-weight:700;font-size:13px;margin-bottom:12px;color:var(--dk)">${eje.label} — ${eje.nombre}</div>`;
-    [['I','var(--bl)'],['II','var(--or)'],['III','var(--gn)']].forEach(([nv,col]) => {
-      const pct = Math.round(cnt[nv]/total*100);
-      ejesHtml += `<div style="margin-bottom:8px">
-        <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px">
-          <span style="font-weight:600">Nivel ${nv} — ${eje.niveles[nv].tag}</span>
-          <span>${cnt[nv]} (${pct}%)</span>
-        </div>
-        <div class="bar"><div class="bar-in" style="width:${pct||2}%;background:${col};min-width:24px"><span>${pct}%</span></div></div>
-      </div>`;
-    });
-    ejesHtml += '</div>';
+      <div style="font-weight:700;font-size:13px;margin-bottom:2px;color:var(--dk)">${eje.label} — ${eje.nombre}</div>
+      <div style="font-size:10.5px;color:var(--tx3);margin-bottom:10px">${vals.length} de ${stsTodos.length} evaluados</div>
+      ${socioStackedBar(cnt)}
+      ${socioLegendRow(cnt,eje.niveles)}
+    </div>`;
   });
   ejesHtml += '</div>';
 
-  // Comparativa por curso
+  // Comparativa por curso — con mini barra apilada por eje + participación
   let filas = '';
   cursosSel.forEach(c => {
-    const stsC = D.students.filter(s => s.curso===c && !((socioData[s.id]||{}).exento));
+    const stsC = socioEstudiantesCurso(c);
     if (!stsC.length) return;
-    const avgs = EJES_SOCIO.map(eje => {
-      const vals = stsC.map(s=>(socioData[s.id]||{})[eje.id]).filter(Boolean);
-      return vals.length ? (vals.reduce((a,v)=>a+nVal[v],0)/vals.length) : null;
-    });
-    filas += `<tr><td><span class="badge bb">${c}</span></td>
-      ${avgs.map(v=>`<td style="text-align:center">${v!=null?v.toFixed(1):'—'}</td>`).join('')}
+    const si = stsC.filter(s => (socioData[s.id]||{}).atendido === true).length;
+    const partPct = Math.round(si/(stsC.length||1)*100);
+    const ejeCells = EJES_SOCIO.map(eje => {
+      const cnt = {I:0,II:0,III:0};
+      stsC.forEach(s => { const v=(socioData[s.id]||{})[eje.id]; if(v) cnt[v]++; });
+      return `<td style="min-width:130px">${socioStackedBar(cnt)}</td>`;
+    }).join('');
+    filas += `<tr><td><span class="badge bb">${c}</span></td>${ejeCells}
+      <td style="text-align:center;font-weight:700;color:var(--gn)">${partPct}%</td>
       <td style="text-align:center">${stsC.length}</td></tr>`;
   });
 
-  // Fortalezas y necesidades (eje con mejor/peor promedio global)
+  // Fortalezas y necesidades (eje con mejor/peor promedio, dentro del filtro actual)
   const entries = Object.entries(ejeAvg).filter(e => e[1] > 0);
   const ejeById = id => EJES_SOCIO.find(e => e.id === id);
   const fort = entries.length ? entries.reduce((a,b)=>b[1]>a[1]?b:a) : null;
   const nec  = entries.length ? entries.reduce((a,b)=>b[1]<a[1]?b:a) : null;
 
   const resumenHtml = `<div class="tw" style="padding:16px;margin-bottom:16px">
-    <div style="font-weight:700;font-size:13px;margin-bottom:10px;color:var(--dk)">📌 Tendencias Generales (cursos seleccionados)</div>
+    <div style="font-weight:700;font-size:13px;margin-bottom:2px;color:var(--dk)">Resumen Socioemocional</div>
+    <div style="font-size:11.5px;color:var(--tx2);margin-bottom:12px">${titulo}</div>
     <div style="display:flex;gap:18px;flex-wrap:wrap;font-size:12px">
       <div><strong style="color:#2e7d32">Fortaleza:</strong> ${fort?ejeById(fort[0]).nombre+' (promedio '+fort[1].toFixed(1)+')':'Sin datos suficientes'}</div>
       <div><strong style="color:#c62828">Necesidad:</strong> ${nec?ejeById(nec[0]).nombre+' (promedio '+nec[1].toFixed(1)+')':'Sin datos suficientes'}</div>
-      <div><strong>Estudiantes evaluados:</strong> ${stsTodos.length} de ${D.students.filter(s=>cursosSel.includes(s.curso)).length}</div>
+      <div><strong>Estudiantes evaluados:</strong> ${stsTodos.length} de ${cursosSel.reduce((n,c)=>n+D.students.filter(s=>s.curso===c&&(!socioModFiltro||s.modalidad===socioModFiltro)).length,0)}</div>
     </div>
   </div>`;
 
-  // Participación Plan Socioemocional — consolidada en todos los cursos seleccionados
+  // Participación Plan Socioemocional — consolidada (cursos + modalidad seleccionados)
   const pAtSi = stsTodos.filter(s => (socioData[s.id]||{}).atendido === true).length;
   const pAtNo = stsTodos.filter(s => (socioData[s.id]||{}).atendido === false).length;
   const pAtSin = stsTodos.length - pAtSi - pAtNo;
@@ -5578,49 +5943,21 @@ function renderSocioGlobalHTML(cursosAll) {
   const pctSi = Math.round(pAtSi/pTotal*100);
   const pctNo = Math.round(pAtNo/pTotal*100);
   const pctSin = Math.round(pAtSin/pTotal*100);
-  const participacionHtml = `<div class="tw" style="padding:16px;margin-bottom:16px">
-    <div style="font-weight:700;font-size:13px;margin-bottom:12px;color:var(--dk)">Participación Plan Socioemocional — Todos los Cursos Seleccionados</div>
-    <div style="font-size:10px;color:var(--tx3);margin-bottom:10px">${stsTodos.length} estudiante(s) activos (sin exentos) en ${cursosSel.length} curso(s)</div>
-    <div style="margin-bottom:8px">
-      <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px">
-        <span style="font-weight:600">✓ Atendido</span><span>${pAtSi} (${pctSi}%)</span>
-      </div>
-      <div class="bar"><div class="bar-in" style="width:${pctSi||2}%;background:#2e7d32;min-width:20px"><span>${pctSi}%</span></div></div>
+  const participacionHtml = `<div class="tw" style="padding:16px;margin-bottom:16px;display:flex;gap:22px;align-items:center;flex-wrap:wrap">
+    <div style="flex-shrink:0;text-align:center;min-width:110px">
+      <div style="font-size:1.9rem;font-weight:800;color:var(--gn)">${pctSi}%</div>
+      <div style="font-size:10.5px;color:var(--tx3)">Atendido</div>
+      <div style="font-size:10.5px;color:var(--tx3)">${pAtSi} de ${stsTodos.length}</div>
     </div>
-    <div style="margin-bottom:8px">
-      <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px">
-        <span style="font-weight:600">✗ No atendido</span><span>${pAtNo} (${pctNo}%)</span>
-      </div>
-      <div class="bar"><div class="bar-in" style="width:${pctNo||2}%;background:#c62828;min-width:20px"><span>${pctNo}%</span></div></div>
-    </div>
-    <div style="margin-bottom:8px">
-      <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px">
-        <span style="font-weight:600">— Sin registro</span><span>${pAtSin} (${pctSin}%)</span>
-      </div>
+    <div style="flex:1;min-width:220px">
+      <div style="font-weight:700;font-size:13px;margin-bottom:8px;color:var(--dk)">Participación Socioemocional — ${titulo}</div>
+      <div style="font-size:11px;display:flex;justify-content:space-between;margin-bottom:2px"><span>✓ Atendido</span><span>${pAtSi} (${pctSi}%)</span></div>
+      <div class="bar" style="margin-bottom:6px"><div class="bar-in" style="width:${pctSi||2}%;background:#2e7d32;min-width:20px"><span>${pctSi}%</span></div></div>
+      <div style="font-size:11px;display:flex;justify-content:space-between;margin-bottom:2px"><span>✗ No atendido</span><span>${pAtNo} (${pctNo}%)</span></div>
+      <div class="bar" style="margin-bottom:6px"><div class="bar-in" style="width:${pctNo||2}%;background:#c62828;min-width:20px"><span>${pctNo}%</span></div></div>
+      <div style="font-size:11px;display:flex;justify-content:space-between;margin-bottom:2px"><span>— Sin registro</span><span>${pAtSin} (${pctSin}%)</span></div>
       <div class="bar"><div class="bar-in" style="width:${pctSin||2}%;background:#9e9e9e;min-width:20px"><span>${pctSin}%</span></div></div>
     </div>
-  </div>`;
-
-  // Participación por curso (tabla comparativa de atención)
-  let filasPart = '';
-  cursosSel.forEach(c => {
-    const stsC = D.students.filter(s => s.curso===c && !((socioData[s.id]||{}).exento));
-    if (!stsC.length) return;
-    const si = stsC.filter(s => (socioData[s.id]||{}).atendido === true).length;
-    const no = stsC.filter(s => (socioData[s.id]||{}).atendido === false).length;
-    const sin = stsC.length - si - no;
-    const pct = Math.round(si/(stsC.length||1)*100);
-    filasPart += `<tr><td><span class="badge bb">${c}</span></td>
-      <td style="text-align:center;color:#2e7d32;font-weight:700">${si}</td>
-      <td style="text-align:center;color:#c62828;font-weight:700">${no}</td>
-      <td style="text-align:center;color:#777">${sin}</td>
-      <td style="text-align:center;font-weight:700">${pct}%</td></tr>`;
-  });
-  const participacionCursoHtml = `<div class="tw" style="padding:16px;margin-bottom:16px">
-    <div style="font-weight:700;font-size:13px;margin-bottom:12px;color:var(--dk)">Participación por Curso</div>
-    <table><thead><tr>
-      <th>Curso</th><th style="text-align:center">✓ Atendido</th><th style="text-align:center">✗ No atendido</th><th style="text-align:center">— Sin registro</th><th style="text-align:center">% Atención</th>
-    </tr></thead><tbody>${filasPart||'<tr><td colspan="5" style="padding:20px;text-align:center;color:var(--tx3)">Sin datos para los cursos seleccionados</td></tr>'}</tbody></table>
   </div>`;
 
   return `
@@ -5628,6 +5965,7 @@ function renderSocioGlobalHTML(cursosAll) {
     <div style="font-size:11px;font-weight:700;color:var(--dk);margin-bottom:8px">Seleccionar cursos a comparar:</div>
     <div>${chk}</div>
   </div>
+  ${modBar}
   <div class="no-print" style="margin-bottom:12px;display:flex;gap:8px">
     <button class="b bs" onclick="printSection('Socioemocional — Vista General')" style="font-size:10px">🖨️ Imprimir</button>
     <button class="b bs" onclick="exportSocioGlobalXls()" style="font-size:10px">📥 Exportar Excel</button>
@@ -5635,12 +5973,12 @@ function renderSocioGlobalHTML(cursosAll) {
   ${resumenHtml}
   ${ejesHtml}
   ${participacionHtml}
-  ${participacionCursoHtml}
   <div class="tw" style="padding:16px">
-    <div style="font-weight:700;font-size:13px;margin-bottom:12px;color:var(--dk)">Comparativa por Curso</div>
+    <div style="font-weight:700;font-size:13px;margin-bottom:2px;color:var(--dk)">Comparativa por Curso</div>
+    <div style="font-size:10.5px;color:var(--tx3);margin-bottom:10px">${titulo}</div>
     <table><thead><tr>
-      <th>Curso</th>${EJES_SOCIO.map(e=>`<th style="text-align:center">${e.label}</th>`).join('')}<th style="text-align:center">Evaluados</th>
-    </tr></thead><tbody>${filas||'<tr><td colspan="'+(EJES_SOCIO.length+2)+'" style="padding:20px;text-align:center;color:var(--tx3)">Sin datos para los cursos seleccionados</td></tr>'}</tbody></table>
+      <th>Curso</th>${EJES_SOCIO.map(e=>`<th style="text-align:center">${e.label}</th>`).join('')}<th style="text-align:center">Participación</th><th style="text-align:center">Evaluados</th>
+    </tr></thead><tbody>${filas||'<tr><td colspan="'+(EJES_SOCIO.length+3)+'" style="padding:20px;text-align:center;color:var(--tx3)">Sin datos para los cursos/modalidad seleccionados</td></tr>'}</tbody></table>
   </div>`;
 }
 function exportSocioGlobalXls() {
@@ -5650,7 +5988,7 @@ function exportSocioGlobalXls() {
   const wb = XLSX.utils.book_new();
   const rows = [['Curso', ...EJES_SOCIO.map(e=>e.label+' - '+e.nombre), 'Evaluados']];
   cursosSel.forEach(c => {
-    const stsC = D.students.filter(s => s.curso===c && !((socioData[s.id]||{}).exento));
+    const stsC = socioEstudiantesCurso(c);
     if (!stsC.length) return;
     const avgs = EJES_SOCIO.map(eje => {
       const vals = stsC.map(s=>(socioData[s.id]||{})[eje.id]).filter(Boolean);
@@ -5664,7 +6002,7 @@ function exportSocioGlobalXls() {
 
   const rowsPart = [['Curso','Atendido','No Atendido','Sin Registro','% Atención']];
   cursosSel.forEach(c => {
-    const stsC = D.students.filter(s => s.curso===c && !((socioData[s.id]||{}).exento));
+    const stsC = socioEstudiantesCurso(c);
     if (!stsC.length) return;
     const si = stsC.filter(s => (socioData[s.id]||{}).atendido === true).length;
     const no = stsC.filter(s => (socioData[s.id]||{}).atendido === false).length;
