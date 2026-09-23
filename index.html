@@ -126,6 +126,50 @@ h2.pt{font-size:17px}
 .diag-help-level.sel b::after{content:' ✓ seleccionado';font-size:0.72rem;font-weight:700;color:inherit}
 .diag-help-level.noobs{border-style:dashed;color:var(--tx3)}
 
+/* ── Evaluación Diversificada ── */
+.dv-btn{position:relative;background:#ede9fe;border:1px solid #ddd6fe;color:#7c3aed;border-radius:7px;width:22px;height:22px;min-width:22px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;padding:0}
+.dv-btn svg{width:13px;height:13px}
+.dv-btn:hover{background:#ddd6fe}
+.dv-btn:focus-visible{outline:2px solid #7c3aed}
+.dv-btn.dv-has{background:#7c3aed;border-color:#7c3aed;color:#fff}
+.dv-btn .dv-dot{position:absolute;top:-2px;right:-2px;width:7px;height:7px;border-radius:50%;background:#22c55e;border:1.5px solid #fff}
+.dv-overlay{position:fixed;inset:0;background:rgba(15,23,42,.5);display:flex;align-items:center;justify-content:center;z-index:550;padding:20px;animation:fadeIn .15s ease}
+.dv-modal{background:var(--wh);border-radius:16px;box-shadow:0 24px 64px rgba(0,0,0,.28);width:100%;max-width:760px;max-height:92vh;display:flex;flex-direction:column;overflow:hidden}
+.dv-head{padding:18px 24px;border-bottom:1px solid var(--c6);display:flex;gap:14px;align-items:flex-start}
+.dv-head .dv-ic{width:38px;height:38px;border-radius:10px;background:#ede9fe;color:#7c3aed;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.dv-head .dv-ic svg{width:20px;height:20px}
+.dv-head h2{font-size:1.12rem;font-weight:800;color:#7c3aed}
+.dv-head .dv-stu{font-size:0.92rem;font-weight:700;color:var(--dk);margin-top:2px}
+.dv-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:7px}
+.dv-tag{font-size:0.72rem;font-weight:600;padding:2px 9px;border-radius:10px;background:var(--c5);color:var(--tx2)}
+.dv-close{background:none;border:none;font-size:20px;line-height:1;color:var(--tx3);cursor:pointer;padding:4px 8px;border-radius:6px;margin-left:auto}
+.dv-close:hover{background:var(--c5);color:var(--tx)}
+.dv-months{display:flex;gap:4px;padding:12px 24px 0;border-bottom:1px solid var(--c6);flex-wrap:wrap}
+.dv-month-tab{border:none;background:none;padding:9px 16px;font-size:0.85rem;font-weight:700;color:var(--tx3);cursor:pointer;border-bottom:3px solid transparent;border-radius:6px 6px 0 0}
+.dv-month-tab:hover{background:var(--c4)}
+.dv-month-tab.act{color:#7c3aed;border-bottom-color:#7c3aed;background:#ede9fe33}
+.dv-body{padding:18px 24px;overflow-y:auto;flex:1}
+.dv-mhead{display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap}
+.dv-mhead h3{font-size:0.95rem;font-weight:800;color:var(--dk)}
+.dv-note{font-size:0.76rem;color:#7c3aed;background:#ede9fe;padding:5px 11px;border-radius:8px;display:inline-flex;align-items:center;gap:5px}
+.dv-empty{border:1.5px dashed var(--c6);border-radius:12px;padding:28px;text-align:center;color:var(--tx3);font-size:0.88rem}
+.dv-table{width:100%;border-collapse:collapse}
+.dv-table th{font-size:0.72rem;color:var(--tx3);text-transform:uppercase;letter-spacing:.4px;padding:6px 8px;text-align:left}
+.dv-table th.dv-ith{text-align:center;width:64px}
+.dv-row td{padding:6px 8px;border-top:1px solid var(--c5);vertical-align:middle}
+.dv-row input.dv-txt{width:100%;border:1px solid var(--brd);border-radius:6px;padding:6px 9px;font:0.85rem 'DM Sans',sans-serif}
+.dv-row input.dv-txt:focus{border-color:#7c3aed;outline:0;box-shadow:0 0 0 3px #7c3aed1a}
+.dv-row select.dv-lvl{width:100%;padding:5px 4px;font-size:0.8rem;border-radius:6px;border:1px solid var(--brd);text-align:center}
+.dv-del{background:none;border:none;color:var(--tx3);cursor:pointer;padding:5px;border-radius:6px;display:flex}
+.dv-del:hover{background:var(--lr);color:var(--rd)}
+.dv-add{margin-top:12px;font-size:0.82rem}
+.dv-foot{padding:14px 24px;border-top:1px solid var(--c6);display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+@media(max-width:640px){
+  .dv-modal{max-height:100vh;height:100vh;border-radius:0}
+  .dv-months{overflow-x:auto;flex-wrap:nowrap}
+  .dv-table{display:block;overflow-x:auto}
+}
+
 /* ══════════════════════════════════════════════════
    TEMA P1 — INSTITUCIONAL MODERNA
    Navy · Azul real · Gris frío
@@ -665,6 +709,7 @@ const CLOUDINARY_UPLOAD_PRESET = "sge_preset";
 
 let currentUser = null;    // usuario autenticado actual
 let _dirtyEvals = new Set(); // IDs de Estudiantes con evaluaciones modificadas
+let _dirtyDiversificadas = new Set(); // IDs de Estudiantes con evaluación diversificada modificada
 let _saveTimer  = null;
 let _saving     = false;
 let _diagDirty  = false;
@@ -774,6 +819,7 @@ function canEditAsig(curso, asig) {
         if (['7°', '8°'].includes(curso)) return true;
         if (['1°M', '2°M', '3°M', '4°M'].includes(curso) && asig === 'lenguaje') return true;
         if (['1°M', '2°M'].includes(curso) && asig === 'historia') return true;
+        if (['3°M', '4°M'].includes(curso) && asig === 'ed_ciudadana') return true;
         return false; // El resto de los cursos y asignaturas son solo lectura
     }
     
@@ -833,7 +879,7 @@ const EMBEDDED_STATE=/*__EMBEDDED_DATA__*/null/*__END_EMBEDDED__*/;
 
 let D;
 async function load(){
-if(EMBEDDED_STATE){D=JSON.parse(JSON.stringify(EMBEDDED_STATE));if(!D.indDescriptions)D.indDescriptions={};if(!D.profesoresJefe)D.profesoresJefe={};if(!D.diagnosticoEval)D.diagnosticoEval={};return;}
+if(EMBEDDED_STATE){D=JSON.parse(JSON.stringify(EMBEDDED_STATE));if(!D.indDescriptions)D.indDescriptions={};if(!D.profesoresJefe)D.profesoresJefe={};if(!D.diagnosticoEval)D.diagnosticoEval={};if(!D.diversificadas)D.diversificadas={};return;}
 try{
   const[configSnap,studentsSnap,descSnap,pjSnap]=await Promise.all([
     db.collection('sge').doc('config').get(),
@@ -847,6 +893,7 @@ try{
     indDescriptions: descSnap.exists     ? (descSnap.data().v||{})        : {},
     profesoresJefe:  pjSnap.exists       ? (pjSnap.data().v||{})          : {},
     evaluations:     {},
+    diversificadas:  {},
     asistencia:      {},
     diagnosticoEval: {}
   };
@@ -881,6 +928,8 @@ try{
     });
     D.evaluations[doc.id]=evData;
   });
+  const diverSnaps=await db.collection('sge_diversificadas').get();
+  diverSnaps.forEach(doc=>{ D.diversificadas[doc.id]=doc.data().v||{}; });
   const diagSnap=await db.collection('sge_diag').doc('data').get();
   D.diagnostico=diagSnap.exists?(diagSnap.data().v||{}):{};
   const diagEvalSnap=await db.collection('sge_diag_eval').doc('data').get();
@@ -892,7 +941,7 @@ try{
   }
 }catch(e){
   console.error('Error cargando datos:',e);
-  D={students:JSON.parse(JSON.stringify(INITIAL_STUDENTS)),evaluations:{},diagnostico:{},diagnosticoEval:{},asistencia:{},indDescriptions:{},profesoresJefe:{},config:{...DEFAULT_CFG}};
+  D={students:JSON.parse(JSON.stringify(INITIAL_STUDENTS)),evaluations:{},diversificadas:{},diagnostico:{},diagnosticoEval:{},asistencia:{},indDescriptions:{},profesoresJefe:{},config:{...DEFAULT_CFG}};
   showToast('⚠ Error al cargar — verifica tu conexión');
 }
 }
@@ -929,6 +978,17 @@ async function _doSave(){
       }
       await Promise.all(evP);
       _dirtyEvals.clear();
+    }
+    if(_dirtyDiversificadas.size>0){
+      const dvP=[];
+      for(const sid of _dirtyDiversificadas){
+        if(D.diversificadas&&D.diversificadas[sid]&&Object.keys(D.diversificadas[sid]).length)
+          dvP.push(db.collection('sge_diversificadas').doc(sid).set({v:D.diversificadas[sid]}));
+        else
+          dvP.push(db.collection('sge_diversificadas').doc(sid).delete().catch(()=>{}));
+      }
+      await Promise.all(dvP);
+      _dirtyDiversificadas.clear();
     }
     if(_diagDirty){
       await db.collection('sge_diag').doc('data').set({v:D.diagnostico||{}});
@@ -1312,7 +1372,7 @@ return`<div style="display:flex;justify-content:space-between;align-items:center
 }
 function newStu(){closeStuMod();showStuModal({id:'',matricula:'',rut:'',nombre:'',curso:'',cursoDisplay:'',modalidad:''});}
 function editStu(id){closeStuMod();var s=D.students.find(x=>x.id===id);if(s)showStuModal({id:s.id,matricula:s.matricula,rut:s.rut,nombre:s.nombre,curso:s.curso,cursoDisplay:s.cursoDisplay||'',modalidad:s.modalidad||''});}
-function delStu(id){if(!confirm('¿Eliminar estudiante y sus evaluaciones?'))return;D.students=D.students.filter(s=>s.id!==id);_dirtyEvals.add(id);delete D.evaluations[id];save();render();}
+function delStu(id){if(!confirm('¿Eliminar estudiante y sus evaluaciones?'))return;D.students=D.students.filter(s=>s.id!==id);_dirtyEvals.add(id);delete D.evaluations[id];_dirtyDiversificadas.add(id);delete D.diversificadas[id];save();render();}
 function showStuModal(s){
 var isNew=!s.id;
 var dlOpts='';
@@ -1814,7 +1874,8 @@ cells+='<td style="text-align:center;font-weight:800;font-size:11px;'+nc+'">'+(c
 }else{var oc=oCalc(allInds.length?allInds:[]);
 cells+='<td style="text-align:center">\u2014</td><td style="text-align:center;font-weight:700">'+(oc||'\u2014')+'</td>';}
 var rowBg=i%2?'var(--c4)':'var(--wh)';
-rows+='<tr style="background:'+rowBg+';'+stRowBarStyle(s)+'" class="st-row-bar"><td class="st-sticky-col" style="background:'+rowBg+';z-index:1"><div style="font-weight:600;font-size:10px">'+s.nombre+'</div><div style="display:flex;gap:4px;margin-top:2px;transform:scale(.86);transform-origin:left center">'+stModChip(s)+stEstadoChip(s)+'</div></td>'+cells+'</tr>';});
+var dvHas=dvHasData(s.id,eAsig);
+rows+='<tr style="background:'+rowBg+';'+stRowBarStyle(s)+'" class="st-row-bar"><td class="st-sticky-col" style="background:'+rowBg+';z-index:1"><div style="display:flex;align-items:center;gap:6px"><div style="font-weight:600;font-size:10px">'+s.nombre+'</div><button type="button" class="dv-btn'+(dvHas?' dv-has':'')+'" title="Evaluación diversificada'+(dvHas?' configurada':'')+'" aria-label="Evaluación diversificada de '+diagEsc(s.nombre)+(dvHas?' — configurada':'')+'" onclick="dvOpen(\''+s.id+'\',\''+eAsig+'\')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="4.5" r="2"></circle><path d="M19 8.5l-5.5 1.8-1.5-1.6-1.5 1.6L5 8.5M12 10.3V16m-3 6.5l3-6.5 3 6.5"></path></svg>'+(dvHas?'<span class="dv-dot"></span>':'')+'</button></div><div style="display:flex;gap:4px;margin-top:2px;transform:scale(.86);transform-origin:left center">'+stModChip(s)+stEstadoChip(s)+'</div></td>'+cells+'</tr>';});
 var hasPending=Object.keys(ePending).length>0;
 body=descPanel+'<div class="tw"><table><thead><tr style="background:var(--md)">'+thTop+'</tr><tr>'+thSub+'</tr></thead><tbody>'+rows+'</tbody></table>'
 +((hasPending && !isReadOnly)?'<div class="no-print" style="padding:8px 12px;background:var(--lb);border-top:1px solid #d2e3fc;display:flex;justify-content:flex-end;gap:8px"><button class="b bs" onclick="ePending={};render()">Descartar</button><button class="b bp" onclick="eSaveAll()">💾 Guardar</button></div>':'')+'</div>';
@@ -1852,6 +1913,157 @@ Object.entries(ePending).forEach(([k,v])=>{const[sid,mes,ind]=k.split('-');_dirt
 if(!D.evaluations[sid])D.evaluations[sid]={};if(!D.evaluations[sid][eAsig])D.evaluations[sid][eAsig]={};
 if(!D.evaluations[sid][eAsig][mes])D.evaluations[sid][eAsig][mes]={};D.evaluations[sid][eAsig][mes][ind]=v;});
 ePending={};save();render();
+}
+
+// ══════════════════════════════════════════════════
+// EVALUACIÓN DIVERSIFICADA — indicadores personalizados por estudiante/asignatura/mes
+// Extiende Evaluaciones sin tocar D.evaluations ni sus cálculos de %logro/nota.
+// Estructura: D.diversificadas[studentId][asigId][mes] = [{id,texto,i1,i2,i3,i4}, ...]
+// Persistencia: colección propia 'sge_diversificadas' (un doc por estudiante), mismo
+// patrón que 'sge_evals' — ver load()/_doSave() y _dirtyDiversificadas.
+// ══════════════════════════════════════════════════
+const DV_LEVELS=['','NL','LI','LB','LA','L'];
+let dvState=null;
+let _dvTriggerEl=null;
+function dvHasData(sid,asigId){
+  var d=D.diversificadas&&D.diversificadas[sid]&&D.diversificadas[sid][asigId];
+  if(!d)return false;
+  return Object.keys(d).some(function(m){return (d[m]||[]).length>0;});
+}
+function _dvHost(){
+  var el=document.getElementById('dvOverlay');
+  if(el)return el;
+  el=document.createElement('div');
+  el.id='dvOverlay';
+  el.className='dv-overlay no-print';
+  el.style.display='none';
+  el.onclick=function(e){if(e.target===el)dvRequestClose();};
+  document.body.appendChild(el);
+  return el;
+}
+function dvOpen(sid,asigId){
+  var s=D.students.find(function(x){return x.id===sid;});
+  if(!s)return;
+  var selIP=eIndPer!==''?IND_PER[parseInt(eIndPer)]:IND_PER[parseInt(getCurrentPer())];
+  var months=(selIP&&selIP.months)||M2.slice(0,3);
+  var src=(D.diversificadas&&D.diversificadas[sid]&&D.diversificadas[sid][asigId])||{};
+  var data={};
+  months.forEach(function(m){ data[m]=JSON.parse(JSON.stringify(src[m]||[])); });
+  _dvTriggerEl=document.activeElement;
+  dvState={studentId:sid,asigId:asigId,curso:s.curso,months:months,activeMonth:months[0],dirty:false,data:data,readOnly:!canEditAsig(s.curso,asigId)};
+  dvRender();
+  document.addEventListener('keydown',dvKeydown,true);
+  setTimeout(function(){var b=document.getElementById('dvCloseBtn');if(b)b.focus();},20);
+}
+function dvRequestClose(){
+  if(dvState&&dvState.dirty){
+    if(!confirm('Hay cambios sin guardar. ¿Deseas cerrar de todas formas?'))return;
+  }
+  dvClose();
+}
+function dvClose(){
+  var el=document.getElementById('dvOverlay');
+  if(el){el.style.display='none';el.innerHTML='';}
+  document.removeEventListener('keydown',dvKeydown,true);
+  dvState=null;
+  if(_dvTriggerEl&&document.body.contains(_dvTriggerEl))_dvTriggerEl.focus();
+  _dvTriggerEl=null;
+}
+function dvKeydown(e){
+  if(e.key==='Escape'){e.preventDefault();e.stopPropagation();dvRequestClose();return;}
+  if(e.key==='Tab'){
+    var box=document.getElementById('dvBox');if(!box)return;
+    var focusables=box.querySelectorAll('button,input,select,[tabindex]:not([tabindex="-1"])');
+    if(!focusables.length)return;
+    var first=focusables[0],last=focusables[focusables.length-1];
+    if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus();}
+    else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}
+  }
+}
+function dvSwitchMonth(m){ dvState.activeMonth=m; dvRender(); }
+function dvNewId(){ return 'dv'+Date.now().toString(36)+Math.random().toString(36).slice(2,7); }
+function dvAddIndicator(){
+  if(dvState.readOnly)return;
+  var mes=dvState.activeMonth;
+  dvState.data[mes].push({id:dvNewId(),texto:'',i1:'',i2:'',i3:'',i4:''});
+  dvState.dirty=true;
+  dvRender();
+  setTimeout(function(){var ins=document.querySelectorAll('.dv-row input.dv-txt');var last=ins[ins.length-1];if(last)last.focus();},20);
+}
+function dvSetTexto(mes,id,v){
+  var row=dvState.data[mes].find(function(r){return r.id===id;});
+  if(row){row.texto=v;dvState.dirty=true;}
+}
+function dvSetNivel(mes,id,campo,v){
+  var row=dvState.data[mes].find(function(r){return r.id===id;});
+  if(row){row[campo]=v;dvState.dirty=true;dvRender();}
+}
+function dvDeleteIndicator(mes,id){
+  if(!confirm('¿Eliminar este indicador personalizado?'))return;
+  dvState.data[mes]=dvState.data[mes].filter(function(r){return r.id!==id;});
+  dvState.dirty=true;
+  dvRender();
+}
+function dvSave(){
+  for(var mes in dvState.data){
+    var vacio=dvState.data[mes].find(function(r){return !r.texto||!r.texto.trim();});
+    if(vacio){alert('Hay un indicador sin texto en '+mes+'. Complétalo o elimínalo antes de guardar.');return;}
+  }
+  if(!D.diversificadas[dvState.studentId])D.diversificadas[dvState.studentId]={};
+  var dest={};
+  Object.keys(dvState.data).forEach(function(mes){
+    if(dvState.data[mes].length)dest[mes]=dvState.data[mes];
+  });
+  D.diversificadas[dvState.studentId][dvState.asigId]=dest;
+  _dirtyDiversificadas.add(dvState.studentId);
+  dvState.dirty=false;
+  save();
+  render();
+  dvRender();
+  showToast('✓ Evaluación diversificada guardada correctamente');
+}
+function dvRender(){
+  var host=_dvHost();
+  if(!dvState){host.style.display='none';return;}
+  var s=D.students.find(function(x){return x.id===dvState.studentId;});
+  if(!s){dvClose();return;}
+  var tags='';
+  tags+='<span class="dv-tag">'+(s.modalidad==='Aula'?'Aula Hospitalaria':s.modalidad==='Sala'?'Sala':'Sin modalidad')+'</span>';
+  if(s.nee)tags+='<span class="dv-tag">NEE: '+diagEsc(s.nee)+'</span>';
+  if(s.plan||s.paci)tags+='<span class="dv-tag">PLAN: '+diagEsc(s.plan||s.paci)+'</span>';
+  var monthsHtml=dvState.months.map(function(m){
+    return '<button type="button" class="dv-month-tab'+(m===dvState.activeMonth?' act':'')+'" onclick="dvSwitchMonth(\''+m+'\')">'+m+'</button>';
+  }).join('');
+  var mes=dvState.activeMonth;
+  var rows=dvState.data[mes]||[];
+  var bodyHtml;
+  if(!rows.length){
+    bodyHtml='<div class="dv-empty">No hay indicadores personalizados registrados para '+mes+'.'+(dvState.readOnly?'':'<div style="margin-top:10px"><button type="button" class="b bp bsm" onclick="dvAddIndicator()">+ Crear primer indicador</button></div>')+'</div>';
+  }else{
+    var trs=rows.map(function(r,i){
+      var lvlSel=function(campo){
+        var opts=DV_LEVELS.map(function(o){return '<option value="'+o+'" '+(r[campo]===o?'selected':'')+'>'+(o||'—')+'</option>';}).join('');
+        return '<select class="dv-lvl" '+(dvState.readOnly?'disabled':'')+' onchange="dvSetNivel(\''+mes+'\',\''+r.id+'\',\''+campo+'\',this.value)">'+opts+'</select>';
+      };
+      return '<tr class="dv-row"><td style="width:26px;color:var(--tx3);font-size:0.78rem">'+(i+1)+'</td>'
+        +'<td><input class="dv-txt" '+(dvState.readOnly?'disabled':'')+' value="'+diagEsc(r.texto)+'" placeholder="Escriba el indicador personalizado…" onchange="dvSetTexto(\''+mes+'\',\''+r.id+'\',this.value)"></td>'
+        +'<td class="dv-ith">'+lvlSel('i1')+'</td><td class="dv-ith">'+lvlSel('i2')+'</td><td class="dv-ith">'+lvlSel('i3')+'</td><td class="dv-ith">'+lvlSel('i4')+'</td>'
+        +'<td style="width:30px">'+(dvState.readOnly?'':'<button type="button" class="dv-del" title="Eliminar indicador" aria-label="Eliminar indicador" onclick="dvDeleteIndicator(\''+mes+'\',\''+r.id+'\')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"></path></svg></button>')+'</td>'
+        +'</tr>';
+    }).join('');
+    bodyHtml='<table class="dv-table"><thead><tr><th></th><th>Indicadores del mes</th><th class="dv-ith">I1</th><th class="dv-ith">I2</th><th class="dv-ith">I3</th><th class="dv-ith">I4</th><th></th></tr></thead><tbody>'+trs+'</tbody></table>'
+      +(dvState.readOnly?'':'<div class="dv-add"><button type="button" class="b bs bsm" onclick="dvAddIndicator()">+ Agregar indicador</button></div>');
+  }
+  var html='<div class="dv-modal" id="dvBox" role="dialog" aria-modal="true" aria-labelledby="dvTitle">'
+    +'<div class="dv-head"><div class="dv-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="2.2"></circle><path d="M19 9l-6 2-1.5-1.7L10 11l-6-2M12 11v6.5m-3.5 6l3.5-7 3.5 7"></path></svg></div>'
+    +'<div><h2 id="dvTitle">Evaluación diversificada</h2><div class="dv-stu">'+diagEsc(s.nombre)+'</div><div class="dv-tags">'+tags+'</div></div>'
+    +'<button class="dv-close" id="dvCloseBtn" aria-label="Cerrar" onclick="dvRequestClose()">✕</button></div>'
+    +'<div class="dv-months">'+monthsHtml+'</div>'
+    +'<div class="dv-body"><div class="dv-mhead"><h3>'+mes+' — Indicadores personalizados</h3><span class="dv-note">ℹ️ Los indicadores corresponden solo al mes seleccionado y pueden ser diferentes en cada mes.</span></div>'+bodyHtml+'</div>'
+    +'<div class="dv-foot"><div></div><div style="display:flex;gap:8px"><button type="button" class="b bs" onclick="dvRequestClose()">Cancelar</button>'+(dvState.readOnly?'':'<button type="button" class="b bp" onclick="dvSave()">Guardar evaluación</button>')+'</div></div>'
+    +'</div>';
+  host.innerHTML=html;
+  host.style.display='flex';
 }
 
 function importEvals(input){
